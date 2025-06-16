@@ -96,3 +96,12 @@ input {
     background-color: #4b3fad;
     transform: scale(0.98);
   }
+
+p {
+    text-align: center;
+    bottom: 20px;
+
+    color: #000000;
+    font-family: "Manjari", sans-serif;
+    font-size: 10px;
+}
