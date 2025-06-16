@@ -99,7 +99,7 @@ input {
 
 p {
     text-align: center;
-    bottom: 20px;
+    padding-bottom: 20px;
 
     color: #000000;
     font-family: "Manjari", sans-serif;
