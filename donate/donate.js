@@ -5,6 +5,9 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       imagem: "./images/qrcode10",
       nome: "R$10,00",
+      descricao: "Uma criança que você não tera nenhum trabalho para cuidar.",
+      preco: 129.90,
+      detalhes: "O Bebê Reborn é feito com silicone e roupas costuradas à mão. Ideal para presentes ou colecionadores.",
     },
     {
       imagem: "./images/qrcode25",
