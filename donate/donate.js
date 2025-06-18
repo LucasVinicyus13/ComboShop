@@ -3,35 +3,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const doacoes = [
     {
-      imagem: "./images/qrcode10.jpeg",
+      imagemCard: "./images/card1.jpeg", // NEW: Image for the clickable card
+      imagemPopup: "./images/qrcode10.jpeg", // Original: Image for the popup
       nome: "R$ 10,00",
-      descricao: "Uma criança que você não tera nenhum trabalho para cuidar.", // Kept for popup details
-      preco: 129.90, // Kept for popup details
+      descricao: "Uma criança que você não tera nenhum trabalho para cuidar.",
+      preco: 129.90,
       detalhes: "O Bebê Reborn é feito com silicone e roupas costuradas à mão. Ideal para presentes ou colecionadores.",
     },
     {
-      imagem: "./images/qrcode25.jpeg",
+      imagemCard: "./images/card2.jpeg", // NEW: Image for the clickable card
+      imagemPopup: "./images/qrcode25.jpeg", // Original: Image for the popup
       nome: "R$ 25,00",
       descricao: "Fraldas para o seu Bebê Reborn sempre ficar limpinho.",
       preco: 79.90,
       detalhes: "Contém 138 unidades. Conforto seco garantido por até 12h.",
     },
     {
-      imagem: "./images/qrcode50.jpeg",
+      imagemCard: "./images/card3.jpeg", // NEW: Image for the clickable card
+      imagemPopup: "./images/qrcode50.jpeg", // Original: Image for the popup
       nome: "R$ 50,00",
       descricao: "Sapatênis tamanho 38 para ficar muito no estilo.",
       preco: 90.00,
       detalhes: "Confeccionado em material sintético de alta qualidade, com palmilha macia e solado antiderrapante para máximo conforto e segurança.",
     },
     {
-      imagem: "./images/qrcode75.jpeg",
+      imagemCard: "./images/card4.jpeg", // NEW: Image for the clickable card
+      imagemPopup: "./images/qrcode75.jpeg", // Original: Image for the popup
       nome: "R$ 75,00",
       descricao: "Compre este boné do PT para estar sempre apoiando nosso querido presidente.",
       preco: 13.13,
       detalhes: "Boné ajustável com estampa bordada em destaque, feito em algodão resistente para garantir estilo e durabilidade no apoio ao seu partido.",
     },
     {
-      imagem: "./images/qrcode100.jpeg",
+      imagemCard: "./images/card5.jpeg", // NEW: Image for the clickable card
+      imagemPopup: "./images/qrcode100.jpeg", // Original: Image for the popup
       nome: "R$ 100,00",
       descricao: "Esse tapete impede de suas visitas chegarem na sua casa e falar mal da pipokinha.",
       preco: 69.00,
@@ -43,11 +48,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const card = document.createElement("div");
     card.className = "doacao-card";
     card.innerHTML = `
-      <img src="${doacao.imagem}" alt="${doacao.nome}">
+      <img src="${doacao.imagemCard}" alt="${doacao.nome}">
       <h2>${doacao.nome}</h2>
     `;
 
-    // Add click event listener to the entire card
     card.addEventListener("click", () => {
       abrirPopup(doacao);
     });
@@ -61,19 +65,17 @@ document.addEventListener("DOMContentLoaded", () => {
     popup.innerHTML = `
       <div class="popup-content">
         <span class="popup-close">&times;</span>
-        <img src="${doacao.imagem}" alt="${doacao.nome}">
+        <img src="${doacao.imagemPopup}" alt="${doacao.nome}">
         <h2>${doacao.nome}</h2>
       </div>
     `;
 
     document.body.appendChild(popup);
 
-    // Close popup when 'X' is clicked
     popup.querySelector(".popup-close").addEventListener("click", () => {
       popup.remove();
     });
 
-    // Close popup when clicking outside the content
     popup.addEventListener("click", (event) => {
         if (event.target === popup) {
             popup.remove();
