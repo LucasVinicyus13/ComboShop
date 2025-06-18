@@ -100,32 +100,7 @@ h1 {
     height: auto;
     border-radius: 5px;
 }
-
-.donate-card h2 {
-    font-size: 18px;
-    color: #000;
-    margin-top: 10px;
-}
-
-.donate-card p {
-    font-size: 14px;
-    color: #000000bb;
-}
-
-.donate-card button {
-    background-color: #6c63ff;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.donate-card button:hover {
-    background-color: #5a52d4;
-}
-
+ 
 /* Popup */
 .popup-overlay {
     position: fixed;
