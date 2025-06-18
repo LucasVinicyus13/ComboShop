@@ -45,46 +45,13 @@ document.addEventListener("DOMContentLoaded", () => {
     card.innerHTML = `
       <img src="${doacao.imagem}" alt="${doacao.nome}">
       <h2>${doacao.nome}</h2>
-    `; // Only image and name now
-
-    // No event listener for "Comprar" button since it's removed
+    `;
 
     lista.appendChild(card);
   });
 
-  // The following functions (abrirPopup, abrirFormularioEndereco, abrirPopupEndereco)
-  // are no longer directly called from the doacao cards, but are kept in the JS file
-  // in case you wish to re-implement similar functionality elsewhere or
-  // integrate them with other parts of your application.
-  function abrirPopup(doacao) {
-    const popup = document.createElement("div");
-    popup.className = "popup-overlay";
-    popup.innerHTML = `
-      <div class="popup-content">
-        <span class="popup-close">&times;</span>
-        <img src="${doacao.imagem}" alt="${doacao.nome}">
-        <h2>${doacao.nome}</h2>
-        <p>${doacao.descricao}</p>
-        <p><strong>Mais detalhes:</strong> ${doacao.detalhes}</p>
-        </div>
-    `;
-
-    document.body.appendChild(popup);
-
-    popup.querySelector(".popup-close").addEventListener("click", () => {
-      popup.remove();
-    });
-  }
-
-  function abrirFormularioEndereco(doacao, quantidade) {
-    // This function is no longer called in this setup
-    console.log("abrirFormularioEndereco called, but not used in this simplified doacao display.");
-  }
-
-  function abrirPopupEndereco(endereco) {
-    // This function is no longer called in this setup
-    console.log("abrirPopupEndereco called, but not used in this simplified doacao display.");
-  }
+  // Removed all functions related to purchasing (abrirPopup, abrirFormularioEndereco, abrirPopupEndereco)
+  // as they are no longer accessible or needed for this simplified display.
 });
 
 
