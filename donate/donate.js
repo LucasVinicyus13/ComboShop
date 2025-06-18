@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       imagem: "./images/Produto1.jpeg",
       nome: "Bebê Reborn",
-      descricao: "Uma criança que você não tera nenhum trabalho para cuidar.",
-      preco: 129.90,
+      descricao: "Uma criança que você não tera nenhum trabalho para cuidar.", // Kept for popup details
+      preco: 129.90, // Kept for popup details
       detalhes: "O Bebê Reborn é feito com silicone e roupas costuradas à mão. Ideal para presentes ou colecionadores.",
     },
     {
@@ -47,11 +47,39 @@ document.addEventListener("DOMContentLoaded", () => {
       <h2>${doacao.nome}</h2>
     `;
 
+    // Add click event listener to the entire card
+    card.addEventListener("click", () => {
+      abrirPopup(doacao);
+    });
+
     lista.appendChild(card);
   });
 
-  // Removed all functions related to purchasing (abrirPopup, abrirFormularioEndereco, abrirPopupEndereco)
-  // as they are no longer accessible or needed for this simplified display.
+  function abrirPopup(doacao) {
+    const popup = document.createElement("div");
+    popup.className = "popup-overlay";
+    popup.innerHTML = `
+      <div class="popup-content">
+        <span class="popup-close">&times;</span>
+        <img src="${doacao.imagem}" alt="${doacao.nome}">
+        <h2>${doacao.nome}</h2>
+      </div>
+    `;
+
+    document.body.appendChild(popup);
+
+    // Close popup when 'X' is clicked
+    popup.querySelector(".popup-close").addEventListener("click", () => {
+      popup.remove();
+    });
+
+    // Close popup when clicking outside the content
+    popup.addEventListener("click", (event) => {
+        if (event.target === popup) {
+            popup.remove();
+        }
+    });
+  }
 });
 
 
