@@ -119,47 +119,7 @@ h1 {
 }
 
 
-/* Popup - Mantido caso queira reativar a funcionalidade em outro lugar */
-.popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #00000088;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-}
-
-.popup-content {
-    position: relative;
-    background-color: #c5a6ff;
-    padding: 30px;
-    border-radius: 15px;
-    max-width: 400px;
-    width: 90%;
-    box-shadow: 0px 6px 20px #000;
-    text-align: center;
-    color: #000;
-}
-
-.popup-content img {
-    width: 100px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
-
-.popup-close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 24px;
-    color: #000;
-    cursor: pointer;
-    font-weight: bold;
-}
+/* Popup - REMOVIDO JÁ QUE NÃO SERÁ ACESSADO*/
 
 /* Responsividade */
 @media (max-width: 768px) {
@@ -188,14 +148,6 @@ h1 {
 }
 
 @media (max-width: 480px) {
-    .popup-content {
-        padding: 20px;
-    }
-
-    .popup-content img {
-        width: 80px;
-    }
-
     li a {
         font-size: 16px;
     }
@@ -353,36 +305,4 @@ h1 {
   .menu-toggle {
     display: flex;
   }
-}
-
-/* Estilo para o campo de quantidade (oculto, mas mantido para referência) */
-.popup-content label,
-.popup-content input,
-.popup-content select {
-  display: none; /* Oculta estes elementos no popup */
-}
-
-/* Botões dentro do pop-up (oculto, mas mantido para referência) */
-.popup-content button {
-  display: none; /* Oculta estes botões no popup */
-}
-
-/* Inputs e Selects nos popups (oculto, mas mantido para referência) */
-.popup-content label {
-  display: none; /* Oculta a label */
-}
-
-.popup-content input[type="text"],
-.popup-content input[type="number"],
-.popup-content select {
-  display: none; /* Oculta inputs e selects */
-}
-
-/* Botão Finalizar Pedido (oculto, mas mantido para referência) */
-.btn-finalizar-pedido {
-  display: none; /* Oculta o botão */
-}
-
-#pagamento {
-  display: none; /* Oculta o select de pagamento */
 }
