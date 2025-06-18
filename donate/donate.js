@@ -5,9 +5,9 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       imagem: "./images/qrcode10",
       nome: "R$10,00",
-      descricao: ". ",
-      preco: ". ",
-      detalhes: ". ",
+      descricao: "aa ",
+      preco: 123,
+      detalhes: "aa",
     },
     {
       imagem: "./images/qrcode25",
