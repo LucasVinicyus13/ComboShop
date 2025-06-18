@@ -88,6 +88,7 @@ h1 {
     text-align: center;
     box-shadow: 0px 4px 20px -5px #000;
     transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer; /* Make it look clickable */
 }
 
 .doacao-card:hover {
@@ -119,7 +120,48 @@ h1 {
 }
 
 
-/* Popup - REMOVIDO JÁ QUE NÃO SERÁ ACESSADO*/
+/* Popup */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #00000088;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.popup-content {
+    position: relative;
+    background-color: #c5a6ff;
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0px 6px 20px #000;
+    text-align: center;
+    color: #000;
+}
+
+.popup-content img {
+    width: 100px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.popup-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    color: #000;
+    cursor: pointer;
+    font-weight: bold;
+}
+
 
 /* Responsividade */
 @media (max-width: 768px) {
