@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const doacoes = [
     {
-      imagemCard: "./images/card1.jpeg", // NEW: Image for the clickable card
+      imagemCard: "./images/card10.jpeg", // NEW: Image for the clickable card
       imagemPopup: "./images/qrcode10.jpeg", // Original: Image for the popup
       nome: "R$ 10,00",
       descricao: "Uma criança que você não tera nenhum trabalho para cuidar.",
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
       detalhes: "O Bebê Reborn é feito com silicone e roupas costuradas à mão. Ideal para presentes ou colecionadores.",
     },
     {
-      imagemCard: "./images/card2.jpeg", // NEW: Image for the clickable card
+      imagemCard: "./images/card25.jpeg", // NEW: Image for the clickable card
       imagemPopup: "./images/qrcode25.jpeg", // Original: Image for the popup
       nome: "R$ 25,00",
       descricao: "Fraldas para o seu Bebê Reborn sempre ficar limpinho.",
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
       detalhes: "Contém 138 unidades. Conforto seco garantido por até 12h.",
     },
     {
-      imagemCard: "./images/card3.jpeg", // NEW: Image for the clickable card
+      imagemCard: "./images/card50.jpeg", // NEW: Image for the clickable card
       imagemPopup: "./images/qrcode50.jpeg", // Original: Image for the popup
       nome: "R$ 50,00",
       descricao: "Sapatênis tamanho 38 para ficar muito no estilo.",
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
       detalhes: "Confeccionado em material sintético de alta qualidade, com palmilha macia e solado antiderrapante para máximo conforto e segurança.",
     },
     {
-      imagemCard: "./images/card4.jpeg", // NEW: Image for the clickable card
+      imagemCard: "./images/card75.jpeg", // NEW: Image for the clickable card
       imagemPopup: "./images/qrcode75.jpeg", // Original: Image for the popup
       nome: "R$ 75,00",
       descricao: "Compre este boné do PT para estar sempre apoiando nosso querido presidente.",
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
       detalhes: "Boné ajustável com estampa bordada em destaque, feito em algodão resistente para garantir estilo e durabilidade no apoio ao seu partido.",
     },
     {
-      imagemCard: "./images/card5.jpeg", // NEW: Image for the clickable card
+      imagemCard: "./images/card100.jpeg", // NEW: Image for the clickable card
       imagemPopup: "./images/qrcode100.jpeg", // Original: Image for the popup
       nome: "R$ 100,00",
       descricao: "Esse tapete impede de suas visitas chegarem na sua casa e falar mal da pipokinha.",
