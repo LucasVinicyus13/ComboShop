@@ -62,12 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="popup-close">&times;</span>
         <img src="${doacao.imagem}" alt="${doacao.nome}">
         <h2>${doacao.nome}</h2>
-        <p>${doacao.descricao}</p>
-        <p><strong>Mais detalhes:</strong> ${doacao.detalhes}</p>
-        <label for="quantidade">Quantidade:</label>
-        <input type="number" id="quantidade" min="1" value="1" required>
-        <span class="price">R$ ${doacao.preco.toFixed(2)}</span>
-        <button type="button" class="btn-endereco">Comprar</button>
       </div>
     `;
 
