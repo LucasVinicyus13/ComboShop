@@ -84,6 +84,7 @@ h1 {
 .doacao-card {
     background-color: #c5a6ff;
     padding: 15px;
+    border-radius: 10px;
     text-align: center;
     box-shadow: 0px 4px 20px -5px #000;
     transition: transform 0.2s, box-shadow 0.2s;
