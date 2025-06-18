@@ -107,50 +107,19 @@ h1 {
     margin-top: 10px;
 }
 
-.doacao-card p {
-    font-size: 14px;
-    color: #000000bb;
+/* Oculta os parágrafos de descrição e preço nos cards */
+.doacao-card p,
+.doacao-card .price {
+    display: none;
 }
 
-.price {
-    display: block;
-    margin: 10px 0;
-    font-weight: bold;
-    color: #000;
-}
-
+/* Oculta o botão de compra nos cards */
 .doacao-card button {
-    background-color: #6c63ff;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+    display: none;
 }
 
-.doacao-card button:hover {
-    background-color: #5a52d4;
-}
 
-/* Botão de compra */
-.btn-comprar {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #8b5cf6;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.btn-comprar:hover {
-    background-color: #6b21a8;
-}
-
-/* Popup */
+/* Popup - Mantido caso queira reativar a funcionalidade em outro lugar */
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -192,22 +161,6 @@ h1 {
     font-weight: bold;
 }
 
-.btn-popup-comprar {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #8b5cf6;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.btn-popup-comprar:hover {
-    background-color: #6b21a8;
-}
-
 /* Responsividade */
 @media (max-width: 768px) {
     header {
@@ -241,12 +194,6 @@ h1 {
 
     .popup-content img {
         width: 80px;
-    }
-
-    .btn-comprar,
-    .btn-popup-comprar {
-        font-size: 14px;
-        padding: 8px 16px;
     }
 
     li a {
@@ -408,97 +355,34 @@ h1 {
   }
 }
 
-/* Estilo para o campo de quantidade */
+/* Estilo para o campo de quantidade (oculto, mas mantido para referência) */
 .popup-content label,
 .popup-content input,
 .popup-content select {
-  display: block;
-  width: 100%;
-  margin-top: 10px;
-  text-align: left;
+  display: none; /* Oculta estes elementos no popup */
 }
 
-.popup-content input[type="number"],
-.popup-content input[type="text"],
-.popup-content select {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  margin-top: 5px;
-}
-
-/* Botões dentro do pop-up (para os botões novos também) */
+/* Botões dentro do pop-up (oculto, mas mantido para referência) */
 .popup-content button {
-  background-color: #7c5fff;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin-top: 15px;
+  display: none; /* Oculta estes botões no popup */
 }
 
-.popup-content button:hover {
-  background-color: #5e40d6;
-}
-
-/* Inputs e Selects nos popups */
+/* Inputs e Selects nos popups (oculto, mas mantido para referência) */
 .popup-content label {
-  font-weight: bold;
-  margin-top: 10px;
-  display: block;
+  display: none; /* Oculta a label */
 }
 
 .popup-content input[type="text"],
 .popup-content input[type="number"],
 .popup-content select {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
+  display: none; /* Oculta inputs e selects */
 }
 
-/* Botão Finalizar Pedido */
+/* Botão Finalizar Pedido (oculto, mas mantido para referência) */
 .btn-finalizar-pedido {
-  background-color: #8b5cf6;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  margin-top: 15px;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
-}
-
-.btn-finalizar-pedido:hover {
-  background-color: #6b21a8;
+  display: none; /* Oculta o botão */
 }
 
 #pagamento {
-  width: 100%;
-  padding: 10px 12px;
-  margin-top: 8px;
-  margin-bottom: 16px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  color: #333;
-  appearance: none; /* Remove estilo padrão do sistema */
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%204%205'%3E%3Cpath%20fill='%23333'%20d='M2%205L0%200h4L2%205z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 10px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-#pagamento:focus {
-  border-color: #666;
-  box-shadow: 0 0 0 2px rgba(100, 100, 100, 0.2);
-  outline: none;
+  display: none; /* Oculta o select de pagamento */
 }
