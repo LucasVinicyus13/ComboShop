@@ -146,8 +146,10 @@ h1 {
     color: #000;
 }
 
+/* Aumenta o tamanho da imagem APENAS no popup */
 .popup-content img {
-    width: 100px;
+    width: 90%; /* Ajuste este valor para controlar o tamanho */
+    height: auto;
     border-radius: 10px;
     margin-bottom: 10px;
 }
