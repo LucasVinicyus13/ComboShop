@@ -45,6 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
     card.innerHTML = `
       <img src="${doacao.imagem}" alt="${doacao.nome}">
       <h2>${doacao.nome}</h2>
+      <p>${doacao.descricao}</p>
+      <span class="price">R$ ${doacao.preco.toFixed(2)}</span>
+      <button type="button" class="btn-comprar">Comprar</button>
     `;
 
     card.querySelector(".btn-comprar").addEventListener("click", () => {
