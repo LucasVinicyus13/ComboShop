@@ -33,11 +33,13 @@ function validarFormulario(event) {
     return false;
   }
 
-  const regexSenha = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@!#$%&*]).{8,}$/;
-  if (!regexSenha.test(password)) {
-    alert("Sua senha deve conter no mínimo 8 dígitos, 1 número, 1 letra e 1 caractere especial (@,!,#,$,%,&,*)");
-    return false;
-  }
+const regexSenha = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!"'@#$%*()_\-+=\[\]´`^~\?\/;:.,\\]).{8,}$/;
+
+if (!regexSenha.test(password)) {
+  alert("Sua senha deve conter no mínimo 8 dígitos, 1 número, 1 letra e 1 caractere especial ( !, \, @, #, etc...)");
+  return false;
+}
+
 
   // ✅ Redireciona para o Google se tudo estiver certo
   window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
