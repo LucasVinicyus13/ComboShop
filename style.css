@@ -110,6 +110,12 @@ p {
     font-size: 15px;
 }
 
+p a {
+    text-decoration: none;
+    font-weight: 700;
+    color: #414bd2;
+}
+
 @media (max-width: 600px) {
     .register {
         width: 90%;
