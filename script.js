@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
@@ -15,6 +15,7 @@ const db = getFirestore(app);
 
 const cpfInput = document.getElementById('cpf');
 
+// Mascara de CPF
 cpfInput.addEventListener('input', () => {
   let value = cpfInput.value.replace(/\D/g, '');
 
@@ -27,12 +28,13 @@ cpfInput.addEventListener('input', () => {
   cpfInput.value = value;
 });
 
-document.getElementById("formulario").addEventListener("submit", async (event) => {
+// Função principal de validação e envio
+async function validarFormulario(event) {
   event.preventDefault();
 
   const fullname = document.getElementById("fullname").value.trim();
   const username = document.getElementById("username").value.trim();
-  const cpf = document.getElementById("cpf").value.replace(/\D/g, '');
+  let cpf = document.getElementById("cpf").value.trim();
   const password = document.getElementById("password").value;
 
   if (!fullname || !username || !cpf || !password) {
@@ -40,37 +42,84 @@ document.getElementById("formulario").addEventListener("submit", async (event) =
     return;
   }
 
-  if (!/^\d{11}$/.test(cpf)) {
-    alert("CPF inválido. Deve conter 11 dígitos numéricos.");
+  cpf = cpf.replace(/[^\d]/g, '');
+
+  const regexCPF = /^\d{11}$/;
+  if (!regexCPF.test(cpf)) {
+    alert("CPF inválido. O CPF deve conter 11 dígitos.");
     return;
   }
 
-  const senhaValida = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!"'@#$%*()_\-+=\[\]´`^~\?\/;:.,\\]).{8,}$/;
-  if (!senhaValida.test(password)) {
-    alert("A senha precisa ter no mínimo 8 caracteres, incluindo uma letra, um número e um caractere especial.");
+  const regexSenha = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!"'@#$%*()_\-+=\[\]´`^~\?\/;:.,\\]).{8,}$/;
+  if (!regexSenha.test(password)) {
+    alert("Sua senha deve conter no mínimo 8 dígitos, 1 número, 1 letra e 1 caractere especial ( !, \\, @, #, etc...)");
     return;
   }
 
-  const usuariosRef = collection(db, "usuarios");
+  try {
+    const usuariosRef = collection(db, "usuarios");
 
-  const consultaCPF = query(usuariosRef, where("cpf", "==", cpf));
-  const consultaUsername = query(usuariosRef, where("username", "==", username));
+    const q1 = query(usuariosRef, where("cpf", "==", cpf));
+    const q2 = query(usuariosRef, where("username", "==", username));
 
-  const [cpfDocs, usernameDocs] = await Promise.all([
-    getDocs(consultaCPF),
-    getDocs(consultaUsername)
-  ]);
+    const [cpfSnapshot, usernameSnapshot] = await Promise.all([
+      getDocs(q1),
+      getDocs(q2)
+    ]);
 
-  if (!cpfDocs.empty || !usernameDocs.empty) {
-    document.getElementById("popup").classList.remove("hidden");
-    return;
+    if (!cpfSnapshot.empty || !usernameSnapshot.empty) {
+      mostrarPopup();
+      return;
+    }
+
+    // Salva o usuário
+    await addDoc(usuariosRef, { fullname, username, cpf, password });
+
+    // ✅ Redireciona para página de produtos
+    window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
+
+  } catch (error) {
+    console.error("Erro ao registrar usuário:", error);
+    alert("Erro ao registrar. Tente novamente.");
   }
+}
 
-  await addDoc(usuariosRef, { fullname, username, cpf, password });
+// Popup personalizado
+function mostrarPopup() {
+  const popup = document.createElement('div');
+  popup.style.position = 'fixed';
+  popup.style.top = '0';
+  popup.style.left = '0';
+  popup.style.width = '100vw';
+  popup.style.height = '100vh';
+  popup.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+  popup.style.display = 'flex';
+  popup.style.alignItems = 'center';
+  popup.style.justifyContent = 'center';
+  popup.style.zIndex = '9999';
 
-  window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
-});
+  popup.innerHTML = `
+    <div style="
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      font-family: 'Manjari', sans-serif;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    ">
+      <p style="font-size: 20px; margin-bottom: 20px;">Já existe um usuário com esse nome de usuário ou CPF. É você?</p>
+      <a href="https://combo-shop.vercel.app/login.html" style="
+        background-color: #6a5acd;
+        color: white;
+        padding: 10px 25px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transition: background-color 0.3s ease;
+      " onmouseover="this.style.backgroundColor='#5a4dbf'" onmouseout="this.style.backgroundColor='#6a5acd'">Fazer login</a>
+    </div>
+  `;
 
-window.fecharPopup = function () {
-  document.getElementById("popup").classList.add("hidden");
-};
+  document.body.appendChild(popup);
+}
