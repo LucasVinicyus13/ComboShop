@@ -123,3 +123,6 @@ function mostrarPopup() {
 
   document.body.appendChild(popup);
 }
+
+// ✅ Associa o formulário à função de validação
+document.getElementById('registerForm').addEventListener('submit', validarFormulario);
