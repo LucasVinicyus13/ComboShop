@@ -13,22 +13,23 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const cpfInput = document.getElementById('cpf');
+// Espera o DOM estar carregado
+document.addEventListener('DOMContentLoaded', () => {
+  const cpfInput = document.getElementById('cpf');
 
-// Mascara de CPF
-cpfInput.addEventListener('input', () => {
-  let value = cpfInput.value.replace(/\D/g, '');
+  // Máscara de CPF
+  cpfInput.addEventListener('input', () => {
+    let value = cpfInput.value.replace(/\D/g, '');
+    if (value.length > 11) value = value.slice(0, 11);
+    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+    value = value.replace(/(\d{3})(\d)/, '$1.$2');
+    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    cpfInput.value = value;
+  });
 
-  if (value.length > 11) value = value.slice(0, 11);
-
-  value = value.replace(/(\d{3})(\d)/, '$1.$2');
-  value = value.replace(/(\d{3})(\d)/, '$1.$2');
-  value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-
-  cpfInput.value = value;
+  document.getElementById('registerForm').addEventListener('submit', validarFormulario);
 });
 
-// Função principal de validação e envio
 async function validarFormulario(event) {
   event.preventDefault();
 
@@ -52,7 +53,7 @@ async function validarFormulario(event) {
 
   const regexSenha = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!"'@#$%*()_\-+=\[\]´`^~\?\/;:.,\\]).{8,}$/;
   if (!regexSenha.test(password)) {
-    alert("Sua senha deve conter no mínimo 8 dígitos, 1 número, 1 letra e 1 caractere especial ( !, \\, @, #, etc...)");
+    alert("Sua senha deve conter no mínimo 8 dígitos, 1 número, 1 letra e 1 caractere especial.");
     return;
   }
 
@@ -72,10 +73,10 @@ async function validarFormulario(event) {
       return;
     }
 
-    // Salva o usuário
+    // Salva o usuário no Firestore
     await addDoc(usuariosRef, { fullname, username, cpf, password });
 
-    // ✅ Redireciona para página de produtos
+    // ✅ Redireciona para produtos
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
 
   } catch (error) {
@@ -84,7 +85,6 @@ async function validarFormulario(event) {
   }
 }
 
-// Popup personalizado
 function mostrarPopup() {
   const popup = document.createElement('div');
   popup.style.position = 'fixed';
@@ -123,6 +123,3 @@ function mostrarPopup() {
 
   document.body.appendChild(popup);
 }
-
-// ✅ Associa o formulário à função de validação
-document.getElementById('registerForm').addEventListener('submit', validarFormulario);
