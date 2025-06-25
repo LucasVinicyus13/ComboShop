@@ -1,37 +1,98 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
-  authDomain: "comboshop-66b1c.firebaseapp.com",
-  projectId: "comboshop-66b1c",
-  storageBucket: "comboshop-66b1c.appspot.com",
-  messagingSenderId: "607173380854",
-  appId: "1:607173380854:web:60b02791198cdc113e7ad7"
-};
+// Variáveis globais fornecidas pelo ambiente Canvas
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
+// Inicializa o Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// Espera o DOM estar carregado
-document.addEventListener('DOMContentLoaded', () => {
-  const cpfInput = document.getElementById('cpf');
+let userId = null;
+let isAuthReady = false;
 
-  // Máscara de CPF
-  cpfInput.addEventListener('input', () => {
-    let value = cpfInput.value.replace(/\D/g, '');
-    if (value.length > 11) value = value.slice(0, 11);
-    value = value.replace(/(\d{3})(\d)/, '$1.$2');
-    value = value.replace(/(\d{3})(\d)/, '$1.$2');
-    value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-    cpfInput.value = value;
-  });
-
-  document.getElementById('registerForm').addEventListener('submit', validarFormulario);
+// Observador do estado de autenticação para garantir que o Firebase esteja pronto
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    userId = user.uid;
+    console.log("Usuário autenticado:", userId);
+  } else {
+    // Tenta fazer login anonimamente se não houver token personalizado ou se o usuário sair
+    try {
+      await signInAnonymously(auth);
+      userId = auth.currentUser.uid;
+      console.log("Usuário autenticado anonimamente:", userId);
+    } catch (error) {
+      console.error("Erro na autenticação anônima:", error);
+    }
+  }
+  isAuthReady = true;
 });
 
+// Tenta fazer login com token personalizado se disponível
+if (initialAuthToken) {
+  signInWithCustomToken(auth, initialAuthToken)
+    .then((userCredential) => {
+      console.log("Autenticação com token personalizada bem-sucedida.");
+    })
+    .catch((error) => {
+      console.error("Erro na autenticação com token personalizada:", error);
+      // Retorna para o login anônimo se o token personalizado falhar
+      signInAnonymously(auth);
+    });
+}
+
+const cpfInput = document.getElementById('cpf');
+const formulario = document.getElementById('formulario');
+const messageModal = document.getElementById('messageModal');
+const modalMessage = document.getElementById('modalMessage');
+const closeButton = document.querySelector('.close'); // Usa a classe 'close' existente no CSS
+const modalLoginLink = document.getElementById('modalLoginLink');
+
+// Mascara de CPF
+cpfInput.addEventListener('input', () => {
+  let value = cpfInput.value.replace(/\D/g, '');
+
+  if (value.length > 11) value = value.slice(0, 11);
+
+  value = value.replace(/(\d{3})(\d)/, '$1.$2');
+  value = value.replace(/(\d{3})(\d)/, '$1.$2');
+  value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+
+  cpfInput.value = value;
+});
+
+// Função para exibir o modal de mensagem
+function showModal(message, showLoginLink = false) {
+  modalMessage.textContent = message;
+  if (showLoginLink) {
+    modalLoginLink.style.display = 'inline-block';
+  } else {
+    modalLoginLink.style.display = 'none';
+  }
+  messageModal.classList.remove('hidden');
+}
+
+// Função para esconder o modal de mensagem
+function hideModal() {
+  messageModal.classList.add('hidden');
+}
+
+// Event listener para o botão de fechar o modal
+closeButton.addEventListener('click', hideModal);
+
+// Função principal de validação e envio
 async function validarFormulario(event) {
   event.preventDefault();
+
+  if (!isAuthReady) {
+    showModal("Aguarde, a autenticação está sendo inicializada.");
+    return;
+  }
 
   const fullname = document.getElementById("fullname").value.trim();
   const username = document.getElementById("username").value.trim();
@@ -39,7 +100,7 @@ async function validarFormulario(event) {
   const password = document.getElementById("password").value;
 
   if (!fullname || !username || !cpf || !password) {
-    alert("Por favor, preencha todos os campos obrigatórios.");
+    showModal("Por favor, preencha todos os campos obrigatórios.");
     return;
   }
 
@@ -47,18 +108,27 @@ async function validarFormulario(event) {
 
   const regexCPF = /^\d{11}$/;
   if (!regexCPF.test(cpf)) {
-    alert("CPF inválido. O CPF deve conter 11 dígitos.");
+    showModal("CPF inválido. O CPF deve conter 11 dígitos.");
     return;
   }
 
-  const regexSenha = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!"'@#$%*()_\-+=\[\]´`^~\?\/;:.,\\]).{8,}$/;
+  // Regex atualizada para incluir caracteres especiais comuns
+  const regexSenha = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]).{8,}$/;
   if (!regexSenha.test(password)) {
-    alert("Sua senha deve conter no mínimo 8 dígitos, 1 número, 1 letra e 1 caractere especial.");
+    showModal("Sua senha deve conter no mínimo 8 dígitos, 1 número, 1 letra e 1 caractere especial (por exemplo: !, @, #, $, etc...).");
     return;
   }
 
   try {
-    const usuariosRef = collection(db, "usuarios");
+    // Garante que o userId esteja disponível antes de prosseguir
+    if (!userId) {
+      showModal("Erro de autenticação: ID do usuário não disponível. Tente novamente.");
+      console.error("UserID é nulo durante o envio do formulário.");
+      return;
+    }
+
+    // Caminho da coleção ajustado para as regras de segurança do Firestore (dados privados do usuário)
+    const usuariosRef = collection(db, `artifacts/${appId}/users/${userId}/usuarios`);
 
     const q1 = query(usuariosRef, where("cpf", "==", cpf));
     const q2 = query(usuariosRef, where("username", "==", username));
@@ -69,57 +139,21 @@ async function validarFormulario(event) {
     ]);
 
     if (!cpfSnapshot.empty || !usernameSnapshot.empty) {
-      mostrarPopup();
+      showModal("Já existe um usuário com esse nome de usuário ou CPF. É você?", true); // Passa true para mostrar o link de login
       return;
     }
 
-    // Salva o usuário no Firestore
+    // Salva o usuário
     await addDoc(usuariosRef, { fullname, username, cpf, password });
 
-    // ✅ Redireciona para produtos
+    // Redireciona para página de produtos
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
 
   } catch (error) {
     console.error("Erro ao registrar usuário:", error);
-    alert("Erro ao registrar. Tente novamente.");
+    showModal("Erro ao registrar. Tente novamente.");
   }
 }
 
-function mostrarPopup() {
-  const popup = document.createElement('div');
-  popup.style.position = 'fixed';
-  popup.style.top = '0';
-  popup.style.left = '0';
-  popup.style.width = '100vw';
-  popup.style.height = '100vh';
-  popup.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-  popup.style.display = 'flex';
-  popup.style.alignItems = 'center';
-  popup.style.justifyContent = 'center';
-  popup.style.zIndex = '9999';
-
-  popup.innerHTML = `
-    <div style="
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 15px;
-      text-align: center;
-      font-family: 'Manjari', sans-serif;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
-    ">
-      <p style="font-size: 20px; margin-bottom: 20px;">Já existe um usuário com esse nome de usuário ou CPF. É você?</p>
-      <a href="https://combo-shop.vercel.app/login.html" style="
-        background-color: #6a5acd;
-        color: white;
-        padding: 10px 25px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: bold;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        transition: background-color 0.3s ease;
-      " onmouseover="this.style.backgroundColor='#5a4dbf'" onmouseout="this.style.backgroundColor='#6a5acd'">Fazer login</a>
-    </div>
-  `;
-
-  document.body.appendChild(popup);
-}
+// Adiciona o event listener ao formulário
+formulario.addEventListener('submit', validarFormulario);
