@@ -61,9 +61,15 @@ document.getElementById("formulario").addEventListener("submit", async function 
     return;
   }
 
+  try {
   await addDoc(usuariosRef, { fullname, username, cpf, password });
+  console.log("Cadastro salvo com sucesso!");
+  window.location.replace("https://combo-shop.vercel.app/products/produtos.html");
+} catch (error) {
+  console.error("Erro ao salvar cadastro:", error);
+  alert("Erro ao salvar os dados. Tente novamente.");
+}
 
-  window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
 });
 
 function mostrarPopup() {
