@@ -55,10 +55,11 @@ const modalLoginLink = document.getElementById('modalLoginLink');
 
 // Mascara de CPF
 cpfInput.addEventListener('input', () => {
-  let value = cpfInput.value.replace(/\D/g, '');
+  let value = cpfInput.value.replace(/\D/g, ''); // Remove tudo que não é dígito
 
-  if (value.length > 11) value = value.slice(0, 11);
+  if (value.length > 11) value = value.slice(0, 11); // Limita a 11 dígitos
 
+  // Aplica a máscara: XXX.XXX.XXX-XX
   value = value.replace(/(\d{3})(\d)/, '$1.$2');
   value = value.replace(/(\d{3})(\d)/, '$1.$2');
   value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
@@ -104,7 +105,7 @@ async function validarFormulario(event) {
     return;
   }
 
-  cpf = cpf.replace(/[^\d]/g, '');
+  cpf = cpf.replace(/[^\d]/g, ''); // Garante que o CPF esteja apenas com dígitos para validação
 
   const regexCPF = /^\d{11}$/;
   if (!regexCPF.test(cpf)) {
