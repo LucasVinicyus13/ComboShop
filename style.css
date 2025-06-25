@@ -30,11 +30,9 @@ header {
 .register {
   background-color: #9f8eff;
   width: 500px;
-  height: auto;
-  padding: 30px 0;
+  height: 500px;
   box-shadow: 2px 0px 25px #000;
-  margin-left: auto;
-  margin-right: auto;
+  margin: auto;
   border-radius: 15px;
 }
 
@@ -50,7 +48,8 @@ h1 {
   margin-top: 20px;
 }
 
-label, input {
+label,
+input {
   margin-left: 50px;
   font-family: "Manjari", sans-serif;
 }
@@ -96,7 +95,32 @@ p {
   color: #000000;
   font-family: "Manjari", sans-serif;
   font-size: 15px;
+}
+
+.already-account {
   margin-top: 10px;
+}
+
+/* Pop-up */
+.popup {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  padding: 15px 20px;
+  border: 2px solid #6a5acd;
+  border-radius: 10px;
+  font-family: "Manjari", sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  display: none;
+  z-index: 1000;
+}
+
+.popup a {
+  color: #4b3fad;
+  text-decoration: underline;
+  font-weight: bold;
 }
 
 @media (max-width: 600px) {
