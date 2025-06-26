@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
@@ -11,27 +11,47 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+const db = getFirestore(app);
 
-window.fazerLogin = async function (event) {
+const cpfInput = document.getElementById("cpf");
+
+cpfInput.addEventListener("input", () => {
+  let value = cpfInput.value.replace(/\D/g, "");
+
+  if (value.length > 11) value = value.slice(0, 11);
+
+  value = value.replace(/(\d{3})(\d)/, "$1.$2");
+  value = value.replace(/(\d{3})(\d)/, "$1.$2");
+  value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+  cpfInput.value = value;
+});
+
+async function fazerLogin(event) {
   event.preventDefault();
 
   const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value;
+  const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
 
-  if (!username || !password) {
-    alert("Preencha todos os campos!");
+  if (!username || !cpf) {
+    alert("Preencha todos os campos.");
     return;
   }
 
-  const fakeEmail = username + "@comboshop.com";
+  const usuariosRef = collection(db, "usuarios");
+  const snapshot = await getDocs(usuariosRef);
+  let encontrado = false;
 
-  try {
-    await signInWithEmailAndPassword(auth, fakeEmail, password);
-    alert("Login realizado com sucesso!");
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    if (data.username === username && data.cpf === cpf) {
+      encontrado = true;
+    }
+  });
+
+  if (encontrado) {
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
-  } catch (error) {
-    console.error("Erro no login:", error.message);
-    alert("Usuário ou senha inválidos. Tente novamente.");
+  } else {
+    alert("Usuário ou CPF inválido. Tente novamente.");
   }
-};
+}
