@@ -1,5 +1,17 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
@@ -12,6 +24,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 const usersRef = collection(db, "usuarios");
 
 const cpfInput = document.getElementById("cpf");
@@ -44,7 +57,7 @@ window.validarFormulario = async function (event) {
     return;
   }
 
-  const regexSenha = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!"'@#$%*()_\-+=\[\]´`^~\?\/;:.,\\]).{8,}$/;
+  const regexSenha = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!"'@#$%*()_\-+=\[\]´^~\?/;:.,\\]).{8,}$/;
   if (!regexSenha.test(password)) {
     alert("Sua senha deve conter no mínimo 8 dígitos, 1 número, 1 letra e 1 caractere especial.");
     return;
@@ -60,7 +73,22 @@ window.validarFormulario = async function (event) {
     return;
   }
 
-  await addDoc(usersRef, { fullname, username, cpf, password });
+  // Cria um usuário anônimo com email fake baseado no username
+  const fakeEmail = `${username}@comboshop.com`;
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
+    const user = userCredential.user;
 
-  window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
+    await addDoc(usersRef, {
+      fullname,
+      username,
+      cpf,
+      password,
+      uid: user.uid
+    });
+
+    window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
+  } catch (error) {
+    alert("Erro ao registrar: " + error.message);
+  }
 };
