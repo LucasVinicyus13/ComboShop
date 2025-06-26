@@ -1,159 +1,155 @@
+/* Reset básico */
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  background-color: #414bd2;
-}
-
-header {
-  height: 50px;
-  background-color: #9f8eff;
-  border-bottom: 3px solid #000;
-  box-shadow: 2px 0px 25px #000;
-}
-
-.logo {
-  width: 40px;
-  margin-top: 5px;
-  margin-left: 10px;
-}
-
-.container {
+  font-family: 'Manjari', sans-serif;
+  background: linear-gradient(120deg, #a18cd1, #fbc2eb);
+  min-height: 100vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  height: 100vh;
 }
 
-.register {
-  background-color: #9f8eff;
-  width: 500px;
-  height: auto;
-  box-shadow: 2px 0px 25px #000;
-  margin: 0 auto;
-  border-radius: 15px;
-  padding: 30px 0;
+/* Header com logo */
+header {
+  width: 100%;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
-h1 {
-  text-align: center;
-  color: #000;
-  font-family: "Manjari", sans-serif;
-  font-size: 35px;
-  padding-bottom: 10px;
+header img {
+  height: 50px;
+  margin-left: 20px;
 }
 
-.register > div {
-  margin-top: 20px;
-}
-
-label, input {
-  margin-left: 50px;
-  font-family: "Manjari", sans-serif;
-}
-
-label {
-  font-size: 25px;
-}
-
-input {
-  width: 396px;
-  height: 30px;
-  border: 2px solid #414bd2;
-  border-radius: 7px;
-}
-
-.submit-button {
-  display: block;
-  margin: 20px auto;
-  padding: 10px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  color: white;
-  background-color: #6a5acd;
-  border: none;
+/* Container centralizado */
+.container {
+  background-color: #fff;
+  padding: 40px;
+  margin-top: 50px;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.submit-button:hover {
-  background-color: #5a4dbf;
-  transform: scale(1.05);
-}
-
-.submit-button:active {
-  background-color: #4b3fad;
-  transform: scale(0.98);
-}
-
-p {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 400px;
   text-align: center;
-  color: #000;
-  font-family: "Manjari", sans-serif;
-  font-size: 15px;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  margin: 12px 0 20px;
+  border: 2px solid #b7a1ff;
+  border-radius: 8px;
+  outline: none;
+  font-size: 16px;
+  transition: 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: #6a5acd;
+}
+
+/* Botão registrar-se */
+button {
+  background-color: #6a5acd;
+  color: #fff;
+  border: none;
+  padding: 12px 25px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #5a4dbf;
+}
+
+/* POP-UP estilo Pampers */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+  z-index: 999;
 }
 
 .popup {
-  display: none;
   position: fixed;
-  top: 30%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #fff;
-  color: #000;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 0 20px #000;
+  background-color: #b7a1ff;
+  padding: 30px 40px;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
   z-index: 1000;
+  text-align: center;
+  width: 350px;
   font-family: "Manjari", sans-serif;
-  font-size: 18px;
 }
 
-.popup a {
-  color: #4b3fad;
+.popup h2 {
+  margin-top: 0;
+  font-size: 22px;
+  color: #000;
+}
+
+.popup p {
+  margin: 15px 0;
+  color: #000;
+}
+
+.popup .popup-button {
+  margin-top: 15px;
+  background-color: #6a5acd;
+  color: #fff;
+  border: none;
+  padding: 10px 25px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.popup .popup-button:hover {
+  background-color: #5a4dbf;
+}
+
+.popup .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 22px;
   font-weight: bold;
-  text-decoration: underline;
+  color: #333;
+  cursor: pointer;
 }
 
-@media (max-width: 600px) {
-  .register {
-    width: 90%;
-    padding: 20px 0;
-  }
+.hidden {
+  display: none;
+}
 
-  input {
-    width: 80%;
-    margin-left: 10%;
-  }
-
-  label {
-    display: block;
-    width: 80%;
-    margin-left: 10%;
-    margin-bottom: 5px;
-    font-size: 18px;
-  }
-
-  h1 {
-    font-size: 28px;
-  }
-
-  .submit-button {
-    width: 60%;
-    margin: 20px auto;
-  }
-
-  p {
-    font-size: 13px;
-    padding: 0 10px;
-  }
-
+/* Responsivo */
+@media (max-width: 480px) {
   .container {
-    height: auto;
-    padding: 30px 0;
+    padding: 30px 20px;
+    margin-top: 30px;
+  }
+
+  .popup {
+    width: 90%;
   }
 }
