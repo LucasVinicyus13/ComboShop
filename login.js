@@ -34,3 +34,13 @@ window.login = async function (event) {
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
   }
 };
+
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+
+const auth = getAuth();
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // Usuário já está autenticado, redirecionar para produtos
+    window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
+  }
+});
