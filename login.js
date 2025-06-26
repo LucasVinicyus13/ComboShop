@@ -38,9 +38,10 @@ window.login = async function (event) {
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 
 const auth = getAuth();
+
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    // Usuário já está autenticado, redirecionar para produtos
+    // Usuário já está autenticado, redireciona para a página de produtos
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
   }
 });
