@@ -288,3 +288,13 @@ menuToggle.addEventListener('click', () => {
   menuToggle.classList.toggle('open');
   mobileMenu.classList.toggle('active');
 });
+
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+
+const auth = getAuth();
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    // Se não estiver logado, volta para a página inicial
+    window.location.href = "https://combo-shop.vercel.app";
+  }
+});
