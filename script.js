@@ -1,71 +1,66 @@
-// Configuração do Firebase
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_AUTH_DOMAIN",
-  projectId: "combo-shop-66b1c",
-  storageBucket: "SEU_BUCKET",
-  messagingSenderId: "SEU_SENDER_ID",
-  appId: "SEU_APP_ID"
+  apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
+  authDomain: "comboshop-66b1c.firebaseapp.com",
+  projectId: "comboshop-66b1c",
+  storageBucket: "comboshop-66b1c.appspot.com",
+  messagingSenderId: "607173380854",
+  appId: "1:607173380854:web:60b02791198cdc113e7ad7"
 };
 
-// Inicialização do Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const usersRef = collection(db, "usuarios");
 
-// Referências aos elementos do DOM
-const form = document.getElementById("registerForm");
-const usernameInput = document.getElementById("username");
-const passwordInput = document.getElementById("password");
+const cpfInput = document.getElementById("cpf");
+cpfInput.addEventListener("input", () => {
+  let value = cpfInput.value.replace(/\D/g, "");
+  if (value.length > 11) value = value.slice(0, 11);
+  value = value.replace(/(\d{3})(\d)/, "$1.$2");
+  value = value.replace(/(\d{3})(\d)/, "$1.$2");
+  value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  cpfInput.value = value;
+});
 
-const popupOverlay = document.getElementById("popup-overlay");
-const popup = document.getElementById("popup");
-const closeBtn = document.getElementById("closePopup");
-const loginRedirect = document.getElementById("goToLogin");
+window.validarFormulario = async function (event) {
+  event.preventDefault();
 
-// Evento para fechar popup
-closeBtn.onclick = () => {
-  popupOverlay.classList.add("hidden");
-};
+  const fullname = document.getElementById("fullname").value;
+  const username = document.getElementById("username").value;
+  let cpf = document.getElementById("cpf").value;
+  const password = document.getElementById("password").value;
 
-// Redirecionar para login
-loginRedirect.onclick = () => {
-  window.location.href = "login.html";
-};
-
-// Evento de envio do formulário
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const username = usernameInput.value.trim();
-  const password = passwordInput.value.trim();
-
-  if (!username || !password) {
-    alert("Preencha todos os campos.");
+  if (!fullname || !username || !cpf || !password) {
+    alert("Por favor, preencha todos os campos obrigatórios.");
     return;
   }
 
-  try {
-    // Verifica se já existe um usuário com esse nome ou senha
-    const snapshot = await db.collection("usuarios")
-      .where("username", "==", username)
-      .get();
-
-    if (!snapshot.empty) {
-      popupOverlay.classList.remove("hidden");
-      return;
-    }
-
-    // Adiciona novo usuário
-    await db.collection("usuarios").add({
-      username,
-      password
-    });
-
-    // Redireciona para a página de produtos
-    window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
-
-  } catch (error) {
-    console.error("Erro ao registrar:", error);
-    alert("Erro ao registrar usuário. Tente novamente.");
+  cpf = cpf.replace(/[^\d]/g, "");
+  const regexCPF = /^\d{11}$/;
+  if (!regexCPF.test(cpf)) {
+    alert("CPF inválido. O CPF deve conter 11 dígitos.");
+    return;
   }
-});
+
+  const regexSenha = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!"'@#$%*()_\-+=\[\]´`^~\?\/;:.,\\]).{8,}$/;
+  if (!regexSenha.test(password)) {
+    alert("Sua senha deve conter no mínimo 8 dígitos, 1 número, 1 letra e 1 caractere especial.");
+    return;
+  }
+
+  const q = query(usersRef, where("cpf", "==", cpf));
+  const q2 = query(usersRef, where("username", "==", username));
+  const existingCpf = await getDocs(q);
+  const existingUser = await getDocs(q2);
+
+  if (!existingCpf.empty || !existingUser.empty) {
+    document.getElementById("popup").style.display = "block";
+    return;
+  }
+
+  await addDoc(usersRef, { fullname, username, cpf, password });
+
+  window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
+};
