@@ -6,30 +6,32 @@
   <title>ComboShop | Login</title>
   <link rel="icon" type="image/x-icon" href="./images/ComboShopLogo.png" />
   <link rel="stylesheet" href="login.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@100;400;700&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manjari:wght@100;400;700&display=swap" rel="stylesheet"/>
 </head>
 <body>
   <header>
-    <img class="logo" src="images/ComboShopLogo.png" alt="Combo Shop logo" />
+    <img class="logo" src="images/ComboShopLogo.png" alt="ComboShop logo" />
   </header>
 
   <div class="container">
-    <form class="register" onsubmit="fazerLogin(event)">
+    <form class="register" onsubmit="login(event)">
       <h1>Entrar</h1>
 
       <div class="username">
         <label for="username">Nome de Usuário:</label>
-        <input type="text" id="username" name="username" required autocomplete="off" />
+        <input type="text" id="username" name="username" placeholder="Nome de Usuário" required autocomplete="off" />
       </div>
 
-      <div class="cpf">
-        <label for="cpf">CPF:</label>
-        <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required autocomplete="off" />
+      <div class="password">
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="password" placeholder="Senha" required autocomplete="off" />
       </div>
 
       <button type="submit" class="submit-button">Entrar</button>
 
-      <p>Não tem uma conta? <a href="https://combo-shop.vercel.app/index.html">Registrar</a></p>
+      <p>Não tem uma conta? <a href="https://combo-shop.vercel.app/index.html">Registrar-se</a></p>
     </form>
   </div>
 
