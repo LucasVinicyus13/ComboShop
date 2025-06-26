@@ -3,16 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Registro - ComboShop</title>
-  <link rel="stylesheet" href="style.css"/>
+  <title>ComboShop | Registro</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Registro</h1>
-
-    <p>Já tem uma conta? <a href="https://combo-shop.vercel.app/login.html">Entrar</a></p>
-    <p>Caso a página não carregue, recarregue até carregar</p>
-
+    <h1>Crie sua conta</h1>
     <form id="registerForm">
       <input type="text" id="fullname" placeholder="Nome completo" required />
       <input type="text" id="cpf" placeholder="CPF" required />
@@ -20,14 +16,14 @@
       <input type="password" id="password" placeholder="Senha" required />
       <button type="submit">Registrar</button>
     </form>
+    <p>Já tem uma conta? <a href="https://combo-shop.vercel.app/login.html">Entrar</a></p>
+    <p>Caso a página não carregue, recarregue até carregar</p>
   </div>
 
-  <!-- Popup -->
   <div id="popup" class="popup hidden">
-    <div class="popup-content">
-      <span class="close" onclick="fecharPopup()">&times;</span>
-      <p>Já existe um usuário com esse nome de usuário/CPF. É você? <a href="https://combo-shop.vercel.app/login.html">Fazer login</a></p>
-    </div>
+    <span class="close" onclick="fecharPopup()">&times;</span>
+    <h2>Já existe um usuário com esse nome de usuário/CPF</h2>
+    <p>É você? <a href="https://combo-shop.vercel.app/login.html">Fazer login</a></p>
   </div>
 
   <script type="module" src="script.js"></script>
