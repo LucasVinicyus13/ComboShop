@@ -5,12 +5,13 @@ import {
   addDoc,
   getDocs,
   query,
-  where
+  where,
+  doc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 import {
   getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  createUserWithEmailAndPassword
 } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 
 const firebaseConfig = {
@@ -73,18 +74,16 @@ window.validarFormulario = async function (event) {
     return;
   }
 
-  // Cria um usuário anônimo com email fake baseado no username
   const fakeEmail = `${username}@comboshop.com`;
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
     const user = userCredential.user;
 
-    await addDoc(usersRef, {
+    await setDoc(doc(db, "usuarios", user.uid), {
       fullname,
       username,
       cpf,
-      password,
-      uid: user.uid
+      password
     });
 
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
