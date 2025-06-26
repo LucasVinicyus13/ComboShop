@@ -44,9 +44,14 @@
     </form>
   </div>
 
-  <div id="popup" class="popup">
-    <p>Já existe um usuário com esse nome de usuário ou CPF. É você? <a href="https://combo-shop.vercel.app/login.html">Fazer login</a></p>
-  </div>
+  <div id="popup" class="popup hidden">
+  <span class="close" onclick="fecharPopup()">&times;</span>
+  <h2>Já existe um usuário com esse nome de usuário ou CPF.</h2>
+  <p style="margin: 15px 0;">É você?</p>
+  <button class="popup-button" onclick="window.location.href='login.html'">Fazer login</button>
+</div>
+<div id="popup-overlay" class="popup-overlay hidden"></div>
+
 
   <script type="module" src="script.js"></script>
 </body>
