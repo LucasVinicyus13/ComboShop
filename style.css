@@ -30,17 +30,19 @@ header {
 .register {
   background-color: #9f8eff;
   width: 500px;
-  height: 350px;
+  height: auto;
   box-shadow: 2px 0px 25px #000;
+  margin: 0 auto;
   border-radius: 15px;
+  padding: 30px 0;
 }
 
 h1 {
   text-align: center;
-  padding-top: 20px;
-  color: #000000;
+  color: #000;
   font-family: "Manjari", sans-serif;
   font-size: 35px;
+  padding-bottom: 10px;
 }
 
 .register > div {
@@ -90,15 +92,36 @@ input {
 
 p {
   text-align: center;
-  color: #000000;
+  color: #000;
   font-family: "Manjari", sans-serif;
   font-size: 15px;
+}
+
+.popup {
+  display: none;
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  color: #000;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 20px #000;
+  z-index: 1000;
+  font-family: "Manjari", sans-serif;
+  font-size: 18px;
+}
+
+.popup a {
+  color: #4b3fad;
+  font-weight: bold;
+  text-decoration: underline;
 }
 
 @media (max-width: 600px) {
   .register {
     width: 90%;
-    height: auto;
     padding: 20px 0;
   }
 
