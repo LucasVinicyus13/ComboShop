@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
@@ -12,25 +12,55 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const usersRef = collection(db, "usuarios");
 
-window.login = async function (event) {
+const cpfInput = document.getElementById("cpf");
+cpfInput.addEventListener("input", () => {
+  let value = cpfInput.value.replace(/\D/g, "");
+  if (value.length > 11) value = value.slice(0, 11);
+  value = value.replace(/(\d{3})(\d)/, "$1.$2");
+  value = value.replace(/(\d{3})(\d)/, "$1.$2");
+  value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  cpfInput.value = value;
+});
+
+window.validarFormulario = async function (event) {
   event.preventDefault();
 
-  const username = document.getElementById("username").value.trim();
+  const fullname = document.getElementById("fullname").value;
+  const username = document.getElementById("username").value;
+  let cpf = document.getElementById("cpf").value;
   const password = document.getElementById("password").value;
 
-  if (!username || !password) {
-    alert("Preencha todos os campos.");
+  if (!fullname || !username || !cpf || !password) {
+    alert("Por favor, preencha todos os campos obrigatórios.");
     return;
   }
 
-  const usersRef = collection(db, "usuarios");
-  const q = query(usersRef, where("username", "==", username), where("password", "==", password));
-  const querySnapshot = await getDocs(q);
-
-  if (querySnapshot.empty) {
-    alert("Nome de usuário ou senha incorretos.");
-  } else {
-    window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
+  cpf = cpf.replace(/[^\d]/g, "");
+  const regexCPF = /^\d{11}$/;
+  if (!regexCPF.test(cpf)) {
+    alert("CPF inválido. O CPF deve conter 11 dígitos.");
+    return;
   }
+
+  const regexSenha = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!"'@#$%*()_\-+=\[\]´^~\?\/;:.,\\]).{8,}$/;
+  if (!regexSenha.test(password)) {
+    alert("Sua senha deve conter no mínimo 8 dígitos, 1 número, 1 letra e 1 caractere especial.");
+    return;
+  }
+
+  const q = query(usersRef, where("cpf", "==", cpf));
+  const q2 = query(usersRef, where("username", "==", username));
+  const existingCpf = await getDocs(q);
+  const existingUser = await getDocs(q2);
+
+  if (!existingCpf.empty || !existingUser.empty) {
+    document.getElementById("popup").style.display = "block";
+    return;
+  }
+
+  await addDoc(usersRef, { fullname, username, cpf, password });
+
+  window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
 };
