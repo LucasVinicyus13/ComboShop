@@ -1,3 +1,52 @@
+// FUNÇÃO: Mostrar popup de alerta customizado
+function mostrarPopupAlerta(mensagem, tipo = "info") {
+  const popup = document.createElement("div")
+  popup.className = "popup-alerta-overlay"
+
+  const cores = {
+    success: "#4CAF50",
+    warning: "#ff9800",
+    error: "#f44336",
+    info: "#2196F3",
+  }
+
+  const icones = {
+    success: "✓",
+    warning: "⚠",
+    error: "✕",
+    info: "ℹ",
+  }
+
+  const cor = cores[tipo] || cores.info
+  const icone = icones[tipo] || icones.info
+
+  popup.innerHTML = `
+    <div class="popup-alerta-content" style="border-left: 4px solid ${cor};">
+      <div class="popup-alerta-header" style="background-color: ${cor};">
+        <span class="popup-alerta-icone">${icone}</span>
+      </div>
+      <div class="popup-alerta-body">
+        <p>${mensagem}</p>
+      </div>
+      <button class="popup-alerta-close" style="background-color: ${cor};">OK</button>
+    </div>
+  `
+
+  document.body.appendChild(popup)
+
+  // Fechar ao clicar no botão
+  popup.querySelector(".popup-alerta-close").addEventListener("click", () => {
+    popup.remove()
+  })
+
+  // Auto-close após 4 segundos
+  setTimeout(() => {
+    if (popup.parentElement) {
+      popup.remove()
+    }
+  }, 4000)
+}
+
 // FUNÇÃO: Atualiza o contador do carrinho (movida para escopo global)
 function atualizarContadorCarrinho() {
   const carrinho = JSON.parse(localStorage.getItem("carrinho")) || []
@@ -114,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const quantidade = Number.parseInt(popup.querySelector("#quantidade").value)
       if (quantidade > 0) {
         adicionarAoCarrinho(produto, quantidade)
-        alert(`${produto.nome} foi adicionado ao seu carrinho!`)
+        mostrarPopupAlerta(`${produto.nome} foi adicionado ao seu carrinho!`, "success")
         fecharPopups()
       }
     })
@@ -236,7 +285,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
 
         if (itensParaComprar.length === 0) {
-          alert("Você deve marcar pelo menos um item para prosseguir.")
+          mostrarPopupAlerta("Você deve marcar pelo menos um item para prosseguir.", "warning")
           return
         }
 
@@ -350,11 +399,11 @@ function abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestante
     }
 
     if (!/^\d{5}-\d{3}$/.test(novoEndereco.cep)) {
-      alert("CEP inválido. Use o formato xxxxx-xxx.")
+      mostrarPopupAlerta("CEP inválido. Use o formato xxxxx-xxx.", "error")
       return
     }
     if (novoEndereco.estado.length !== 2) {
-      alert("Estado deve ter 2 letras (ex: SP).")
+      mostrarPopupAlerta("Estado deve ter 2 letras (ex: SP).", "error")
       return
     }
     if (
@@ -364,12 +413,12 @@ function abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestante
       !novoEndereco.rua ||
       !novoEndereco.numero
     ) {
-      alert("Por favor, preencha todos os campos obrigatórios.")
+      mostrarPopupAlerta("Por favor, preencha todos os campos obrigatórios.", "warning")
       return
     }
 
     localStorage.setItem("endereco", JSON.stringify(novoEndereco))
-    alert("Endereço salvo com sucesso!")
+    mostrarPopupAlerta("Endereço salvo com sucesso!", "success")
     popup.remove()
     abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado)
   })
@@ -503,7 +552,7 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
     const percentual = CUPONS[codigo]
 
     if (percentual) {
-      alert(`Cupom ${percentual}% aplicado com sucesso!`)
+      mostrarPopupAlerta(`Cupom ${percentual}% aplicado com sucesso!`, "success")
       abrirFormularioFinalizar(carrinho, itensRestantes, { codigo: codigo })
     } else {
       cupomMessage.textContent = "Cupom inválido ou expirado."
@@ -519,12 +568,12 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
     const endereco = JSON.parse(localStorage.getItem("endereco"))
 
     if (!enderecoPreenchido) {
-      alert("Por favor, preencha o Endereço para Entrega.")
+      mostrarPopupAlerta("Por favor, preencha o Endereço para Entrega.", "warning")
       return
     }
 
     if (!pagamento) {
-      alert("Por favor, selecione o método de pagamento.")
+      mostrarPopupAlerta("Por favor, selecione o método de pagamento.", "warning")
       return
     }
 
@@ -559,7 +608,9 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
 
     // Auto-close após 5 segundos
     setTimeout(() => {
-      confirmPopup.remove()
+      if (confirmPopup.parentElement) {
+        confirmPopup.remove()
+      }
     }, 5000)
   })
 }
