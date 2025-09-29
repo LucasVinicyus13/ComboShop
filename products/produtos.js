@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   ];
 
-  // Renderizar produtos na tela
+  /* ---------- renderizar produtos ---------- */
   produtos.forEach(produto => {
     const card = document.createElement("div");
     card.className = "product-card";
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     lista.appendChild(card);
   });
 
-  // Popup do produto
+  /* ---------- popup do produto (comprar / adicionar ao carrinho) ---------- */
   function abrirPopup(produto) {
     const popup = document.createElement("div");
     popup.className = "popup-overlay";
@@ -76,12 +76,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <button type="button" class="btn-add-carrinho">Adicionar ao Carrinho</button>
       </div>
     `;
-
     document.body.appendChild(popup);
 
-    popup.querySelector(".popup-close").addEventListener("click", () => {
-      popup.remove();
-    });
+    popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
 
     popup.querySelector(".btn-endereco").addEventListener("click", () => {
       const quantidade = parseInt(popup.querySelector("#quantidade").value);
@@ -105,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Adicionar ao carrinho
+  /* ---------- adicionar ao carrinho (localStorage) ---------- */
   function adicionarAoCarrinho(produto, quantidade) {
     let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
 
@@ -125,9 +122,12 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("carrinho", JSON.stringify(carrinho));
   }
 
-  // Função para abrir o carrinho
+  /* ---------- abrir carrinho (renderiza popup com itens e botões) ---------- */
   function abrirCarrinho() {
     const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+
+    // remove popup existente (segurança)
+    document.querySelectorAll(".popup-overlay").forEach(el => el.remove());
 
     const popup = document.createElement("div");
     popup.className = "popup-overlay";
@@ -143,17 +143,22 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       carrinho.forEach((item, index) => {
         conteudo += `
-          <div class="carrinho-item">
-            <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px;">
-            <div style="flex:1; margin-left:10px;">
-              <p><strong>${item.nome}</strong></p>
-              <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
+          <div class="carrinho-item" data-index="${index}">
+            <div class="carrinho-item-info" style="display:flex; align-items:center;">
+              <img src="${item.imagem}" alt="${item.nome}" class="carrinho-item-img" style="width:60px; border-radius:6px; margin-right:10px;">
+              <div class="carrinho-item-details" style="flex:1;">
+                <p><strong>${item.nome}</strong></p>
+                <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
+              </div>
             </div>
-            <div class="carrinho-item-quantidade">
-              <button onclick="alterarQuantidade(${index}, -1)">&lt;</button>
-              <span class="quantidade">${item.quantidade}</span>
-              <button onclick="alterarQuantidade(${index}, 1)">&gt;</button>
-              <p class="carrinho-item-total">Total: R$ ${(item.preco * item.quantidade).toFixed(2)}</p>
+
+            <div class="carrinho-item-quantidade-total" style="display:flex; flex-direction:column; align-items:flex-end;">
+              <div class="carrinho-item-quantidade" style="display:flex; align-items:center; gap:8px;">
+                <button class="btn-dim" data-index="${index}">&lt;</button>
+                <span class="quantidade" data-index="${index}">${item.quantidade}</span>
+                <button class="btn-aum" data-index="${index}">&gt;</button>
+              </div>
+              <p class="carrinho-item-total" data-index="${index}">Total: R$ ${(item.preco * item.quantidade).toFixed(2)}</p>
             </div>
           </div>
           <hr>
@@ -161,19 +166,34 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       conteudo += `
-        <button class="btn-finalizar-carrinho">Finalizar Compra</button>
+        <div style="display:flex; justify-content:center; margin-top:10px;">
+          <button class="btn-finalizar-carrinho">Finalizar Compra</button>
+        </div>
       `;
     }
 
-    conteudo += `</div>`;
+    conteudo += `</div>`; // fecha popup-content
     popup.innerHTML = conteudo;
     document.body.appendChild(popup);
 
-    popup.querySelector(".popup-close").addEventListener("click", () => {
-      popup.remove();
+    // fechar
+    popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
+
+    // listeners para aumentar/diminuir (re-renderiza o popup depois de atualizar)
+    popup.querySelectorAll(".btn-dim").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = parseInt(btn.dataset.index, 10);
+        alterarQuantidade(idx, -1);
+      });
+    });
+    popup.querySelectorAll(".btn-aum").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = parseInt(btn.dataset.index, 10);
+        alterarQuantidade(idx, 1);
+      });
     });
 
-    // Clique em "Finalizar Compra"
+    // finalizar compra
     if (carrinho.length > 0) {
       popup.querySelector(".btn-finalizar-carrinho").addEventListener("click", () => {
         popup.remove();
@@ -182,96 +202,57 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Botões do carrinho
-  document.getElementById("btn-carrinho-desktop").addEventListener("click", abrirCarrinho);
-  document.getElementById("btn-carrinho-mobile").addEventListener("click", abrirCarrinho);
-});
+  /* ---------- funções de endereço / finalizar (mantive a lógica que você já tinha) ---------- */
+  function abrirFormularioEndereco(produto, quantidade) {
+    const popup = document.createElement("div");
+    popup.className = "popup-overlay";
 
-// Função global para alterar quantidade
-function alterarQuantidade(index, delta) {
-  let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
-  if (!carrinho[index]) return;
+    const totalProduto = (produto.preco * quantidade).toFixed(2);
+    const totalPedido = (produto.preco * quantidade + 10.99).toFixed(2);
 
-  carrinho[index].quantidade += delta;
+    popup.innerHTML = `
+      <div class="popup-content">
+        <span class="popup-close">&times;</span>
+        <h2>Finalizar Compra</h2>
+        <p><strong>Produto:</strong> ${produto.nome}</p>
+        <p><strong>Quantidade:</strong> ${quantidade}</p>
+        <p><strong>Total (Produto):</strong> R$ ${totalProduto}</p>
+        <p><strong>Frete:</strong> R$ 10.99</p>
+        <p><strong>Total do Pedido:</strong> R$ ${totalPedido}</p>
 
-  if (carrinho[index].quantidade <= 0) {
-    carrinho.splice(index, 1); // remove se ficar 0
-  }
+        <button type="button" class="btn-endereco">Endereço de Entrega</button> <br> <br>
 
-  localStorage.setItem("carrinho", JSON.stringify(carrinho));
+        <h3>Método de Pagamento:</h3>
+        <select id="pagamento" required>
+          <option value="">Selecione</option>
+          <option value="Cartão de Crédito">Cartão de Crédito</option>
+          <option value="Pix">Pix</option>
+          <option value="Boleto">Boleto</option>
+        </select>
 
-  // Reabrir carrinho atualizado
-  document.querySelector(".popup-overlay")?.remove();
-  document.dispatchEvent(new Event("DOMContentLoaded"));
-  const abrirCarrinho = new Function("return " + abrirCarrinho)(); // gambiarra se quiser manter, posso melhorar
-}
-
-function abrirFormularioFinalizar(carrinho) {
-  const popup = document.createElement("div");
-  popup.className = "popup-overlay";
-
-  let subtotal = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
-  let frete = 10.99;
-  let total = (subtotal + frete).toFixed(2);
-
-  let conteudo = `
-    <div class="popup-content">
-      <span class="popup-close">&times;</span>
-      <h2>Finalizar Compra</h2>
-  `;
-
-  carrinho.forEach(item => {
-    conteudo += `
-      <div class="carrinho-item">
-        <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px;">
-        <div style="flex:1; margin-left:10px;">
-          <p><strong>${item.nome}</strong></p>
-          <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
-          <p>Quantidade: ${item.quantidade}</p>
-          <p>Total: R$ ${(item.preco * item.quantidade).toFixed(2)}</p>
-        </div>
+        <button type="button" class="btn-finalizar-pedido">Finalizar Pedido</button>
       </div>
-      <hr>
     `;
-  });
 
-  conteudo += `
-    <h3>Resumo do Pedido</h3>
-    <p><strong>Sub-total:</strong> R$ ${subtotal.toFixed(2)}</p>
-    <p><strong>Frete:</strong> R$ ${frete.toFixed(2)}</p>
-    <p><strong>Total:</strong> R$ ${total}</p>
+    document.body.appendChild(popup);
 
-    <h3>Método de Pagamento:</h3>
-    <select id="pagamento" required>
-      <option value="">Selecione</option>
-      <option value="Cartão de Crédito">Cartão de Crédito</option>
-      <option value="Pix">Pix</option>
-      <option value="Boleto">Boleto</option>
-    </select>
+    const endereco = {
+      cep: '', cidade: '', estado: '', bairro: '', rua: '', numero: '', complemento: ''
+    };
 
-    <button type="button" class="btn-endereco">Endereço de Entrega</button>
-    <button type="button" class="btn-finalizar-pedido">Finalizar Pedido</button>
-    </div>
-  `;
-
-  popup.innerHTML = conteudo;
-  document.body.appendChild(popup);
-
-  popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
-
-  // Endereço
-  popup.querySelector(".btn-endereco").addEventListener("click", () => {
-    abrirPopupEndereco({});
-  });
-
-  // Finalizar Pedido
-  popup.querySelector(".btn-finalizar-pedido").addEventListener("click", () => {
-    const pagamento = popup.querySelector("#pagamento").value;
-    if (!pagamento) {
-      alert("Por favor, selecione o método de pagamento.");
-      return;
+    const enderecoSalvo = JSON.parse(localStorage.getItem("enderecoSalvo"));
+    if (enderecoSalvo) {
+      Object.assign(endereco, enderecoSalvo);
     }
-    alert(`Pedido finalizado!\nTotal: R$ ${total}\nPagamento: ${pagamento}`);
-    popup.remove();
-  });
-}
+
+    popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
+
+    popup.querySelector(".btn-endereco").addEventListener("click", () => {
+      abrirPopupEndereco(endereco);
+    });
+
+    popup.querySelector(".btn-finalizar-pedido").addEventListener("click", () => {
+      const pagamento = popup.querySelector('#pagamento').value;
+
+      if (!pagamento) {
+        alert("Por favor, selecione o método de pagamento
