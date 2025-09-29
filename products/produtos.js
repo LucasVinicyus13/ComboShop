@@ -102,10 +102,17 @@ document.addEventListener("DOMContentLoaded", () => {
     popup.querySelector(".popup-close").addEventListener("click", () => fecharPopups())
 
     popup.querySelector(".btn-endereco").addEventListener("click", () => {
+      console.log("[v0] Botão Comprar clicado no popup")
       const quantidade = Number.parseInt(popup.querySelector("#quantidade").value)
+      console.log("[v0] Quantidade selecionada:", quantidade)
+      console.log("[v0] Produto:", produto)
+
       if (quantidade > 0) {
+        console.log("[v0] Chamando abrirFormularioFinalizar...")
         abrirFormularioFinalizar([{ ...produto, quantidade }], [], null)
         fecharPopups()
+      } else {
+        console.log("[v0] Quantidade inválida:", quantidade)
       }
     })
 
@@ -378,6 +385,11 @@ function abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestante
 /* TELA DE FINALIZAR COMPRA (Corrigida e com Múltiplos Cupons) */
 /* ======================================= */
 function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
+  console.log("[v0] abrirFormularioFinalizar chamada")
+  console.log("[v0] Carrinho recebido:", carrinho)
+  console.log("[v0] Itens restantes:", itensRestantes)
+  console.log("[v0] Cupom aplicado:", cupomAplicado)
+
   fecharPopups()
 
   // 🔴 ONDE VOCÊ DEVE INSERIR NOVOS CUPONS 🔴
