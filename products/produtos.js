@@ -391,6 +391,7 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
   console.log("[v0] Cupom aplicado:", cupomAplicado)
 
   fecharPopups()
+  console.log("[v0] Popups fechados")
 
   // 🔴 ONDE VOCÊ DEVE INSERIR NOVOS CUPONS 🔴
   const CUPONS = {
@@ -401,9 +402,11 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
 
   const popup = document.createElement("div")
   popup.className = "popup-overlay"
+  console.log("[v0] Elemento popup criado")
 
   const subtotal = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0)
   const frete = 10.99
+  console.log("[v0] Subtotal calculado:", subtotal)
 
   let valorDesconto = 0
   let percentualDescontoAplicado = 0
@@ -419,9 +422,11 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
 
   const total = subtotal - valorDesconto + frete
   const totalFormatado = total.toFixed(2)
+  console.log("[v0] Total calculado:", totalFormatado)
 
   const enderecoSalvo = JSON.parse(localStorage.getItem("endereco"))
   const enderecoPreenchido = enderecoSalvo && enderecoSalvo.rua && enderecoSalvo.numero
+  console.log("[v0] Endereço preenchido:", enderecoPreenchido)
 
   let conteudo = `
         <div class="popup-content">
@@ -485,10 +490,15 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
         </div>
     `
 
+  console.log("[v0] Conteúdo HTML construído, tamanho:", conteudo.length)
   popup.innerHTML = conteudo
+  console.log("[v0] innerHTML definido")
+
   document.body.appendChild(popup)
+  console.log("[v0] Popup adicionado ao body")
 
   popup.querySelector(".popup-close").addEventListener("click", () => popup.remove())
+  console.log("[v0] Event listener do botão fechar adicionado")
 
   const cupomInput = popup.querySelector("#cupom")
   const btnCupom = popup.querySelector("#btn-aplicar-cupom")
@@ -547,4 +557,6 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
 
     popup.remove()
   })
+
+  console.log("[v0] Todos os event listeners adicionados - função concluída")
 }
