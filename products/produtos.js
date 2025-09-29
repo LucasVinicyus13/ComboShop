@@ -25,8 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     {
       imagem: "./images/Produto4.jpg",
-      nome: "Boné do PT",
-      descricao: "Compre este boné do PT para estar sempre apoiando nosso querido presidente.",
+      nome: "Peruca Loira",
+      descricao: "Para Você ficar divo que nem o Ken da Barbie.",
       preco: 13.13,
       detalhes: "Boné ajustável com estampa bordada em destaque, feito em algodão resistente para garantir estilo e durabilidade no apoio ao seu partido.",
     },
