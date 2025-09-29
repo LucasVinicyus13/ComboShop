@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   ];
 
+  // Renderizar produtos na tela
   produtos.forEach(produto => {
     const card = document.createElement("div");
     card.className = "product-card";
@@ -57,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
     lista.appendChild(card);
   });
 
+  // Popup do produto
   function abrirPopup(produto) {
     const popup = document.createElement("div");
     popup.className = "popup-overlay";
@@ -103,6 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Adicionar ao carrinho
   function adicionarAoCarrinho(produto, quantidade) {
     let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
 
@@ -122,94 +125,86 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("carrinho", JSON.stringify(carrinho));
   }
 
-  // Carrinho
   // Função para abrir o carrinho
-function abrirCarrinho() {
-  const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+  function abrirCarrinho() {
+    const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
 
-  const popup = document.createElement("div");
-  popup.className = "popup-overlay";
+    const popup = document.createElement("div");
+    popup.className = "popup-overlay";
 
-  let conteudo = `
-    <div class="popup-content">
-      <span class="popup-close">&times;</span>
-      <h2>Meu Carrinho</h2>
-  `;
-
-  if (carrinho.length === 0) {
-    conteudo += `<p>Você ainda não adicionou nenhum item ao seu carrinho.</p>`;
-  } else {
-    carrinho.forEach((item, index) => {
-      conteudo += `
-        <div class="carrinho-item">
-          <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px;">
-          <div style="flex:1; margin-left:10px;">
-            <p><strong>${item.nome}</strong></p>
-            <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
-          </div>
-          <div class="carrinho-item-quantidade">
-            <button onclick="alterarQuantidade(${index}, -1)">&lt;</button>
-            <span class="quantidade">${item.quantidade}</span>
-            <button onclick="alterarQuantidade(${index}, 1)">&gt;</button>
-            <p>Total: R$ ${(item.preco * item.quantidade).toFixed(2)}</p>
-          </div>
-        </div>
-        <hr>
-      `;
-    });
-
-    conteudo += `
-      <button class="btn-finalizar-carrinho">Finalizar Compra</button>
+    let conteudo = `
+      <div class="popup-content">
+        <span class="popup-close">&times;</span>
+        <h2>Meu Carrinho</h2>
     `;
-  }
 
-  conteudo += `</div>`;
-  popup.innerHTML = conteudo;
-  document.body.appendChild(popup);
+    if (carrinho.length === 0) {
+      conteudo += `<p>Você ainda não adicionou nenhum item ao seu carrinho.</p>`;
+    } else {
+      carrinho.forEach((item, index) => {
+        conteudo += `
+          <div class="carrinho-item">
+            <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px;">
+            <div style="flex:1; margin-left:10px;">
+              <p><strong>${item.nome}</strong></p>
+              <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
+            </div>
+            <div class="carrinho-item-quantidade">
+              <button onclick="alterarQuantidade(${index}, -1)">&lt;</button>
+              <span class="quantidade">${item.quantidade}</span>
+              <button onclick="alterarQuantidade(${index}, 1)">&gt;</button>
+              <p class="carrinho-item-total">Total: R$ ${(item.preco * item.quantidade).toFixed(2)}</p>
+            </div>
+          </div>
+          <hr>
+        `;
+      });
 
-  popup.querySelector(".popup-close").addEventListener("click", () => {
-    popup.remove();
-  });
+      conteudo += `
+        <button class="btn-finalizar-carrinho">Finalizar Compra</button>
+      `;
+    }
 
-  // Clique em "Finalizar Compra"
-  if (carrinho.length > 0) {
-    popup.querySelector(".btn-finalizar-carrinho").addEventListener("click", () => {
+    conteudo += `</div>`;
+    popup.innerHTML = conteudo;
+    document.body.appendChild(popup);
+
+    popup.querySelector(".popup-close").addEventListener("click", () => {
       popup.remove();
-      abrirFormularioFinalizar(carrinho);
     });
+
+    // Clique em "Finalizar Compra"
+    if (carrinho.length > 0) {
+      popup.querySelector(".btn-finalizar-carrinho").addEventListener("click", () => {
+        popup.remove();
+        abrirFormularioFinalizar(carrinho);
+      });
+    }
   }
-}
-
-  // Atualizar carrinho (aumentar ou diminuir a quantidade)
-  popup.querySelectorAll(".btn-quantidade").forEach(button => {
-    button.addEventListener("click", (e) => {
-      const index = e.target.getAttribute("data-index");
-      const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
-      let produto = carrinho[index];
-      
-      // Aumentar ou diminuir quantidade
-      if (e.target.classList.contains("aumentar")) {
-        produto.quantidade++;
-      } else if (e.target.classList.contains("diminuir") && produto.quantidade > 1) {
-        produto.quantidade--;
-      }
-
-      // Atualiza o carrinho no localStorage
-      localStorage.setItem("carrinho", JSON.stringify(carrinho));
-
-      // Atualiza a interface (quantidade e total)
-      popup.querySelectorAll(".quantidade")[index].textContent = produto.quantidade;
-      popup.querySelectorAll(".carrinho-item-total")[index].textContent = `Total: R$ ${(
-        produto.preco * produto.quantidade
-      ).toFixed(2)}`;
-    });
-  });
-}
 
   // Botões do carrinho
   document.getElementById("btn-carrinho-desktop").addEventListener("click", abrirCarrinho);
   document.getElementById("btn-carrinho-mobile").addEventListener("click", abrirCarrinho);
 });
+
+// Função global para alterar quantidade
+function alterarQuantidade(index, delta) {
+  let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+  if (!carrinho[index]) return;
+
+  carrinho[index].quantidade += delta;
+
+  if (carrinho[index].quantidade <= 0) {
+    carrinho.splice(index, 1); // remove se ficar 0
+  }
+
+  localStorage.setItem("carrinho", JSON.stringify(carrinho));
+
+  // Reabrir carrinho atualizado
+  document.querySelector(".popup-overlay")?.remove();
+  document.dispatchEvent(new Event("DOMContentLoaded"));
+  const abrirCarrinho = new Function("return " + abrirCarrinho)(); // gambiarra se quiser manter, posso melhorar
+}
 
 function abrirFormularioFinalizar(carrinho) {
   const popup = document.createElement("div");
