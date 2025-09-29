@@ -101,6 +101,13 @@ document.addEventListener("DOMContentLoaded", () => {
       preco: 69.0,
       detalhes: "Tapete em tecido antiderrapante, com estampa ousada e divertida da MC Pipokinha.",
     },
+    {
+      imagem: "./images/Produto5.jpeg",
+      nome: "Tapete da MC Pipokinha",
+      descricao: "Esse tapete impede de suas visitas chegarem na sua casa e falar mal da pipokinha.",
+      preco: 69.0,
+      detalhes: "Tapete em tecido antiderrapante, com estampa ousada e divertida da MC Pipokinha.",
+    },
   ]
 
   // Chama a função ao carregar a página pela primeira vez
