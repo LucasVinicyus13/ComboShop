@@ -58,27 +58,52 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   function abrirPopup(produto) {
-    const popup = document.createElement("div");
-    popup.className = "popup-overlay";
-    popup.innerHTML = `
-      <div class="popup-content">
-        <span class="popup-close">&times;</span>
-        <img src="${produto.imagem}" alt="${produto.nome}">
-        <h2>${produto.nome}</h2>
-        <p>${produto.descricao}</p>
-        <p><strong>Mais detalhes:</strong> ${produto.detalhes}</p>
-        <label for="quantidade">Quantidade:</label>
-        <input type="number" id="quantidade" min="1" value="1" required>
-        <span class="price">R$ ${produto.preco.toFixed(2)}</span>
-        <button type="button" class="btn-endereco">Comprar</button>
-      </div>
-    `;
+  const popup = document.createElement("div");
+  popup.className = "popup-overlay";
+  popup.innerHTML = `
+    <div class="popup-content">
+      <span class="popup-close">&times;</span>
+      <img src="${produto.imagem}" alt="${produto.nome}">
+      <h2>${produto.nome}</h2>
+      <p>${produto.descricao}</p>
+      <p><strong>Mais detalhes:</strong> ${produto.detalhes}</p>
+      <label for="quantidade">Quantidade:</label>
+      <input type="number" id="quantidade" min="1" value="1" required>
+      <span class="price">R$ ${produto.preco.toFixed(2)}</span>
+      <button type="button" class="btn-endereco">Comprar</button>
+      <button type="button" class="btn-add-carrinho">Adicionar ao Carrinho</button>
+    </div>
+  `;
 
-    document.body.appendChild(popup);
+  document.body.appendChild(popup);
 
-    popup.querySelector(".popup-close").addEventListener("click", () => {
-      popup.remove();
-    });
+  popup.querySelector(".popup-close").addEventListener("click", () => {
+    popup.remove();
+  });
+
+  popup.querySelector(".btn-endereco").addEventListener("click", () => {
+    const quantidade = parseInt(popup.querySelector("#quantidade").value);
+    if (quantidade <= 0 || isNaN(quantidade)) {
+      alert("Por favor, insira uma quantidade válida.");
+      return;
+    }
+    abrirFormularioEndereco(produto, quantidade);
+    popup.remove();
+  });
+
+  // Novo: adicionar ao carrinho
+  popup.querySelector(".btn-add-carrinho").addEventListener("click", () => {
+    const quantidade = parseInt(popup.querySelector("#quantidade").value);
+    if (quantidade <= 0 || isNaN(quantidade)) {
+      alert("Por favor, insira uma quantidade válida.");
+      return;
+    }
+    adicionarAoCarrinho(produto, quantidade);
+    alert(`${produto.nome} foi adicionado ao seu carrinho!`);
+    popup.remove();
+  });
+}
+
 
     popup.querySelector(".btn-endereco").addEventListener("click", () => {
       const quantidade = parseInt(popup.querySelector("#quantidade").value);
@@ -291,15 +316,35 @@ menuToggle.addEventListener('click', () => {
 
 // Função para abrir o carrinho
 function abrirCarrinho() {
+  const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+
   const popup = document.createElement("div");
   popup.className = "popup-overlay";
-  popup.innerHTML = `
+
+  let conteudo = `
     <div class="popup-content">
       <span class="popup-close">&times;</span>
       <h2>Meu Carrinho</h2>
-      <p>Você ainda não adicionou nenhum item ao seu carrinho.</p>
-    </div>
   `;
+
+  if (carrinho.length === 0) {
+    conteudo += `<p>Você ainda não adicionou nenhum item ao seu carrinho.</p>`;
+  } else {
+    carrinho.forEach(item => {
+      conteudo += `
+        <div class="carrinho-item">
+          <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px 0;">
+          <p><strong>${item.nome}</strong></p>
+          <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
+          <p>Quantidade: ${item.quantidade}</p>
+        </div>
+        <hr>
+      `;
+    });
+  }
+
+  conteudo += `</div>`;
+  popup.innerHTML = conteudo;
 
   document.body.appendChild(popup);
 
@@ -308,6 +353,28 @@ function abrirCarrinho() {
   });
 }
 
+
 // Botões do carrinho
 document.getElementById("btn-carrinho-desktop").addEventListener("click", abrirCarrinho);
 document.getElementById("btn-carrinho-mobile").addEventListener("click", abrirCarrinho);
+
+function adicionarAoCarrinho(produto, quantidade) {
+  let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+
+  // Verifica se o produto já existe no carrinho
+  const itemExistente = carrinho.find(item => item.nome === produto.nome);
+
+  if (itemExistente) {
+    itemExistente.quantidade += quantidade;
+  } else {
+    carrinho.push({
+      nome: produto.nome,
+      imagem: produto.imagem,
+      preco: produto.preco,
+      quantidade: quantidade
+    });
+  }
+
+  localStorage.setItem("carrinho", JSON.stringify(carrinho));
+}
+
