@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `
 
     card.querySelector(".btn-comprar").addEventListener("click", () => {
-      abrirFormularioFinalizar([{ ...produto, quantidade: 1 }], [], null)
+      abrirPopup(produto)
     })
 
     lista.appendChild(card)
