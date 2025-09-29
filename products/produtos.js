@@ -25,7 +25,7 @@ function mostrarPopupAlerta(mensagem, tipo = "info") {
       <div class="popup-alerta-header" style="background-color: ${cor};">
         <span class="popup-alerta-icone">${icone}</span>
       </div>
-      <div class="popup-alerta-body">
+      <div class="popup-alerta-body" style="background-color: ${cor};">
         <p>${mensagem}</p>
       </div>
       <button class="popup-alerta-close" style="background-color: ${cor};">OK</button>
