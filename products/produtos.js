@@ -103,7 +103,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const quantidade = parseInt(popup.querySelector("#quantidade").value);
             // Ao comprar diretamente, assumimos que não há itens restantes no carrinho ([]).
             if (quantidade > 0) {
-                abrirFormularioFinalizar([{ ...produto, quantidade }], []); 
+                // Passamos o cupom inicialmente como nulo
+                abrirFormularioFinalizar([{ ...produto, quantidade }], [], null); 
                 fecharPopups();
             }
         });
@@ -246,13 +247,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     alert("Você deve marcar pelo menos um item para prosseguir."); 
                     return; 
                 }
-
-                // CORREÇÃO: Não removemos mais os itens do localStorage aqui!
                 
-                // 2. Procede com a compra APENAS dos itens selecionados
+                // 2. Procede com a compra APENAS dos itens selecionados, cupom é nulo inicialmente
                 fecharPopups();
-                // Passamos os itens que SOBRARAM para que sejam removidos SOMENTE na conclusão da compra.
-                abrirFormularioFinalizar(itensParaComprar, itensRestantes); 
+                // Passamos os itens que SOBRARAM e o cupom aplicado (inicialmente null)
+                abrirFormularioFinalizar(itensParaComprar, itensRestantes, null); 
             });
         }
     }
@@ -270,8 +269,8 @@ document.addEventListener("DOMContentLoaded", () => {
 /* ======================================= */
 /* TELA DE ENDEREÇO */
 /* ======================================= */
-// A função de endereço precisa receber os itensRestantes para retornar corretamente
-function abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestantes) {
+// A função de endereço agora recebe o cupom aplicado
+function abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestantes, cupomAplicado) {
     fecharPopups();
     
     const popup = document.createElement("div");
@@ -288,7 +287,7 @@ function abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestante
             <p>Preencha os dados do seu endereço para continuar.</p>
             <form id="form-endereco">
                 <input type="text" id="cep" placeholder="CEP (xxxxx-xxx)" value="${enderecoSalvo.cep}" maxlength="9" required><br>
-                <input type="text" id="cidade" placeholder="Cidade" value="${enderecoSalco.cidade}" required><br>
+                <input type="text" id="cidade" placeholder="Cidade" value="${enderecoSalvo.cidade}" required><br>
                 <input type="text" id="estado" placeholder="Estado (ex: SP)" value="${enderecoSalvo.estado}" maxlength="2" required><br>
                 <input type="text" id="bairro" placeholder="Bairro" value="${enderecoSalvo.bairro}" required><br>
                 <input type="text" id="rua" placeholder="Rua" value="${enderecoSalvo.rua}" required><br>
@@ -305,8 +304,8 @@ function abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestante
     // Fecha e volta para a tela de finalizar compra
     popup.querySelector(".popup-close").addEventListener("click", () => {
         popup.remove();
-        // Retorna para a tela de finalizar, passando também os itensRestantes
-        abrirFormularioFinalizar(carrinho, itensRestantes); 
+        // Retorna para a tela de finalizar, passando o cupom de volta
+        abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado); 
     });
 
     /* ---------- validações de inputs ---------- */
@@ -368,24 +367,48 @@ function abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestante
         localStorage.setItem("endereco", JSON.stringify(novoEndereco));
         alert("Endereço salvo com sucesso!");
         popup.remove();
-        // Volta para a tela de finalizar, passando também os itensRestantes
-        abrirFormularioFinalizar(carrinho, itensRestantes); 
+        // Volta para a tela de finalizar, passando o cupom de volta
+        abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado); 
     });
 }
 
 
 /* ======================================= */
-/* TELA DE FINALIZAR COMPRA (Agora recebe itensRestantes) */
+/* TELA DE FINALIZAR COMPRA (Corrigida e com Múltiplos Cupons) */
 /* ======================================= */
-function abrirFormularioFinalizar(carrinho, itensRestantes) {
+function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
     fecharPopups();
 
+    // 🔴 ONDE VOCÊ DEVE INSERIR NOVOS CUPONS 🔴
+    // Formato: "CODIGO_DO_CUPOM": PERCENTUAL_DE_DESCONTO (ex: 10 para 10%)
+    const CUPONS = {
+        "COMBOSHOP10": 10,  
+        "SUPER20": 20,      
+        "TESTE30": 30,       // Exemplo de um novo cupom
+    };
+    // ----------------------------------------
+    
     const popup = document.createElement("div");
     popup.className = "popup-overlay";
 
     let subtotal = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
     let frete = 10.99;
-    let total = (subtotal + frete);
+    
+    let valorDesconto = 0;
+    let percentualDescontoAplicado = 0;
+
+    // Lógica do Desconto:
+    if (cupomAplicado) {
+        const percentual = CUPONS[cupomAplicado.codigo];
+        
+        if (percentual) {
+            percentualDescontoAplicado = percentual;
+            // Calcula o desconto sobre o subtotal (e não sobre o frete)
+            valorDesconto = subtotal * (percentualDescontoAplicado / 100);
+        }
+    }
+    
+    let total = (subtotal - valorDesconto + frete);
     const totalFormatado = total.toFixed(2);
     
     const enderecoSalvo = JSON.parse(localStorage.getItem("endereco"));
@@ -416,8 +439,18 @@ function abrirFormularioFinalizar(carrinho, itensRestantes) {
         <h3>Resumo do Pedido (${carrinho.length} Itens)</h3>
         <p><strong>Sub-total:</strong> R$ ${subtotal.toFixed(2)}</p>
         <p><strong>Frete:</strong> R$ ${frete.toFixed(2)}</p>
+        
+        ${valorDesconto > 0 ? `<p style="color: green;"><strong>Desconto (${percentualDescontoAplicado}%):</strong> - R$ ${valorDesconto.toFixed(2)}</p>` : ''}
+        
         <p><strong>Total:</strong> R$ ${totalFormatado}</p>
         <hr>
+
+        <div style="margin-bottom: 20px;">
+            <label for="cupom">Cupom de Desconto:</label>
+            <input type="text" id="cupom" placeholder="Digite seu cupom" style="width: 70%; display: inline-block;">
+            <button type="button" id="btn-aplicar-cupom" style="width: 28%; padding: 8px 0; margin: 0;">Enviar</button>
+            <p id="cupom-message" style="margin-top: 5px; color: red; font-size: 14px;"></p>
+        </div>
 
         <h3>Entrega:</h3>
         <p>
@@ -446,13 +479,48 @@ function abrirFormularioFinalizar(carrinho, itensRestantes) {
     popup.innerHTML = conteudo;
     document.body.appendChild(popup);
 
-    // Ao fechar esta tela (cancelar), o item não é removido, pois o localStorage não foi atualizado
     popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
+
+    // Lógica do Cupom
+    const cupomInput = popup.querySelector("#cupom");
+    const btnCupom = popup.querySelector("#btn-aplicar-cupom");
+    const cupomMessage = popup.querySelector("#cupom-message");
+
+    // Mantém o estado do cupom
+    if (cupomAplicado) {
+        cupomInput.value = cupomAplicado.codigo;
+        cupomInput.disabled = true;
+        btnCupom.disabled = true;
+        cupomMessage.textContent = "Cupom já aplicado!";
+        cupomMessage.style.color = "green";
+    }
+
+    btnCupom.addEventListener("click", () => {
+        const codigo = cupomInput.value.toUpperCase().trim();
+
+        if (cupomAplicado) {
+            cupomMessage.textContent = "Você só pode adicionar um cupom por pedido";
+            return;
+        }
+        
+        // Verifica se o código digitado existe no objeto CUPONS
+        const percentual = CUPONS[codigo]; 
+
+        if (percentual) {
+            // Se o cupom for válido, reabrimos o formulário com o cupom aplicado
+            alert(`Cupom ${percentual}% aplicado com sucesso!`);
+            // Reabre o formulário passando o objeto do cupom (apenas o código é suficiente)
+            abrirFormularioFinalizar(carrinho, itensRestantes, { codigo: codigo });
+        } else {
+            cupomMessage.textContent = "Cupom inválido ou expirado.";
+        }
+    });
+
 
     // Abre o formulário de endereço
     popup.querySelector(".btn-endereco-entrega").addEventListener("click", () => {
-        // Passa o array de itens restantes para que ele seja usado no retorno.
-        abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestantes); 
+        // Passa o cupom aplicado para que ele seja mantido no retorno.
+        abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestantes, cupomAplicado); 
     });
 
     /* ---------- finalizar pedido (Remove itens restantes) ---------- */
@@ -474,7 +542,7 @@ function abrirFormularioFinalizar(carrinho, itensRestantes) {
         localStorage.setItem("carrinho", JSON.stringify(itensRestantes));
         atualizarContadorCarrinho();
 
-        alert(`Pedido finalizado!\nTotal: R$ ${totalFormatado}\nPagamento: ${pagamento}\nEntrega em: ${endereco.rua}, ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}-${endereco.estado}\nCEP: ${endereco.cep}`);
+        alert(`Pedido finalizado!\nTotal: R$ ${totalFormatado}\nPagamento: ${pagamento}\nEntrega em: ${endereco.rua}, ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}-${endereco.estado}\nCEP: ${endereco.cep}${valorDesconto > 0 ? `\nDesconto Aplicado: R$ ${valorDesconto.toFixed(2)} (${percentualDescontoAplicado}%)` : ''}`);
 
         popup.remove();
     });
