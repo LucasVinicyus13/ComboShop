@@ -1,86 +1,88 @@
+// FUNÇÃO: Atualiza o contador do carrinho (movida para escopo global)
+function atualizarContadorCarrinho() {
+  const carrinho = JSON.parse(localStorage.getItem("carrinho")) || []
+  const totalItens = carrinho.length
+
+  const desktopCounter = document.getElementById("contador-desktop")
+  const mobileCounter = document.getElementById("contador-mobile")
+
+  if (desktopCounter) desktopCounter.textContent = totalItens
+  if (mobileCounter) mobileCounter.textContent = totalItens
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-    const lista = document.getElementById("product-list");
+  const lista = document.getElementById("product-list")
 
-    // Produtos
-    const produtos = [
-        {
-            imagem: "./images/Produto1.jpeg",
-            nome: "Bebê Reborn",
-            descricao: "Uma criança que você não tera nenhum trabalho para cuidar.",
-            preco: 129.90,
-            detalhes: "O Bebê Reborn é feito com silicone e roupas costuradas à mão. Ideal para presentes ou colecionadores.",
-        },
-        {
-            imagem: "./images/Produto2.jpg",
-            nome: "Fraldas Pampers",
-            descricao: "Fraldas para o seu Bebê Reborn sempre ficar limpinho.",
-            preco: 79.90,
-            detalhes: "Contém 138 unidades. Conforto seco garantido por até 12h.",
-        },
-        {
-            imagem: "./images/Produto3.png",
-            nome: "Sapatênis",
-            descricao: "Sapatênis tamanho 38 para ficar muito no estilo.",
-            preco: 90.00,
-            detalhes: "Confeccionado em material sintético de alta qualidade, com palmilha macia e solado antiderrapante para máximo conforto e segurança.",
-        },
-        {
-            imagem: "./images/Produto4.jpg",
-            nome: "Peruca Loira",
-            descricao: "Para você ficar divo que nem o Ken da Barbie.",
-            preco: 13.13,
-            detalhes: "Boné ajustável com estampa bordada em destaque, feito em algodão resistente para garantir estilo e durabilidade.",
-        },
-        {
-            imagem: "./images/Produto5.jpeg",
-            nome: "Tapete da MC Pipokinha",
-            descricao: "Esse tapete impede de suas visitas chegarem na sua casa e falar mal da pipokinha.",
-            preco: 69.00,
-            detalhes: "Tapete em tecido antiderrapante, com estampa ousada e divertida da MC Pipokinha.",
-        }
-    ];
+  // Produtos
+  const produtos = [
+    {
+      imagem: "./images/Produto1.jpeg",
+      nome: "Bebê Reborn",
+      descricao: "Uma criança que você não tera nenhum trabalho para cuidar.",
+      preco: 129.9,
+      detalhes: "O Bebê Reborn é feito com silicone e roupas costuradas à mão. Ideal para presentes ou colecionadores.",
+    },
+    {
+      imagem: "./images/Produto2.jpg",
+      nome: "Fraldas Pampers",
+      descricao: "Fraldas para o seu Bebê Reborn sempre ficar limpinho.",
+      preco: 79.9,
+      detalhes: "Contém 138 unidades. Conforto seco garantido por até 12h.",
+    },
+    {
+      imagem: "./images/Produto3.png",
+      nome: "Sapatênis",
+      descricao: "Sapatênis tamanho 38 para ficar muito no estilo.",
+      preco: 90.0,
+      detalhes:
+        "Confeccionado em material sintético de alta qualidade, com palmilha macia e solado antiderrapante para máximo conforto e segurança.",
+    },
+    {
+      imagem: "./images/Produto4.jpg",
+      nome: "Peruca Loira",
+      descricao: "Para você ficar divo que nem o Ken da Barbie.",
+      preco: 13.13,
+      detalhes:
+        "Boné ajustável com estampa bordada em destaque, feito em algodão resistente para garantir estilo e durabilidade.",
+    },
+    {
+      imagem: "./images/Produto5.jpeg",
+      nome: "Tapete da MC Pipokinha",
+      descricao: "Esse tapete impede de suas visitas chegarem na sua casa e falar mal da pipokinha.",
+      preco: 69.0,
+      detalhes: "Tapete em tecido antiderrapante, com estampa ousada e divertida da MC Pipokinha.",
+    },
+  ]
 
-    // FUNÇÃO: Atualiza o contador do carrinho
-    function atualizarContadorCarrinho() {
-        const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
-        const totalItens = carrinho.length; 
-        
-        const desktopCounter = document.getElementById("contador-desktop");
-        const mobileCounter = document.getElementById("contador-mobile");
+  // Chama a função ao carregar a página pela primeira vez
+  atualizarContadorCarrinho()
 
-        if (desktopCounter) desktopCounter.textContent = totalItens;
-        if (mobileCounter) mobileCounter.textContent = totalItens;
-    }
-
-    // Chama a função ao carregar a página pela primeira vez
-    atualizarContadorCarrinho();
-
-    // Renderizar produtos
-    produtos.forEach(produto => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
+  // Renderizar produtos
+  produtos.forEach((produto) => {
+    const card = document.createElement("div")
+    card.className = "product-card"
+    card.innerHTML = `
             <img src="${produto.imagem}" alt="${produto.nome}">
             <h2>${produto.nome}</h2>
             <p>${produto.descricao}</p>
             <span class="price">R$ ${produto.preco.toFixed(2)}</span>
             <button type="button" class="btn-comprar">Comprar</button>
-        `;
+        `
 
-        card.querySelector(".btn-comprar").addEventListener("click", () => {
-            abrirPopup(produto);
-        });
+    card.querySelector(".btn-comprar").addEventListener("click", () => {
+      abrirPopup(produto)
+    })
 
-        lista.appendChild(card);
-    });
+    lista.appendChild(card)
+  })
 
-    // Popup de detalhes do produto
-    function abrirPopup(produto) {
-        fecharPopups(); 
+  // Popup de detalhes do produto
+  function abrirPopup(produto) {
+    fecharPopups()
 
-        const popup = document.createElement("div");
-        popup.className = "popup-overlay";
-        popup.innerHTML = `
+    const popup = document.createElement("div")
+    popup.className = "popup-overlay"
+    popup.innerHTML = `
             <div class="popup-content">
                 <span class="popup-close">&times;</span>
                 <img src="${produto.imagem}" alt="${produto.nome}">
@@ -93,77 +95,70 @@ document.addEventListener("DOMContentLoaded", () => {
                 <button type="button" class="btn-endereco">Comprar</button>
                 <button type="button" class="btn-add-carrinho">Adicionar ao Carrinho</button>
             </div>
-        `;
+        `
 
-        document.body.appendChild(popup);
+    document.body.appendChild(popup)
 
-        popup.querySelector(".popup-close").addEventListener("click", () => fecharPopups());
+    popup.querySelector(".popup-close").addEventListener("click", () => fecharPopups())
 
-        popup.querySelector(".btn-endereco").addEventListener("click", () => {
-            const quantidade = parseInt(popup.querySelector("#quantidade").value);
-            // Ao comprar diretamente, assumimos que não há itens restantes no carrinho ([]).
-            if (quantidade > 0) {
-                // Passamos o cupom inicialmente como nulo
-                abrirFormularioFinalizar([{ ...produto, quantidade }], [], null); 
-                fecharPopups();
-            }
-        });
+    popup.querySelector(".btn-endereco").addEventListener("click", () => {
+      const quantidade = Number.parseInt(popup.querySelector("#quantidade").value)
+      if (quantidade > 0) {
+        abrirFormularioFinalizar([{ ...produto, quantidade }], [], null)
+        fecharPopups()
+      }
+    })
 
-        popup.querySelector(".btn-add-carrinho").addEventListener("click", () => {
-            const quantidade = parseInt(popup.querySelector("#quantidade").value);
-            if (quantidade > 0) {
-                adicionarAoCarrinho(produto, quantidade);
-                alert(`${produto.nome} foi adicionado ao seu carrinho!`);
-                fecharPopups();
-            }
-        });
+    popup.querySelector(".btn-add-carrinho").addEventListener("click", () => {
+      const quantidade = Number.parseInt(popup.querySelector("#quantidade").value)
+      if (quantidade > 0) {
+        adicionarAoCarrinho(produto, quantidade)
+        alert(`${produto.nome} foi adicionado ao seu carrinho!`)
+        fecharPopups()
+      }
+    })
+  }
+
+  // Adicionar ao carrinho
+  function adicionarAoCarrinho(produto, quantidade) {
+    const carrinho = JSON.parse(localStorage.getItem("carrinho")) || []
+    const itemExistente = carrinho.find((item) => item.nome === produto.nome)
+
+    if (itemExistente) {
+      itemExistente.quantidade += quantidade
+    } else {
+      carrinho.push({
+        nome: produto.nome,
+        imagem: produto.imagem,
+        preco: produto.preco,
+        quantidade: quantidade,
+      })
     }
+    localStorage.setItem("carrinho", JSON.stringify(carrinho))
+    atualizarContadorCarrinho()
+  }
 
-    // Função para fechar qualquer popup existente
-    function fecharPopups() {
-        document.querySelectorAll(".popup-overlay").forEach(p => p.remove());
-    }
+  // Abrir carrinho
+  function abrirCarrinho() {
+    fecharPopups()
+    const carrinho = JSON.parse(localStorage.getItem("carrinho")) || []
 
-    // Adicionar ao carrinho
-    function adicionarAoCarrinho(produto, quantidade) {
-        let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
-        const itemExistente = carrinho.find(item => item.nome === produto.nome);
+    const popup = document.createElement("div")
+    popup.className = "popup-overlay"
 
-        if (itemExistente) {
-            itemExistente.quantidade += quantidade;
-        } else {
-            carrinho.push({
-                nome: produto.nome,
-                imagem: produto.imagem,
-                preco: produto.preco,
-                quantidade: quantidade
-            });
-        }
-        localStorage.setItem("carrinho", JSON.stringify(carrinho));
-        atualizarContadorCarrinho(); 
-    }
-
-    // Abrir carrinho
-    function abrirCarrinho() {
-        fecharPopups();
-        let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
-
-        const popup = document.createElement("div");
-        popup.className = "popup-overlay";
-
-        let conteudo = `
+    let conteudo = `
             <div class="popup-content">
                 <span class="popup-close">&times;</span>
                 <h2>Meu Carrinho</h2>
-        `;
+        `
 
-        if (carrinho.length === 0) {
-            conteudo += `<p>Você ainda não adicionou nenhum item ao seu carrinho.</p>`;
-        } else {
-            conteudo += `<p style="text-align: left; font-style: italic;">Selecione os itens que deseja comprar:</p>`;
+    if (carrinho.length === 0) {
+      conteudo += `<p>Você ainda não adicionou nenhum item ao seu carrinho.</p>`
+    } else {
+      conteudo += `<p style="text-align: left; font-style: italic;">Selecione os itens que deseja comprar:</p>`
 
-            carrinho.forEach((item, index) => {
-                conteudo += `
+      carrinho.forEach((item, index) => {
+        conteudo += `
                     <div class="carrinho-item">
                         <input type="checkbox" class="item-selecionado" data-index="${index}" checked>
                         <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px;">
@@ -179,108 +174,110 @@ document.addEventListener("DOMContentLoaded", () => {
                         </div>
                     </div>
                     <hr>
-                `;
-            });
-            
-            conteudo += `
+                `
+      })
+
+      conteudo += `
                 <button class="btn-finalizar-carrinho" type="button">Finalizar Compra (${carrinho.length} itens)</button>
-            `;
-        }
-
-        conteudo += `</div>`;
-        popup.innerHTML = conteudo;
-        document.body.appendChild(popup);
-
-        popup.querySelector(".popup-close").addEventListener("click", () => fecharPopups());
-
-        // Atualiza a contagem de itens no botão ao desmarcar/marcar
-        popup.querySelectorAll('.item-selecionado').forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                const itensSelecionados = popup.querySelectorAll('.item-selecionado:checked').length;
-                const btnFinalizar = popup.querySelector(".btn-finalizar-carrinho");
-                btnFinalizar.textContent = `Finalizar Compra (${itensSelecionados} itens)`;
-                btnFinalizar.disabled = itensSelecionados === 0;
-            });
-        });
-
-        // Alterar quantidades
-        popup.querySelectorAll(".diminuir, .aumentar").forEach(btn => {
-            btn.addEventListener("click", e => {
-                const index = parseInt(e.target.getAttribute("data-index"));
-                let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
-                let produto = carrinho[index];
-
-                if (e.target.classList.contains("aumentar")) {
-                    produto.quantidade++;
-                } else if (produto.quantidade > 1) {
-                    produto.quantidade--;
-                }
-
-                if (produto.quantidade === 0) {
-                    carrinho.splice(index, 1);
-                }
-
-                localStorage.setItem("carrinho", JSON.stringify(carrinho));
-                atualizarContadorCarrinho(); 
-                fecharPopups();
-                abrirCarrinho(); 
-            });
-        });
-
-        // Finalizar compra (Filtrando os itens selecionados)
-        if (carrinho.length > 0) {
-            popup.querySelector(".btn-finalizar-carrinho").addEventListener("click", () => {
-                const checkBoxes = popup.querySelectorAll('.item-selecionado');
-                const itensParaComprar = [];
-                const itensRestantes = [];
-
-                checkBoxes.forEach((checkbox, index) => {
-                    if (checkbox.checked) {
-                        itensParaComprar.push(carrinho[index]);
-                    } else {
-                        itensRestantes.push(carrinho[index]);
-                    }
-                });
-
-                // VERIFICAÇÃO E AVISO SOLICITADO
-                if (itensParaComprar.length === 0) {
-                    alert("Você deve marcar pelo menos um item para prosseguir."); 
-                    return; 
-                }
-                
-                // 2. Procede com a compra APENAS dos itens selecionados, cupom é nulo inicialmente
-                fecharPopups();
-                // Passamos os itens que SOBRARAM e o cupom aplicado (inicialmente null)
-                abrirFormularioFinalizar(itensParaComprar, itensRestantes, null); 
-            });
-        }
+            `
     }
 
-    // Botões abrir carrinho
-    document.getElementById("btn-carrinho-desktop").addEventListener("click", abrirCarrinho);
-    document.getElementById("btn-carrinho-mobile").addEventListener("click", abrirCarrinho);
+    conteudo += `</div>`
+    popup.innerHTML = conteudo
+    document.body.appendChild(popup)
 
-    /* FUNÇÕES AUXILIARES */
-    window.capitalizeWords = function(str) {
-        return str.replace(/\b\w+/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+    popup.querySelector(".popup-close").addEventListener("click", () => fecharPopups())
+
+    popup.querySelectorAll(".item-selecionado").forEach((checkbox) => {
+      checkbox.addEventListener("change", () => {
+        const itensSelecionados = popup.querySelectorAll(".item-selecionado:checked").length
+        const btnFinalizar = popup.querySelector(".btn-finalizar-carrinho")
+        btnFinalizar.textContent = `Finalizar Compra (${itensSelecionados} itens)`
+        btnFinalizar.disabled = itensSelecionados === 0
+      })
+    })
+
+    popup.querySelectorAll(".diminuir, .aumentar").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const index = Number.parseInt(e.target.getAttribute("data-index"))
+        const carrinho = JSON.parse(localStorage.getItem("carrinho")) || []
+        const produto = carrinho[index]
+
+        if (e.target.classList.contains("aumentar")) {
+          produto.quantidade++
+        } else if (produto.quantidade > 1) {
+          produto.quantidade--
+        }
+
+        if (produto.quantidade === 0) {
+          carrinho.splice(index, 1)
+        }
+
+        localStorage.setItem("carrinho", JSON.stringify(carrinho))
+        atualizarContadorCarrinho()
+        fecharPopups()
+        abrirCarrinho()
+      })
+    })
+
+    if (carrinho.length > 0) {
+      popup.querySelector(".btn-finalizar-carrinho").addEventListener("click", () => {
+        const checkBoxes = popup.querySelectorAll(".item-selecionado")
+        const itensParaComprar = []
+        const itensRestantes = []
+
+        checkBoxes.forEach((checkbox, index) => {
+          if (checkbox.checked) {
+            itensParaComprar.push(carrinho[index])
+          } else {
+            itensRestantes.push(carrinho[index])
+          }
+        })
+
+        if (itensParaComprar.length === 0) {
+          alert("Você deve marcar pelo menos um item para prosseguir.")
+          return
+        }
+
+        fecharPopups()
+        abrirFormularioFinalizar(itensParaComprar, itensRestantes, null)
+      })
     }
-});
+  }
+
+  // Botões abrir carrinho
+  document.getElementById("btn-carrinho-desktop").addEventListener("click", abrirCarrinho)
+  document.getElementById("btn-carrinho-mobile").addEventListener("click", abrirCarrinho)
+
+  /* FUNÇÕES AUXILIARES */
+  window.capitalizeWords = (str) => str.replace(/\b\w+/g, (w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+})
+
+// Função para fechar qualquer popup existente (movida para escopo global)
+function fecharPopups() {
+  document.querySelectorAll(".popup-overlay").forEach((p) => p.remove())
+}
 
 /* ======================================= */
 /* TELA DE ENDEREÇO */
 /* ======================================= */
-// A função de endereço agora recebe o cupom aplicado
 function abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestantes, cupomAplicado) {
-    fecharPopups();
-    
-    const popup = document.createElement("div");
-    popup.className = "popup-overlay";
+  fecharPopups()
 
-    const enderecoSalvo = JSON.parse(localStorage.getItem("endereco")) || {
-        cep: "", cidade: "", estado: "", bairro: "", rua: "", numero: "", complemento: ""
-    };
+  const popup = document.createElement("div")
+  popup.className = "popup-overlay"
 
-    let conteudo = `
+  const enderecoSalvo = JSON.parse(localStorage.getItem("endereco")) || {
+    cep: "",
+    cidade: "",
+    estado: "",
+    bairro: "",
+    rua: "",
+    numero: "",
+    complemento: "",
+  }
+
+  const conteudo = `
         <div class="popup-content">
             <span class="popup-close">&times;</span>
             <h2>Endereço de Entrega</h2>
@@ -296,133 +293,132 @@ function abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestante
             </form>
             <button type="button" class="btn-salvar-endereco">Salvar Endereço</button>
         </div>
-    `;
+    `
 
-    popup.innerHTML = conteudo;
-    document.body.appendChild(popup);
+  popup.innerHTML = conteudo
+  document.body.appendChild(popup)
 
-    // Fecha e volta para a tela de finalizar compra
-    popup.querySelector(".popup-close").addEventListener("click", () => {
-        popup.remove();
-        // Retorna para a tela de finalizar, passando o cupom de volta
-        abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado); 
-    });
+  popup.querySelector(".popup-close").addEventListener("click", () => {
+    popup.remove()
+    abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado)
+  })
 
-    /* ---------- validações de inputs ---------- */
-    const cepInput = popup.querySelector("#cep");
-    cepInput.addEventListener("input", () => {
-        let value = cepInput.value.replace(/\D/g, ""); 
-        if (value.length > 8) value = value.slice(0, 8);
-        if (value.length > 5) {
-            cepInput.value = value.slice(0, 5) + "-" + value.slice(5);
-        } else {
-            cepInput.value = value;
-        }
-    });
+  /* ---------- validações de inputs ---------- */
+  const cepInput = popup.querySelector("#cep")
+  cepInput.addEventListener("input", () => {
+    let value = cepInput.value.replace(/\D/g, "")
+    if (value.length > 8) value = value.slice(0, 8)
+    if (value.length > 5) {
+      cepInput.value = value.slice(0, 5) + "-" + value.slice(5)
+    } else {
+      cepInput.value = value
+    }
+  })
+  ;["#cidade", "#bairro", "#rua"].forEach((id) => {
+    const input = popup.querySelector(id)
+    input.addEventListener("input", () => {
+      input.value = window.capitalizeWords(input.value)
+    })
+  })
 
-    ["#cidade", "#bairro", "#rua"].forEach(id => {
-        const input = popup.querySelector(id);
-        input.addEventListener("input", () => {
-            input.value = capitalizeWords(input.value);
-        });
-    });
-    
-    const estadoInput = popup.querySelector("#estado");
-    estadoInput.addEventListener("input", () => {
-        estadoInput.value = estadoInput.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 2);
-    });
+  const estadoInput = popup.querySelector("#estado")
+  estadoInput.addEventListener("input", () => {
+    estadoInput.value = estadoInput.value
+      .toUpperCase()
+      .replace(/[^A-Z]/g, "")
+      .slice(0, 2)
+  })
 
-    const numeroInput = popup.querySelector("#numero");
-    numeroInput.addEventListener("input", () => {
-        numeroInput.value = numeroInput.value.replace(/\D/g, "");
-    });
+  const numeroInput = popup.querySelector("#numero")
+  numeroInput.addEventListener("input", () => {
+    numeroInput.value = numeroInput.value.replace(/\D/g, "")
+  })
 
-    /* ---------- salvar endereço ---------- */
-    popup.querySelector(".btn-salvar-endereco").addEventListener("click", () => {
-        const form = popup.querySelector("#form-endereco");
+  /* ---------- salvar endereço ---------- */
+  popup.querySelector(".btn-salvar-endereco").addEventListener("click", () => {
+    const form = popup.querySelector("#form-endereco")
 
-        const novoEndereco = {
-            cep: form.querySelector("#cep").value,
-            cidade: form.querySelector("#cidade").value,
-            estado: form.querySelector("#estado").value,
-            bairro: form.querySelector("#bairro").value,
-            rua: form.querySelector("#rua").value,
-            numero: form.querySelector("#numero").value,
-            complemento: form.querySelector("#complemento").value
-        };
+    const novoEndereco = {
+      cep: form.querySelector("#cep").value,
+      cidade: form.querySelector("#cidade").value,
+      estado: form.querySelector("#estado").value,
+      bairro: form.querySelector("#bairro").value,
+      rua: form.querySelector("#rua").value,
+      numero: form.querySelector("#numero").value,
+      complemento: form.querySelector("#complemento").value,
+    }
 
-        if (!/^\d{5}-\d{3}$/.test(novoEndereco.cep)) {
-            alert("CEP inválido. Use o formato xxxxx-xxx.");
-            return;
-        }
-        if (novoEndereco.estado.length !== 2) {
-             alert("Estado deve ter 2 letras (ex: SP).");
-             return;
-        }
-        if (!novoEndereco.cidade || !novoEndereco.estado || !novoEndereco.bairro || !novoEndereco.rua || !novoEndereco.numero) {
-            alert("Por favor, preencha todos os campos obrigatórios.");
-            return;
-        }
+    if (!/^\d{5}-\d{3}$/.test(novoEndereco.cep)) {
+      alert("CEP inválido. Use o formato xxxxx-xxx.")
+      return
+    }
+    if (novoEndereco.estado.length !== 2) {
+      alert("Estado deve ter 2 letras (ex: SP).")
+      return
+    }
+    if (
+      !novoEndereco.cidade ||
+      !novoEndereco.estado ||
+      !novoEndereco.bairro ||
+      !novoEndereco.rua ||
+      !novoEndereco.numero
+    ) {
+      alert("Por favor, preencha todos os campos obrigatórios.")
+      return
+    }
 
-        localStorage.setItem("endereco", JSON.stringify(novoEndereco));
-        alert("Endereço salvo com sucesso!");
-        popup.remove();
-        // Volta para a tela de finalizar, passando o cupom de volta
-        abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado); 
-    });
+    localStorage.setItem("endereco", JSON.stringify(novoEndereco))
+    alert("Endereço salvo com sucesso!")
+    popup.remove()
+    abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado)
+  })
 }
-
 
 /* ======================================= */
 /* TELA DE FINALIZAR COMPRA (Corrigida e com Múltiplos Cupons) */
 /* ======================================= */
 function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
-    fecharPopups();
+  fecharPopups()
 
-    // 🔴 ONDE VOCÊ DEVE INSERIR NOVOS CUPONS 🔴
-    // Formato: "CODIGO_DO_CUPOM": PERCENTUAL_DE_DESCONTO (ex: 10 para 10%)
-    const CUPONS = {
-        "COMBOSHOP10": 10,  
-        "SUPER20": 20,      
-        "TESTE30": 30,       // Exemplo de um novo cupom
-    };
-    // ----------------------------------------
-    
-    const popup = document.createElement("div");
-    popup.className = "popup-overlay";
+  // 🔴 ONDE VOCÊ DEVE INSERIR NOVOS CUPONS 🔴
+  const CUPONS = {
+    COMBOSHOP10: 10,
+    SUPER20: 20,
+    TESTE30: 30,
+  }
 
-    let subtotal = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
-    let frete = 10.99;
-    
-    let valorDesconto = 0;
-    let percentualDescontoAplicado = 0;
+  const popup = document.createElement("div")
+  popup.className = "popup-overlay"
 
-    // Lógica do Desconto:
-    if (cupomAplicado) {
-        const percentual = CUPONS[cupomAplicado.codigo];
-        
-        if (percentual) {
-            percentualDescontoAplicado = percentual;
-            // Calcula o desconto sobre o subtotal (e não sobre o frete)
-            valorDesconto = subtotal * (percentualDescontoAplicado / 100);
-        }
+  const subtotal = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0)
+  const frete = 10.99
+
+  let valorDesconto = 0
+  let percentualDescontoAplicado = 0
+
+  if (cupomAplicado) {
+    const percentual = CUPONS[cupomAplicado.codigo]
+
+    if (percentual) {
+      percentualDescontoAplicado = percentual
+      valorDesconto = subtotal * (percentualDescontoAplicado / 100)
     }
-    
-    let total = (subtotal - valorDesconto + frete);
-    const totalFormatado = total.toFixed(2);
-    
-    const enderecoSalvo = JSON.parse(localStorage.getItem("endereco"));
-    const enderecoPreenchido = enderecoSalvo && enderecoSalvo.rua && enderecoSalvo.numero;
+  }
 
-    let conteudo = `
+  const total = subtotal - valorDesconto + frete
+  const totalFormatado = total.toFixed(2)
+
+  const enderecoSalvo = JSON.parse(localStorage.getItem("endereco"))
+  const enderecoPreenchido = enderecoSalvo && enderecoSalvo.rua && enderecoSalvo.numero
+
+  let conteudo = `
         <div class="popup-content">
             <span class="popup-close">&times;</span>
             <h2>Finalizar Compra</h2>
-    `;
+    `
 
-    // Resumo dos Itens 
-    carrinho.forEach(item => {
-        conteudo += `
+  carrinho.forEach((item) => {
+    conteudo += `
             <div class="carrinho-item">
                 <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px;">
                 <div style="flex:1; margin-left:10px;">
@@ -431,16 +427,15 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
                 </div>
             </div>
             <hr>
-        `;
-    });
+        `
+  })
 
-    // Resumo e Botão Endereço 
-    conteudo += `
+  conteudo += `
         <h3>Resumo do Pedido (${carrinho.length} Itens)</h3>
         <p><strong>Sub-total:</strong> R$ ${subtotal.toFixed(2)}</p>
         <p><strong>Frete:</strong> R$ ${frete.toFixed(2)}</p>
         
-        ${valorDesconto > 0 ? `<p style="color: green;"><strong>Desconto (${percentualDescontoAplicado}%):</strong> - R$ ${valorDesconto.toFixed(2)}</p>` : ''}
+        ${valorDesconto > 0 ? `<p style="color: green;"><strong>Desconto (${percentualDescontoAplicado}%):</strong> - R$ ${valorDesconto.toFixed(2)}</p>` : ""}
         
         <p><strong>Total:</strong> R$ ${totalFormatado}</p>
         <hr>
@@ -454,10 +449,12 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
 
         <h3>Entrega:</h3>
         <p>
-            ${enderecoPreenchido ? 
-                `<strong>Endereço:</strong> ${enderecoSalvo.rua}, ${enderecoSalvo.numero}, ${enderecoSalvo.bairro} - ${enderecoSalvo.cidade}/${enderecoSalvo.estado} <br> 
+            ${
+              enderecoPreenchido
+                ? `<strong>Endereço:</strong> ${enderecoSalvo.rua}, ${enderecoSalvo.numero}, ${enderecoSalvo.bairro} - ${enderecoSalvo.cidade}/${enderecoSalvo.estado} <br> 
                 <small>CEP: ${enderecoSalvo.cep}</small>`
-                : '<strong style="color: red;">Endereço não preenchido!</strong>'}
+                : '<strong style="color: red;">Endereço não preenchido!</strong>'
+            }
         </p>
         
         <button type="button" class="btn-endereco-entrega" style="margin-top: 15px;">
@@ -474,80 +471,68 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
 
         <button type="button" class="btn-finalizar-pedido">Finalizar Pedido</button>
         </div>
-    `;
+    `
 
-    popup.innerHTML = conteudo;
-    document.body.appendChild(popup);
+  popup.innerHTML = conteudo
+  document.body.appendChild(popup)
 
-    popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
+  popup.querySelector(".popup-close").addEventListener("click", () => popup.remove())
 
-    // Lógica do Cupom
-    const cupomInput = popup.querySelector("#cupom");
-    const btnCupom = popup.querySelector("#btn-aplicar-cupom");
-    const cupomMessage = popup.querySelector("#cupom-message");
+  const cupomInput = popup.querySelector("#cupom")
+  const btnCupom = popup.querySelector("#btn-aplicar-cupom")
+  const cupomMessage = popup.querySelector("#cupom-message")
 
-    // Mantém o estado do cupom
+  if (cupomAplicado) {
+    cupomInput.value = cupomAplicado.codigo
+    cupomInput.disabled = true
+    btnCupom.disabled = true
+    cupomMessage.textContent = "Cupom já aplicado!"
+    cupomMessage.style.color = "green"
+  }
+
+  btnCupom.addEventListener("click", () => {
+    const codigo = cupomInput.value.toUpperCase().trim()
+
     if (cupomAplicado) {
-        cupomInput.value = cupomAplicado.codigo;
-        cupomInput.disabled = true;
-        btnCupom.disabled = true;
-        cupomMessage.textContent = "Cupom já aplicado!";
-        cupomMessage.style.color = "green";
+      cupomMessage.textContent = "Você só pode adicionar um cupom por pedido"
+      return
     }
 
-    btnCupom.addEventListener("click", () => {
-        const codigo = cupomInput.value.toUpperCase().trim();
+    const percentual = CUPONS[codigo]
 
-        if (cupomAplicado) {
-            cupomMessage.textContent = "Você só pode adicionar um cupom por pedido";
-            return;
-        }
-        
-        // Verifica se o código digitado existe no objeto CUPONS
-        const percentual = CUPONS[codigo]; 
+    if (percentual) {
+      alert(`Cupom ${percentual}% aplicado com sucesso!`)
+      abrirFormularioFinalizar(carrinho, itensRestantes, { codigo: codigo })
+    } else {
+      cupomMessage.textContent = "Cupom inválido ou expirado."
+    }
+  })
 
-        if (percentual) {
-            // Se o cupom for válido, reabrimos o formulário com o cupom aplicado
-            alert(`Cupom ${percentual}% aplicado com sucesso!`);
-            // Reabre o formulário passando o objeto do cupom (apenas o código é suficiente)
-            abrirFormularioFinalizar(carrinho, itensRestantes, { codigo: codigo });
-        } else {
-            cupomMessage.textContent = "Cupom inválido ou expirado.";
-        }
-    });
+  popup.querySelector(".btn-endereco-entrega").addEventListener("click", () => {
+    abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestantes, cupomAplicado)
+  })
 
+  popup.querySelector(".btn-finalizar-pedido").addEventListener("click", () => {
+    const pagamento = popup.querySelector("#pagamento").value
+    const endereco = JSON.parse(localStorage.getItem("endereco"))
 
-    // Abre o formulário de endereço
-    popup.querySelector(".btn-endereco-entrega").addEventListener("click", () => {
-        // Passa o cupom aplicado para que ele seja mantido no retorno.
-        abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestantes, cupomAplicado); 
-    });
+    if (!enderecoPreenchido) {
+      alert("Por favor, preencha o Endereço para Entrega.")
+      return
+    }
 
-    /* ---------- finalizar pedido (Remove itens restantes) ---------- */
-    popup.querySelector(".btn-finalizar-pedido").addEventListener("click", () => {
-        const pagamento = popup.querySelector("#pagamento").value;
-        const endereco = JSON.parse(localStorage.getItem("endereco"));
+    if (!pagamento) {
+      alert("Por favor, selecione o método de pagamento.")
+      return
+    }
 
-        if (!enderecoPreenchido) {
-            alert("Por favor, preencha o Endereço para Entrega.");
-            return;
-        }
+    localStorage.setItem("carrinho", JSON.stringify(itensRestantes))
+    atualizarContadorCarrinho()
 
-        if (!pagamento) {
-            alert("Por favor, selecione o método de pagamento.");
-            return;
-        }
+    alert(
+      `Pedido finalizado!\nTotal: R$ ${totalFormatado}\nPagamento: ${pagamento}\nEntrega em: ${endereco.rua}, ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}-${endereco.estado}\nCEP: ${endereco.cep}${valorDesconto > 0 ? `\nDesconto Aplicado: R$ ${valorDesconto.toFixed(2)} (${percentualDescontoAplicado}%)` : ""}`,
+    )
 
-        // CORREÇÃO FINAL: Somente aqui, ao CONCLUIR o pedido, atualizamos o localStorage.
-        localStorage.setItem("carrinho", JSON.stringify(itensRestantes));
-        atualizarContadorCarrinho();
-
-        alert(`Pedido finalizado!\nTotal: R$ ${totalFormatado}\nPagamento: ${pagamento}\nEntrega em: ${endereco.rua}, ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}-${endereco.estado}\nCEP: ${endereco.cep}${valorDesconto > 0 ? `\nDesconto Aplicado: R$ ${valorDesconto.toFixed(2)} (${percentualDescontoAplicado}%)` : ''}`);
-
-        popup.remove();
-    });
-}
-
-function fecharPopups() {
-    document.querySelectorAll(".popup-overlay").forEach(p => p.remove());
+    popup.remove()
+  })
 }
