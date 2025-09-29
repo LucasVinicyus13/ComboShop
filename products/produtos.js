@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     {
       imagem: "./images/Produto4.jpg",
       nome: "Peruca Loira",
-      descricao: "Para Você ficar divo que nem o Ken da Barbie.",
+      descricao: "Para você ficar divo que nem o Ken da Barbie.",
       preco: 13.13,
       detalhes: "Boné ajustável com estampa bordada em destaque, feito em algodão resistente para garantir estilo e durabilidade no apoio ao seu partido.",
     },
