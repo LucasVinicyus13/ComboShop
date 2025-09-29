@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const quantidade = Number.parseInt(popup.querySelector("#quantidade").value)
 
       if (quantidade > 0) {
-        abrirFormularioFinalizar([{ ...produto, quantidade }], [], null)
+        abrirFormularioFinalizar([{ ...produto, quantidade }], null, null)
         fecharPopups()
       }
     })
@@ -528,8 +528,10 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
       return
     }
 
-    localStorage.setItem("carrinho", JSON.stringify(itensRestantes))
-    atualizarContadorCarrinho()
+    if (itensRestantes !== null) {
+      localStorage.setItem("carrinho", JSON.stringify(itensRestantes))
+      atualizarContadorCarrinho()
+    }
 
     popup.remove()
 
