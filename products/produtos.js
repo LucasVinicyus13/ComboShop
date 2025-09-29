@@ -531,10 +531,33 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
     localStorage.setItem("carrinho", JSON.stringify(itensRestantes))
     atualizarContadorCarrinho()
 
-    alert(
-      `Pedido finalizado!\nTotal: R$ ${totalFormatado}\nPagamento: ${pagamento}\nEntrega em: ${endereco.rua}, ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}-${endereco.estado}\nCEP: ${endereco.cep}${valorDesconto > 0 ? `\nDesconto Aplicado: R$ ${valorDesconto.toFixed(2)} (${percentualDescontoAplicado}%)` : ""}`,
-    )
-
     popup.remove()
+
+    // Criar popup de confirmação
+    const confirmPopup = document.createElement("div")
+    confirmPopup.className = "popup-overlay"
+    confirmPopup.innerHTML = `
+      <div class="popup-content" style="max-width: 400px; text-align: center;">
+        <h2 style="color: #4CAF50; margin-bottom: 20px;">Pedido finalizado!</h2>
+        <p><strong>Total:</strong> R$ ${totalFormatado}</p>
+        <p><strong>Pagamento:</strong> ${pagamento}</p>
+        <p><strong>Entrega em:</strong> ${endereco.rua}, ${endereco.numero}, ${endereco.bairro} - ${endereco.cidade}/${endereco.estado}</p>
+        <p><strong>CEP:</strong> ${endereco.cep}</p>
+        ${valorDesconto > 0 ? `<p style="color: green;"><strong>Desconto Aplicado:</strong> R$ ${valorDesconto.toFixed(2)} (${percentualDescontoAplicado}%)</p>` : ""}
+        <button type="button" class="btn-ok" style="margin-top: 20px; padding: 10px 30px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">OK</button>
+      </div>
+    `
+
+    document.body.appendChild(confirmPopup)
+
+    // Botão OK fecha o popup
+    confirmPopup.querySelector(".btn-ok").addEventListener("click", () => {
+      confirmPopup.remove()
+    })
+
+    // Auto-close após 5 segundos
+    setTimeout(() => {
+      confirmPopup.remove()
+    }, 5000)
   })
 }
