@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const lista = document.getElementById("product-list");
 
+  // Produtos
   const produtos = [
     {
       imagem: "./images/Produto1.jpeg",
@@ -28,18 +29,18 @@ document.addEventListener("DOMContentLoaded", () => {
       nome: "Peruca Loira",
       descricao: "Para você ficar divo que nem o Ken da Barbie.",
       preco: 13.13,
-      detalhes: "Boné ajustável com estampa bordada em destaque, feito em algodão resistente para garantir estilo e durabilidade no apoio ao seu partido.",
+      detalhes: "Boné ajustável com estampa bordada em destaque, feito em algodão resistente para garantir estilo e durabilidade.",
     },
     {
       imagem: "./images/Produto5.jpeg",
       nome: "Tapete da MC Pipokinha",
       descricao: "Esse tapete impede de suas visitas chegarem na sua casa e falar mal da pipokinha.",
       preco: 69.00,
-      detalhes: "Tapete em tecido antiderrapante, com estampa ousada e divertida da MC Pipokinha. Ideal para quem quer recepcionar as visitas com muito estilo (e um toque de polêmica).",
+      detalhes: "Tapete em tecido antiderrapante, com estampa ousada e divertida da MC Pipokinha.",
     }
   ];
 
-  /* ---------- renderizar produtos ---------- */
+  // Renderizar produtos
   produtos.forEach(produto => {
     const card = document.createElement("div");
     card.className = "product-card";
@@ -58,8 +59,10 @@ document.addEventListener("DOMContentLoaded", () => {
     lista.appendChild(card);
   });
 
-  /* ---------- popup do produto (comprar / adicionar ao carrinho) ---------- */
+  // Popup de detalhes do produto
   function abrirPopup(produto) {
+    fecharPopups(); // garante que só um popup existe
+
     const popup = document.createElement("div");
     popup.className = "popup-overlay";
     popup.innerHTML = `
@@ -76,36 +79,37 @@ document.addEventListener("DOMContentLoaded", () => {
         <button type="button" class="btn-add-carrinho">Adicionar ao Carrinho</button>
       </div>
     `;
+
     document.body.appendChild(popup);
 
-    popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
+    popup.querySelector(".popup-close").addEventListener("click", () => fecharPopups());
 
     popup.querySelector(".btn-endereco").addEventListener("click", () => {
       const quantidade = parseInt(popup.querySelector("#quantidade").value);
-      if (quantidade <= 0 || isNaN(quantidade)) {
-        alert("Por favor, insira uma quantidade válida.");
-        return;
+      if (quantidade > 0) {
+        abrirFormularioFinalizar([{ ...produto, quantidade }]);
+        fecharPopups();
       }
-      abrirFormularioEndereco(produto, quantidade);
-      popup.remove();
     });
 
     popup.querySelector(".btn-add-carrinho").addEventListener("click", () => {
       const quantidade = parseInt(popup.querySelector("#quantidade").value);
-      if (quantidade <= 0 || isNaN(quantidade)) {
-        alert("Por favor, insira uma quantidade válida.");
-        return;
+      if (quantidade > 0) {
+        adicionarAoCarrinho(produto, quantidade);
+        alert(`${produto.nome} foi adicionado ao seu carrinho!`);
+        fecharPopups();
       }
-      adicionarAoCarrinho(produto, quantidade);
-      alert(`${produto.nome} foi adicionado ao seu carrinho!`);
-      popup.remove();
     });
   }
 
-  /* ---------- adicionar ao carrinho (localStorage) ---------- */
+  // Função para fechar qualquer popup existente
+  function fecharPopups() {
+    document.querySelectorAll(".popup-overlay").forEach(p => p.remove());
+  }
+
+  // Adicionar ao carrinho
   function adicionarAoCarrinho(produto, quantidade) {
     let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
-
     const itemExistente = carrinho.find(item => item.nome === produto.nome);
 
     if (itemExistente) {
@@ -118,16 +122,13 @@ document.addEventListener("DOMContentLoaded", () => {
         quantidade: quantidade
       });
     }
-
     localStorage.setItem("carrinho", JSON.stringify(carrinho));
   }
 
-  /* ---------- abrir carrinho (renderiza popup com itens e botões) ---------- */
+  // Abrir carrinho
   function abrirCarrinho() {
-    const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
-
-    // remove popup existente (segurança)
-    document.querySelectorAll(".popup-overlay").forEach(el => el.remove());
+    fecharPopups();
+    let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
 
     const popup = document.createElement("div");
     popup.className = "popup-overlay";
@@ -143,116 +144,131 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       carrinho.forEach((item, index) => {
         conteudo += `
-          <div class="carrinho-item" data-index="${index}">
-            <div class="carrinho-item-info" style="display:flex; align-items:center;">
-              <img src="${item.imagem}" alt="${item.nome}" class="carrinho-item-img" style="width:60px; border-radius:6px; margin-right:10px;">
-              <div class="carrinho-item-details" style="flex:1;">
-                <p><strong>${item.nome}</strong></p>
-                <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
-              </div>
+          <div class="carrinho-item">
+            <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px;">
+            <div style="flex:1; margin-left:10px;">
+              <p><strong>${item.nome}</strong></p>
+              <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
             </div>
-
-            <div class="carrinho-item-quantidade-total" style="display:flex; flex-direction:column; align-items:flex-end;">
-              <div class="carrinho-item-quantidade" style="display:flex; align-items:center; gap:8px;">
-                <button class="btn-dim" data-index="${index}">&lt;</button>
-                <span class="quantidade" data-index="${index}">${item.quantidade}</span>
-                <button class="btn-aum" data-index="${index}">&gt;</button>
-              </div>
-              <p class="carrinho-item-total" data-index="${index}">Total: R$ ${(item.preco * item.quantidade).toFixed(2)}</p>
+            <div class="carrinho-item-quantidade">
+              <button class="diminuir" data-index="${index}">&lt;</button>
+              <span class="quantidade">${item.quantidade}</span>
+              <button class="aumentar" data-index="${index}">&gt;</button>
+              <p>Total: R$ ${(item.preco * item.quantidade).toFixed(2)}</p>
             </div>
           </div>
           <hr>
         `;
       });
 
-      conteudo += `
-        <div style="display:flex; justify-content:center; margin-top:10px;">
-          <button class="btn-finalizar-carrinho">Finalizar Compra</button>
-        </div>
-      `;
+      conteudo += `<button class="btn-finalizar-carrinho">Finalizar Compra</button>`;
     }
 
-    conteudo += `</div>`; // fecha popup-content
+    conteudo += `</div>`;
     popup.innerHTML = conteudo;
     document.body.appendChild(popup);
 
-    // fechar
-    popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
+    popup.querySelector(".popup-close").addEventListener("click", () => fecharPopups());
 
-    // listeners para aumentar/diminuir (re-renderiza o popup depois de atualizar)
-    popup.querySelectorAll(".btn-dim").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const idx = parseInt(btn.dataset.index, 10);
-        alterarQuantidade(idx, -1);
+    // Alterar quantidades
+    popup.querySelectorAll(".diminuir, .aumentar").forEach(btn => {
+      btn.addEventListener("click", e => {
+        const index = parseInt(e.target.getAttribute("data-index"));
+        let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+        let produto = carrinho[index];
+
+        if (e.target.classList.contains("aumentar")) {
+          produto.quantidade++;
+        } else if (produto.quantidade > 1) {
+          produto.quantidade--;
+        }
+
+        localStorage.setItem("carrinho", JSON.stringify(carrinho));
+        fecharPopups();
+        abrirCarrinho(); // recarrega popup atualizado
       });
     });
-    popup.querySelectorAll(".btn-aum").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const idx = parseInt(btn.dataset.index, 10);
-        alterarQuantidade(idx, 1);
-      });
-    });
 
-    // finalizar compra
+    // Finalizar compra
     if (carrinho.length > 0) {
       popup.querySelector(".btn-finalizar-carrinho").addEventListener("click", () => {
-        popup.remove();
+        fecharPopups();
         abrirFormularioFinalizar(carrinho);
       });
     }
   }
 
-  /* ---------- funções de endereço / finalizar (mantive a lógica que você já tinha) ---------- */
-  function abrirFormularioEndereco(produto, quantidade) {
-    const popup = document.createElement("div");
-    popup.className = "popup-overlay";
+  // Botões abrir carrinho
+  document.getElementById("btn-carrinho-desktop").addEventListener("click", abrirCarrinho);
+  document.getElementById("btn-carrinho-mobile").addEventListener("click", abrirCarrinho);
+});
 
-    const totalProduto = (produto.preco * quantidade).toFixed(2);
-    const totalPedido = (produto.preco * quantidade + 10.99).toFixed(2);
+// Tela de finalizar compra
+function abrirFormularioFinalizar(carrinho) {
+  const popup = document.createElement("div");
+  popup.className = "popup-overlay";
 
-    popup.innerHTML = `
-      <div class="popup-content">
-        <span class="popup-close">&times;</span>
-        <h2>Finalizar Compra</h2>
-        <p><strong>Produto:</strong> ${produto.nome}</p>
-        <p><strong>Quantidade:</strong> ${quantidade}</p>
-        <p><strong>Total (Produto):</strong> R$ ${totalProduto}</p>
-        <p><strong>Frete:</strong> R$ 10.99</p>
-        <p><strong>Total do Pedido:</strong> R$ ${totalPedido}</p>
+  let subtotal = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
+  let frete = 10.99;
+  let total = (subtotal + frete).toFixed(2);
 
-        <button type="button" class="btn-endereco">Endereço de Entrega</button> <br> <br>
+  let conteudo = `
+    <div class="popup-content">
+      <span class="popup-close">&times;</span>
+      <h2>Finalizar Compra</h2>
+  `;
 
-        <h3>Método de Pagamento:</h3>
-        <select id="pagamento" required>
-          <option value="">Selecione</option>
-          <option value="Cartão de Crédito">Cartão de Crédito</option>
-          <option value="Pix">Pix</option>
-          <option value="Boleto">Boleto</option>
-        </select>
-
-        <button type="button" class="btn-finalizar-pedido">Finalizar Pedido</button>
+  carrinho.forEach(item => {
+    conteudo += `
+      <div class="carrinho-item">
+        <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px;">
+        <div style="flex:1; margin-left:10px;">
+          <p><strong>${item.nome}</strong></p>
+          <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
+          <p>Quantidade: ${item.quantidade}</p>
+          <p>Total: R$ ${(item.preco * item.quantidade).toFixed(2)}</p>
+        </div>
       </div>
+      <hr>
     `;
+  });
 
-    document.body.appendChild(popup);
+  conteudo += `
+    <h3>Resumo do Pedido</h3>
+    <p><strong>Sub-total:</strong> R$ ${subtotal.toFixed(2)}</p>
+    <p><strong>Frete:</strong> R$ ${frete.toFixed(2)}</p>
+    <p><strong>Total:</strong> R$ ${total}</p>
 
-    const endereco = {
-      cep: '', cidade: '', estado: '', bairro: '', rua: '', numero: '', complemento: ''
-    };
+    <h3>Método de Pagamento:</h3>
+    <select id="pagamento" required>
+      <option value="">Selecione</option>
+      <option value="Cartão de Crédito">Cartão de Crédito</option>
+      <option value="Pix">Pix</option>
+      <option value="Boleto">Boleto</option>
+    </select>
 
-    const enderecoSalvo = JSON.parse(localStorage.getItem("enderecoSalvo"));
-    if (enderecoSalvo) {
-      Object.assign(endereco, enderecoSalvo);
+    <button type="button" class="btn-endereco">Endereço de Entrega</button>
+    <button type="button" class="btn-finalizar-pedido">Finalizar Pedido</button>
+    </div>
+  `;
+
+  popup.innerHTML = conteudo;
+  document.body.appendChild(popup);
+
+  popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
+
+  popup.querySelector(".btn-endereco").addEventListener("click", () => {
+    alert("Aqui abriria o formulário de endereço de entrega.");
+  });
+
+  popup.querySelector(".btn-finalizar-pedido").addEventListener("click", () => {
+    const pagamento = popup.querySelector("#pagamento").value;
+    if (!pagamento) {
+      alert("Por favor, selecione o método de pagamento.");
+      return;
     }
-
-    popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
-
-    popup.querySelector(".btn-endereco").addEventListener("click", () => {
-      abrirPopupEndereco(endereco);
-    });
-
-    popup.querySelector(".btn-finalizar-pedido").addEventListener("click", () => {
-      const pagamento = popup.querySelector('#pagamento').value;
-
-      if (!pagamento) {
-        alert("Por favor, selecione o método de pagamento
+    alert(`Pedido finalizado!\nTotal: R$ ${total}\nPagamento: ${pagamento}`);
+    popup.remove();
+    localStorage.removeItem("carrinho"); // limpa carrinho após compra
+  });
+}
