@@ -146,15 +146,18 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="carrinho-item-details">
               <p class="carrinho-item-nome"><strong>${item.nome}</strong></p>
               <p class="carrinho-item-preco">R$ ${item.preco.toFixed(2)}</p>
-              <div class="carrinho-item-quantidade">
-                <button class="btn-quantidade diminuir" data-index="${index}">←</button>
-                <span class="quantidade">${item.quantidade}</span>
-                <button class="btn-quantidade aumentar" data-index="${index}">→</button>
-              </div>
-              <p class="carrinho-item-total">Total: R$ ${(
-                item.preco * item.quantidade
-              ).toFixed(2)}</p>
             </div>
+          </div>
+
+          <div class="carrinho-item-quantidade-total">
+            <div class="carrinho-item-quantidade">
+              <button class="btn-quantidade diminuir" data-index="${index}">←</button>
+              <span class="quantidade">${item.quantidade}</span>
+              <button class="btn-quantidade aumentar" data-index="${index}">→</button>
+            </div>
+            <p class="carrinho-item-total">Total: R$ ${(
+              item.preco * item.quantidade
+            ).toFixed(2)}</p>
           </div>
         </div>
         <hr>
