@@ -16,14 +16,18 @@
                 <span></span> 
                 <span></span> 
             </div> 
-        </div> 
+        </div>
 
         <nav class="mobile-menu" id="mobile-menu"> 
             <ul> 
                 <li><a href="#">Produtos</a></li> 
                 <li>
+                    <!-- Wrapped cart button in container for badge positioning -->
                     <button id="btn-carrinho-mobile" class="btn-carrinho"> 
-                        <img src="./images/carrinho.png" alt="Carrinho" class="icon-carrinho"> 
+                        <div class="cart-icon-wrapper">
+                            <img src="./images/carrinho.png" alt="Carrinho" class="icon-carrinho"> 
+                            <span id="contador-mobile" class="cart-badge">0</span>
+                        </div>
                     </button>
                 </li> 
                 <li><a href="https://combo-shop.vercel.app/donate/donate.html">Doações</a></li> 
@@ -36,8 +40,12 @@
             <ul> 
                 <li><a href="#">Produtos</a></li> 
                 <li> 
+                    <!-- Wrapped cart button in container for badge positioning -->
                     <button id="btn-carrinho-desktop" class="btn-carrinho"> 
-                        <img src="./images/carrinho.png" alt="Carrinho" class="icon-carrinho"> 
+                        <div class="cart-icon-wrapper">
+                            <img src="./images/carrinho.png" alt="Carrinho" class="icon-carrinho"> 
+                            <span id="contador-desktop" class="cart-badge">0</span>
+                        </div>
                     </button> 
                 </li> 
                 <li><a href="https://combo-shop.vercel.app/donate/donate.html">Doações</a></li> 
