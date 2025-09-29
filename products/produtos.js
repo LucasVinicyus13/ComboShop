@@ -40,6 +40,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     ];
 
+    // FUNÇÃO: Atualiza o contador do carrinho
+    function atualizarContadorCarrinho() {
+        const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+        const totalItens = carrinho.length; // Conta o número de itens ÚNICOS no carrinho
+        
+        const desktopCounter = document.getElementById("contador-desktop");
+        const mobileCounter = document.getElementById("contador-mobile");
+
+        if (desktopCounter) desktopCounter.textContent = totalItens;
+        if (mobileCounter) mobileCounter.textContent = totalItens;
+    }
+
+    // Chama a função ao carregar a página pela primeira vez
+    atualizarContadorCarrinho();
+
     // Renderizar produtos
     produtos.forEach(produto => {
         const card = document.createElement("div");
@@ -61,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Popup de detalhes do produto
     function abrirPopup(produto) {
-        fecharPopups(); // garante que só um popup existe
+        fecharPopups(); 
 
         const popup = document.createElement("div");
         popup.className = "popup-overlay";
@@ -87,7 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
         popup.querySelector(".btn-endereco").addEventListener("click", () => {
             const quantidade = parseInt(popup.querySelector("#quantidade").value);
             if (quantidade > 0) {
-                // Ao clicar em comprar, cria um carrinho temporário com 1 item e vai para a finalização
                 abrirFormularioFinalizar([{ ...produto, quantidade }]);
                 fecharPopups();
             }
@@ -124,9 +138,10 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
         localStorage.setItem("carrinho", JSON.stringify(carrinho));
+        atualizarContadorCarrinho(); 
     }
 
-    // Abrir carrinho (MODIFICADO)
+    // Abrir carrinho
     function abrirCarrinho() {
         fecharPopups();
         let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
@@ -143,14 +158,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (carrinho.length === 0) {
             conteudo += `<p>Você ainda não adicionou nenhum item ao seu carrinho.</p>`;
         } else {
-            // Cabeçalho de seleção
             conteudo += `<p style="text-align: left; font-style: italic;">Selecione os itens que deseja comprar:</p>`;
 
             carrinho.forEach((item, index) => {
-                // Adicionado o checkbox com "checked" por padrão
                 conteudo += `
                     <div class="carrinho-item">
-                        <input type="checkbox" class="item-selecionado" data-index="${index}" checked style="margin-right: 15px;">
+                        <input type="checkbox" class="item-selecionado" data-index="${index}" checked>
                         <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px;">
                         <div style="flex:1; margin-left:10px;">
                             <p><strong>${item.nome}</strong></p>
@@ -167,7 +180,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 `;
             });
             
-            // O subtotal será recalculado na próxima tela
             conteudo += `
                 <button class="btn-finalizar-carrinho" type="button">Finalizar Compra (${carrinho.length} itens)</button>
             `;
@@ -189,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
 
-        // Alterar quantidades (mantido)
+        // Alterar quantidades
         popup.querySelectorAll(".diminuir, .aumentar").forEach(btn => {
             btn.addEventListener("click", e => {
                 const index = parseInt(e.target.getAttribute("data-index"));
@@ -207,12 +219,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 localStorage.setItem("carrinho", JSON.stringify(carrinho));
+                atualizarContadorCarrinho(); 
                 fecharPopups();
-                abrirCarrinho(); // recarrega popup atualizado
+                abrirCarrinho(); 
             });
         });
 
-        // Finalizar compra (MODIFICADO para levar apenas os itens checados)
+        // Finalizar compra (Filtrando os itens selecionados)
         if (carrinho.length > 0) {
             popup.querySelector(".btn-finalizar-carrinho").addEventListener("click", () => {
                 const checkBoxes = popup.querySelectorAll('.item-selecionado');
@@ -227,13 +240,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 });
 
+                // VERIFICAÇÃO E AVISO SOLICITADO
                 if (itensParaComprar.length === 0) {
-                    alert("Selecione pelo menos um item para finalizar a compra.");
-                    return;
+                    alert("Você deve marcar pelo menos um item para prosseguir."); 
+                    return; 
                 }
 
                 // 1. Atualiza o carrinho no localStorage (remove os comprados)
                 localStorage.setItem("carrinho", JSON.stringify(itensRestantes));
+                atualizarContadorCarrinho(); 
                 
                 // 2. Procede com a compra APENAS dos itens selecionados
                 fecharPopups();
@@ -253,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* ======================================= */
-/* TELA DE ENDEREÇO (Mantido) */
+/* TELA DE ENDEREÇO */
 /* ======================================= */
 function abrirFormularioEndereco(carrinho, subtotal, frete, total) {
     fecharPopups();
@@ -291,10 +306,10 @@ function abrirFormularioEndereco(carrinho, subtotal, frete, total) {
         abrirFormularioFinalizar(carrinho); 
     });
 
-    /* ---------- validações de inputs (Mantidas) ---------- */
+    /* ---------- validações de inputs ---------- */
     const cepInput = popup.querySelector("#cep");
     cepInput.addEventListener("input", () => {
-        let value = cepInput.value.replace(/\D/g, "");
+        let value = cepInput.value.replace(/\D/g, ""); 
         if (value.length > 8) value = value.slice(0, 8);
         if (value.length > 5) {
             cepInput.value = value.slice(0, 5) + "-" + value.slice(5);
@@ -350,13 +365,13 @@ function abrirFormularioEndereco(carrinho, subtotal, frete, total) {
         localStorage.setItem("endereco", JSON.stringify(novoEndereco));
         alert("Endereço salvo com sucesso!");
         popup.remove();
-        abrirFormularioFinalizar(carrinho);
+        abrirFormularioFinalizar(carrinho); 
     });
 }
 
 
 /* ======================================= */
-/* TELA DE FINALIZAR COMPRA (Mantido, mas agora recebe itens filtrados) */
+/* TELA DE FINALIZAR COMPRA */
 /* ======================================= */
 function abrirFormularioFinalizar(carrinho) {
     fecharPopups();
@@ -378,7 +393,7 @@ function abrirFormularioFinalizar(carrinho) {
             <h2>Finalizar Compra</h2>
     `;
 
-    // Resumo dos Itens (mantido)
+    // Resumo dos Itens 
     carrinho.forEach(item => {
         conteudo += `
             <div class="carrinho-item">
@@ -392,7 +407,7 @@ function abrirFormularioFinalizar(carrinho) {
         `;
     });
 
-    // Resumo e Botão Endereço (mantido)
+    // Resumo e Botão Endereço 
     conteudo += `
         <h3>Resumo do Pedido (${carrinho.length} Itens)</h3>
         <p><strong>Sub-total:</strong> R$ ${subtotal.toFixed(2)}</p>
@@ -431,11 +446,10 @@ function abrirFormularioFinalizar(carrinho) {
 
     // Abre o formulário de endereço
     popup.querySelector(".btn-endereco-entrega").addEventListener("click", () => {
-        // Passa o carrinho com os itens selecionados de volta para a tela de endereço
         abrirFormularioEndereco(carrinho, subtotal, frete, total);
     });
 
-    /* ---------- finalizar pedido (Mantido) ---------- */
+    /* ---------- finalizar pedido ---------- */
     popup.querySelector(".btn-finalizar-pedido").addEventListener("click", () => {
         const pagamento = popup.querySelector("#pagamento").value;
         const endereco = JSON.parse(localStorage.getItem("endereco"));
@@ -453,7 +467,6 @@ function abrirFormularioFinalizar(carrinho) {
         alert(`Pedido finalizado!\nTotal: R$ ${totalFormatado}\nPagamento: ${pagamento}\nEntrega em: ${endereco.rua}, ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}-${endereco.estado}\nCEP: ${endereco.cep}`);
 
         popup.remove();
-        // O carrinho já foi atualizado na tela anterior.
     });
 }
 
