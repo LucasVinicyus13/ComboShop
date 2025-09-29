@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // FUNÇÃO: Atualiza o contador do carrinho
     function atualizarContadorCarrinho() {
         const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
-        const totalItens = carrinho.length; // Conta o número de itens ÚNICOS no carrinho
+        const totalItens = carrinho.length; 
         
         const desktopCounter = document.getElementById("contador-desktop");
         const mobileCounter = document.getElementById("contador-mobile");
