@@ -514,3 +514,62 @@ h1 {
   width: 20px;
   height: 20px;
 }
+
+.carrinho-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.carrinho-item-info {
+  display: flex;
+  align-items: center;
+}
+
+.carrinho-item-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 6px;
+  margin-right: 15px;
+}
+
+.carrinho-item-details {
+  flex: 1;
+}
+
+.carrinho-item-nome {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.carrinho-item-preco {
+  font-size: 16px;
+  color: #555;
+}
+
+.carrinho-item-quantidade {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.carrinho-item-quantidade button {
+  background-color: #6c63ff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.carrinho-item-quantidade button:hover {
+  background-color: #5a52d4;
+}
+
+.carrinho-item-total {
+  font-weight: bold;
+  margin-top: 10px;
+  font-size: 16px;
+}
