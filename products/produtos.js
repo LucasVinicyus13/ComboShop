@@ -151,9 +151,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
           <div class="carrinho-item-quantidade-total">
             <div class="carrinho-item-quantidade">
-              <button class="btn-quantidade diminuir" data-index="${index}">←</button>
+              <button class="btn-quantidade diminuir" data-index="${index}"><</button>
               <span class="quantidade">${item.quantidade}</span>
-              <button class="btn-quantidade aumentar" data-index="${index}">→</button>
+              <button class="btn-quantidade aumentar" data-index="${index}">></button>
             </div>
             <p class="carrinho-item-total">Total: R$ ${(
               item.preco * item.quantidade
