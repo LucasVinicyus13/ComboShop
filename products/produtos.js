@@ -123,7 +123,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Carrinho
-  function abrirCarrinho() {
+  // Função para abrir o carrinho
+function abrirCarrinho() {
   const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
 
   const popup = document.createElement("div");
@@ -141,39 +142,43 @@ document.addEventListener("DOMContentLoaded", () => {
     carrinho.forEach((item, index) => {
       conteudo += `
         <div class="carrinho-item">
-          <div class="carrinho-item-info">
-            <img src="${item.imagem}" alt="${item.nome}" class="carrinho-item-img">
-            <div class="carrinho-item-details">
-              <p class="carrinho-item-nome"><strong>${item.nome}</strong></p>
-              <p class="carrinho-item-preco">R$ ${item.preco.toFixed(2)}</p>
-            </div>
+          <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px;">
+          <div style="flex:1; margin-left:10px;">
+            <p><strong>${item.nome}</strong></p>
+            <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
           </div>
-
-          <div class="carrinho-item-quantidade-total">
-            <div class="carrinho-item-quantidade">
-              <button class="btn-quantidade diminuir" data-index="${index}"><</button>
-              <span class="quantidade">${item.quantidade}</span>
-              <button class="btn-quantidade aumentar" data-index="${index}">></button>
-            </div>
-            <p class="carrinho-item-total">Total: R$ ${(
-              item.preco * item.quantidade
-            ).toFixed(2)}</p>
+          <div class="carrinho-item-quantidade">
+            <button onclick="alterarQuantidade(${index}, -1)">&lt;</button>
+            <span class="quantidade">${item.quantidade}</span>
+            <button onclick="alterarQuantidade(${index}, 1)">&gt;</button>
+            <p>Total: R$ ${(item.preco * item.quantidade).toFixed(2)}</p>
           </div>
         </div>
         <hr>
       `;
     });
+
+    conteudo += `
+      <button class="btn-finalizar-carrinho">Finalizar Compra</button>
+    `;
   }
 
   conteudo += `</div>`;
   popup.innerHTML = conteudo;
-
   document.body.appendChild(popup);
 
-  // Fechar popup
   popup.querySelector(".popup-close").addEventListener("click", () => {
     popup.remove();
   });
+
+  // Clique em "Finalizar Compra"
+  if (carrinho.length > 0) {
+    popup.querySelector(".btn-finalizar-carrinho").addEventListener("click", () => {
+      popup.remove();
+      abrirFormularioFinalizar(carrinho);
+    });
+  }
+}
 
   // Atualizar carrinho (aumentar ou diminuir a quantidade)
   popup.querySelectorAll(".btn-quantidade").forEach(button => {
@@ -205,3 +210,73 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btn-carrinho-desktop").addEventListener("click", abrirCarrinho);
   document.getElementById("btn-carrinho-mobile").addEventListener("click", abrirCarrinho);
 });
+
+function abrirFormularioFinalizar(carrinho) {
+  const popup = document.createElement("div");
+  popup.className = "popup-overlay";
+
+  let subtotal = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
+  let frete = 10.99;
+  let total = (subtotal + frete).toFixed(2);
+
+  let conteudo = `
+    <div class="popup-content">
+      <span class="popup-close">&times;</span>
+      <h2>Finalizar Compra</h2>
+  `;
+
+  carrinho.forEach(item => {
+    conteudo += `
+      <div class="carrinho-item">
+        <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px;">
+        <div style="flex:1; margin-left:10px;">
+          <p><strong>${item.nome}</strong></p>
+          <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
+          <p>Quantidade: ${item.quantidade}</p>
+          <p>Total: R$ ${(item.preco * item.quantidade).toFixed(2)}</p>
+        </div>
+      </div>
+      <hr>
+    `;
+  });
+
+  conteudo += `
+    <h3>Resumo do Pedido</h3>
+    <p><strong>Sub-total:</strong> R$ ${subtotal.toFixed(2)}</p>
+    <p><strong>Frete:</strong> R$ ${frete.toFixed(2)}</p>
+    <p><strong>Total:</strong> R$ ${total}</p>
+
+    <h3>Método de Pagamento:</h3>
+    <select id="pagamento" required>
+      <option value="">Selecione</option>
+      <option value="Cartão de Crédito">Cartão de Crédito</option>
+      <option value="Pix">Pix</option>
+      <option value="Boleto">Boleto</option>
+    </select>
+
+    <button type="button" class="btn-endereco">Endereço de Entrega</button>
+    <button type="button" class="btn-finalizar-pedido">Finalizar Pedido</button>
+    </div>
+  `;
+
+  popup.innerHTML = conteudo;
+  document.body.appendChild(popup);
+
+  popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
+
+  // Endereço
+  popup.querySelector(".btn-endereco").addEventListener("click", () => {
+    abrirPopupEndereco({});
+  });
+
+  // Finalizar Pedido
+  popup.querySelector(".btn-finalizar-pedido").addEventListener("click", () => {
+    const pagamento = popup.querySelector("#pagamento").value;
+    if (!pagamento) {
+      alert("Por favor, selecione o método de pagamento.");
+      return;
+    }
+    alert(`Pedido finalizado!\nTotal: R$ ${total}\nPagamento: ${pagamento}`);
+    popup.remove();
+  });
+}
