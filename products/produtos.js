@@ -101,8 +101,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         popup.querySelector(".btn-endereco").addEventListener("click", () => {
             const quantidade = parseInt(popup.querySelector("#quantidade").value);
+            // Ao comprar diretamente, assumimos que não há itens restantes no carrinho ([]).
             if (quantidade > 0) {
-                abrirFormularioFinalizar([{ ...produto, quantidade }]);
+                abrirFormularioFinalizar([{ ...produto, quantidade }], []); 
                 fecharPopups();
             }
         });
@@ -246,13 +247,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     return; 
                 }
 
-                // 1. Atualiza o carrinho no localStorage (remove os comprados)
-                localStorage.setItem("carrinho", JSON.stringify(itensRestantes));
-                atualizarContadorCarrinho(); 
+                // CORREÇÃO: Não removemos mais os itens do localStorage aqui!
                 
                 // 2. Procede com a compra APENAS dos itens selecionados
                 fecharPopups();
-                abrirFormularioFinalizar(itensParaComprar);
+                // Passamos os itens que SOBRARAM para que sejam removidos SOMENTE na conclusão da compra.
+                abrirFormularioFinalizar(itensParaComprar, itensRestantes); 
             });
         }
     }
@@ -270,7 +270,8 @@ document.addEventListener("DOMContentLoaded", () => {
 /* ======================================= */
 /* TELA DE ENDEREÇO */
 /* ======================================= */
-function abrirFormularioEndereco(carrinho, subtotal, frete, total) {
+// A função de endereço precisa receber os itensRestantes para retornar corretamente
+function abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestantes) {
     fecharPopups();
     
     const popup = document.createElement("div");
@@ -287,7 +288,7 @@ function abrirFormularioEndereco(carrinho, subtotal, frete, total) {
             <p>Preencha os dados do seu endereço para continuar.</p>
             <form id="form-endereco">
                 <input type="text" id="cep" placeholder="CEP (xxxxx-xxx)" value="${enderecoSalvo.cep}" maxlength="9" required><br>
-                <input type="text" id="cidade" placeholder="Cidade" value="${enderecoSalvo.cidade}" required><br>
+                <input type="text" id="cidade" placeholder="Cidade" value="${enderecoSalco.cidade}" required><br>
                 <input type="text" id="estado" placeholder="Estado (ex: SP)" value="${enderecoSalvo.estado}" maxlength="2" required><br>
                 <input type="text" id="bairro" placeholder="Bairro" value="${enderecoSalvo.bairro}" required><br>
                 <input type="text" id="rua" placeholder="Rua" value="${enderecoSalvo.rua}" required><br>
@@ -301,9 +302,11 @@ function abrirFormularioEndereco(carrinho, subtotal, frete, total) {
     popup.innerHTML = conteudo;
     document.body.appendChild(popup);
 
+    // Fecha e volta para a tela de finalizar compra
     popup.querySelector(".popup-close").addEventListener("click", () => {
         popup.remove();
-        abrirFormularioFinalizar(carrinho); 
+        // Retorna para a tela de finalizar, passando também os itensRestantes
+        abrirFormularioFinalizar(carrinho, itensRestantes); 
     });
 
     /* ---------- validações de inputs ---------- */
@@ -365,15 +368,16 @@ function abrirFormularioEndereco(carrinho, subtotal, frete, total) {
         localStorage.setItem("endereco", JSON.stringify(novoEndereco));
         alert("Endereço salvo com sucesso!");
         popup.remove();
-        abrirFormularioFinalizar(carrinho); 
+        // Volta para a tela de finalizar, passando também os itensRestantes
+        abrirFormularioFinalizar(carrinho, itensRestantes); 
     });
 }
 
 
 /* ======================================= */
-/* TELA DE FINALIZAR COMPRA */
+/* TELA DE FINALIZAR COMPRA (Agora recebe itensRestantes) */
 /* ======================================= */
-function abrirFormularioFinalizar(carrinho) {
+function abrirFormularioFinalizar(carrinho, itensRestantes) {
     fecharPopups();
 
     const popup = document.createElement("div");
@@ -442,14 +446,16 @@ function abrirFormularioFinalizar(carrinho) {
     popup.innerHTML = conteudo;
     document.body.appendChild(popup);
 
+    // Ao fechar esta tela (cancelar), o item não é removido, pois o localStorage não foi atualizado
     popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
 
     // Abre o formulário de endereço
     popup.querySelector(".btn-endereco-entrega").addEventListener("click", () => {
-        abrirFormularioEndereco(carrinho, subtotal, frete, total);
+        // Passa o array de itens restantes para que ele seja usado no retorno.
+        abrirFormularioEndereco(carrinho, subtotal, frete, total, itensRestantes); 
     });
 
-    /* ---------- finalizar pedido ---------- */
+    /* ---------- finalizar pedido (Remove itens restantes) ---------- */
     popup.querySelector(".btn-finalizar-pedido").addEventListener("click", () => {
         const pagamento = popup.querySelector("#pagamento").value;
         const endereco = JSON.parse(localStorage.getItem("endereco"));
@@ -463,6 +469,10 @@ function abrirFormularioFinalizar(carrinho) {
             alert("Por favor, selecione o método de pagamento.");
             return;
         }
+
+        // CORREÇÃO FINAL: Somente aqui, ao CONCLUIR o pedido, atualizamos o localStorage.
+        localStorage.setItem("carrinho", JSON.stringify(itensRestantes));
+        atualizarContadorCarrinho();
 
         alert(`Pedido finalizado!\nTotal: R$ ${totalFormatado}\nPagamento: ${pagamento}\nEntrega em: ${endereco.rua}, ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}-${endereco.estado}\nCEP: ${endereco.cep}`);
 
