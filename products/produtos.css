@@ -720,14 +720,16 @@ h1 {
 }
 
 .popup-alerta-body {
-  background-color: white;
+  /* Removed white background from alert body */
+  background-color: transparent;
   padding: 20px 30px;
   text-align: center;
 }
 
 .popup-alerta-body p {
   font-size: 16px;
-  color: #333;
+  /* Changed text color to white for visibility on colored background */
+  color: white;
   line-height: 1.5;
   margin: 0;
 }
