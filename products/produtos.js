@@ -124,42 +124,79 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Carrinho
   function abrirCarrinho() {
-    const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+  const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
 
-    const popup = document.createElement("div");
-    popup.className = "popup-overlay";
+  const popup = document.createElement("div");
+  popup.className = "popup-overlay";
 
-    let conteudo = `
-      <div class="popup-content">
-        <span class="popup-close">&times;</span>
-        <h2>Meu Carrinho</h2>
-    `;
+  let conteudo = `
+    <div class="popup-content">
+      <span class="popup-close">&times;</span>
+      <h2>Meu Carrinho</h2>
+  `;
 
-    if (carrinho.length === 0) {
-      conteudo += `<p>Você ainda não adicionou nenhum item ao seu carrinho.</p>`;
-    } else {
-      carrinho.forEach(item => {
-        conteudo += `
-          <div class="carrinho-item">
-            <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px 0;">
-            <p><strong>${item.nome}</strong></p>
-            <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
-            <p>Quantidade: ${item.quantidade}</p>
+  if (carrinho.length === 0) {
+    conteudo += `<p>Você ainda não adicionou nenhum item ao seu carrinho.</p>`;
+  } else {
+    carrinho.forEach((item, index) => {
+      conteudo += `
+        <div class="carrinho-item">
+          <div class="carrinho-item-info">
+            <img src="${item.imagem}" alt="${item.nome}" class="carrinho-item-img">
+            <div class="carrinho-item-details">
+              <p class="carrinho-item-nome"><strong>${item.nome}</strong></p>
+              <p class="carrinho-item-preco">R$ ${item.preco.toFixed(2)}</p>
+              <div class="carrinho-item-quantidade">
+                <button class="btn-quantidade diminuir" data-index="${index}">←</button>
+                <span class="quantidade">${item.quantidade}</span>
+                <button class="btn-quantidade aumentar" data-index="${index}">→</button>
+              </div>
+              <p class="carrinho-item-total">Total: R$ ${(
+                item.preco * item.quantidade
+              ).toFixed(2)}</p>
+            </div>
           </div>
-          <hr>
-        `;
-      });
-    }
-
-    conteudo += `</div>`;
-    popup.innerHTML = conteudo;
-
-    document.body.appendChild(popup);
-
-    popup.querySelector(".popup-close").addEventListener("click", () => {
-      popup.remove();
+        </div>
+        <hr>
+      `;
     });
   }
+
+  conteudo += `</div>`;
+  popup.innerHTML = conteudo;
+
+  document.body.appendChild(popup);
+
+  // Fechar popup
+  popup.querySelector(".popup-close").addEventListener("click", () => {
+    popup.remove();
+  });
+
+  // Atualizar carrinho (aumentar ou diminuir a quantidade)
+  popup.querySelectorAll(".btn-quantidade").forEach(button => {
+    button.addEventListener("click", (e) => {
+      const index = e.target.getAttribute("data-index");
+      const carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+      let produto = carrinho[index];
+      
+      // Aumentar ou diminuir quantidade
+      if (e.target.classList.contains("aumentar")) {
+        produto.quantidade++;
+      } else if (e.target.classList.contains("diminuir") && produto.quantidade > 1) {
+        produto.quantidade--;
+      }
+
+      // Atualiza o carrinho no localStorage
+      localStorage.setItem("carrinho", JSON.stringify(carrinho));
+
+      // Atualiza a interface (quantidade e total)
+      popup.querySelectorAll(".quantidade")[index].textContent = produto.quantidade;
+      popup.querySelectorAll(".carrinho-item-total")[index].textContent = `Total: R$ ${(
+        produto.preco * produto.quantidade
+      ).toFixed(2)}`;
+    });
+  });
+}
 
   // Botões do carrinho
   document.getElementById("btn-carrinho-desktop").addEventListener("click", abrirCarrinho);
