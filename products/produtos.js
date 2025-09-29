@@ -212,78 +212,6 @@ function abrirFormularioFinalizar(carrinho) {
   let frete = 10.99;
   let total = (subtotal + frete).toFixed(2);
 
-  let conteudo = `
-    <div class="popup-content">
-      <span class="popup-close">&times;</span>
-      <h2>Finalizar Compra</h2>
-  `;
-
-  carrinho.forEach(item => {
-    conteudo += `
-      <div class="carrinho-item">
-        <img src="${item.imagem}" alt="${item.nome}" style="width:60px; border-radius:6px; margin:5px;">
-        <div style="flex:1; margin-left:10px;">
-          <p><strong>${item.nome}</strong></p>
-          <p>Preço unitário: R$ ${item.preco.toFixed(2)}</p>
-          <p>Quantidade: ${item.quantidade}</p>
-          <p>Total: R$ ${(item.preco * item.quantidade).toFixed(2)}</p>
-        </div>
-      </div>
-      <hr>
-    `;
-  });
-
-  conteudo += `
-    <h3>Resumo do Pedido</h3>
-    <p><strong>Sub-total:</strong> R$ ${subtotal.toFixed(2)}</p>
-    <p><strong>Frete:</strong> R$ ${frete.toFixed(2)}</p>
-    <p><strong>Total:</strong> R$ ${total}</p>
-
-    <h3>Método de Pagamento:</h3>
-    <select id="pagamento" required>
-      <option value="">Selecione</option>
-      <option value="Cartão de Crédito">Cartão de Crédito</option>
-      <option value="Pix">Pix</option>
-      <option value="Boleto">Boleto</option>
-    </select>
-
-    <button type="button" class="btn-endereco">Endereço de Entrega</button>
-    <button type="button" class="btn-finalizar-pedido">Finalizar Pedido</button>
-    </div>
-  `;
-
-  popup.innerHTML = conteudo;
-  document.body.appendChild(popup);
-
-  popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
-
-  popup.querySelector(".btn-endereco").addEventListener("click", () => {
-    alert("Aqui abriria o formulário de endereço de entrega.");
-  });
-
-  popup.querySelector(".btn-finalizar-pedido").addEventListener("click", () => {
-    const pagamento = popup.querySelector("#pagamento").value;
-    if (!pagamento) {
-      alert("Por favor, selecione o método de pagamento.");
-      return;
-    }
-    alert(`Pedido finalizado!\nTotal: R$ ${total}\nPagamento: ${pagamento}`);
-    popup.remove();
-    localStorage.removeItem("carrinho"); // limpa carrinho após compra
-  });
-}
-
-// ... (código anterior continua igual até abrirFormularioFinalizar)
-
-function abrirFormularioFinalizar(carrinho) {
-  const popup = document.createElement("div");
-  popup.className = "popup-overlay";
-
-  let subtotal = carrinho.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
-  let frete = 10.99;
-  let total = (subtotal + frete).toFixed(2);
-
-  // recupera endereço salvo (se houver)
   const enderecoSalvo = JSON.parse(localStorage.getItem("endereco")) || {
     cep: "", cidade: "", estado: "", bairro: "", rua: "", numero: "", complemento: ""
   };
@@ -317,7 +245,7 @@ function abrirFormularioFinalizar(carrinho) {
 
     <h3>Endereço de Entrega</h3>
     <form id="form-endereco">
-      <input type="text" id="cep" placeholder="CEP" value="${enderecoSalvo.cep}" required><br>
+      <input type="text" id="cep" placeholder="CEP (xxxxx-xxx)" value="${enderecoSalvo.cep}" maxlength="9" required><br>
       <input type="text" id="cidade" placeholder="Cidade" value="${enderecoSalvo.cidade}" required><br>
       <input type="text" id="estado" placeholder="Estado" value="${enderecoSalvo.estado}" required><br>
       <input type="text" id="bairro" placeholder="Bairro" value="${enderecoSalvo.bairro}" required><br>
@@ -343,7 +271,37 @@ function abrirFormularioFinalizar(carrinho) {
 
   popup.querySelector(".popup-close").addEventListener("click", () => popup.remove());
 
-  // Finalizar pedido
+  /* ---------- validações de inputs ---------- */
+  const cepInput = popup.querySelector("#cep");
+  cepInput.addEventListener("input", () => {
+    let value = cepInput.value.replace(/\D/g, ""); // remove não números
+    if (value.length > 8) value = value.slice(0, 8);
+    if (value.length > 5) {
+      cepInput.value = value.slice(0, 5) + "-" + value.slice(5);
+    } else {
+      cepInput.value = value;
+    }
+  });
+
+  // função para deixar capitalizado
+  function capitalizeWords(str) {
+    return str.replace(/\b\w+/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+  }
+
+  ["#cidade", "#estado", "#bairro", "#rua"].forEach(id => {
+    const input = popup.querySelector(id);
+    input.addEventListener("input", () => {
+      input.value = capitalizeWords(input.value);
+    });
+  });
+
+  // apenas números no número
+  const numeroInput = popup.querySelector("#numero");
+  numeroInput.addEventListener("input", () => {
+    numeroInput.value = numeroInput.value.replace(/\D/g, "");
+  });
+
+  /* ---------- finalizar pedido ---------- */
   popup.querySelector(".btn-finalizar-pedido").addEventListener("click", () => {
     const pagamento = popup.querySelector("#pagamento").value;
     const form = popup.querySelector("#form-endereco");
@@ -358,18 +316,21 @@ function abrirFormularioFinalizar(carrinho) {
       complemento: form.querySelector("#complemento").value
     };
 
-    // validação simples
-    if (!pagamento || !endereco.cep || !endereco.cidade || !endereco.estado || !endereco.bairro || !endereco.rua || !endereco.numero) {
+    // validação
+    if (!/^\d{5}-\d{3}$/.test(endereco.cep)) {
+      alert("CEP inválido. Use o formato xxxxx-xxx.");
+      return;
+    }
+    if (!pagamento || !endereco.cidade || !endereco.estado || !endereco.bairro || !endereco.rua || !endereco.numero) {
       alert("Por favor, preencha todos os campos obrigatórios e selecione o método de pagamento.");
       return;
     }
 
-    // salva endereço no localStorage
     localStorage.setItem("endereco", JSON.stringify(endereco));
 
-    alert(`Pedido finalizado!\nTotal: R$ ${total}\nPagamento: ${pagamento}\nEntrega em: ${endereco.rua}, ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}-${endereco.estado}`);
+    alert(`Pedido finalizado!\nTotal: R$ ${total}\nPagamento: ${pagamento}\nEntrega em: ${endereco.rua}, ${endereco.numero}, ${endereco.bairro}, ${endereco.cidade}-${endereco.estado}\nCEP: ${endereco.cep}`);
 
     popup.remove();
-    localStorage.removeItem("carrinho"); // limpa carrinho após compra
+    localStorage.removeItem("carrinho");
   });
 }
