@@ -288,3 +288,26 @@ menuToggle.addEventListener('click', () => {
   menuToggle.classList.toggle('open');
   mobileMenu.classList.toggle('active');
 });
+
+// Função para abrir o carrinho
+function abrirCarrinho() {
+  const popup = document.createElement("div");
+  popup.className = "popup-overlay";
+  popup.innerHTML = `
+    <div class="popup-content">
+      <span class="popup-close">&times;</span>
+      <h2>Meu Carrinho</h2>
+      <p>Você ainda não adicionou nenhum item ao seu carrinho.</p>
+    </div>
+  `;
+
+  document.body.appendChild(popup);
+
+  popup.querySelector(".popup-close").addEventListener("click", () => {
+    popup.remove();
+  });
+}
+
+// Botões do carrinho
+document.getElementById("btn-carrinho-desktop").addEventListener("click", abrirCarrinho);
+document.getElementById("btn-carrinho-mobile").addEventListener("click", abrirCarrinho);
