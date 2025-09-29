@@ -557,7 +557,8 @@ h1 {
 
 .carrinho-item-quantidade {
   display: flex;
-  align-items: center; /* Centraliza verticalmente */
+  align-items: center;  /* Centraliza verticalmente */
+  justify-content: center; /* Alinha horizontalmente */
   gap: 10px;
   margin-top: 5px;
 }
@@ -572,6 +573,13 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.carrinho-item-quantidade .quantidade {
+  font-size: 16px; /* Ajusta o tamanho da fonte do número */
+  font-weight: bold;
+  display: inline-block;
+  margin: 0 5px; /* Adiciona um pequeno espaçamento entre as setas e o número */
 }
 
 .carrinho-item-quantidade button:hover {
