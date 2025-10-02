@@ -467,9 +467,10 @@ function abrirFormularioFinalizar(carrinho, itensRestantes, cupomAplicado) {
 
   // 🔴 ONDE VOCÊ DEVE INSERIR NOVOS CUPONS 🔴
   const CUPONS = {
-    COMBOSHOP10: 10,
-    SUPER20: 20,
-    TESTE30: 30,
+    LUXCA: 10,
+    LUXCAA: 20,
+    LUXCAAA: 30,
+    FREE: 100,
   }
 
   const popup = document.createElement("div")
