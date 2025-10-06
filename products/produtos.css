@@ -33,6 +33,10 @@ header {
   order: 0;
 }
 
+.logos {
+  display: inline-block;
+}
+
 ul {
   display: flex;
   list-style-type: none;
