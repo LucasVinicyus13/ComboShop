@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <label for="quantidade">Quantidade:</label>
                 <input type="number" id="quantidade" min="1" value="1" required>
                 <span class="price">R$ ${produto.preco.toFixed(2)}</span>
-                <button type="button" class="btn-endereco"><img src="./">Comprar</button>
+                <button type="button" class="btn-endereco"><img src="images/setec.png" class="btn-img" alt="logo da setec">Comprar</button>
                 <button type="button" class="btn-add-carrinho">Adicionar ao Carrinho</button>
             </div>
         `
