@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
       detalhes: "Cerâmica branca de 325ml com frase em preto e alça ergonômica. Pode ir no microondas e lava-louças, ilustração de carinha brava no verso.",
     },
     {
-      imagem: "./images/produto10.jpeg",
+      imagem: "./images/Produto10.jpeg",
       nome: "Almofada Peidorrenta Profissional",
       descricao: "Para aquele tio chato do churrasco ou para zoar seus amigos. Diversão garantida desde 1950. Testado e aprovado por crianças de todas as idades.",
       preco: 12.9,
