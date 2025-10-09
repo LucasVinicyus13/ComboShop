@@ -33,10 +33,14 @@ header {
   order: 0;
 }
 
+.logos {
+  display: flex;
+  flex-direction: row;
+}
+
 .logos > img {
   width: 40px;
   height: 40px;
-  vertical-align: middle; 
 }
 
 ul {
