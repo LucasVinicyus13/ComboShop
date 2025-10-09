@@ -154,7 +154,7 @@ h1 {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 20px;
   transition: background-color 0.3s ease;
 }
 
@@ -163,8 +163,8 @@ h1 {
 }
 
 .btn-img {
-  width: 20px;
-  height: 20px;
+  width: 23px;
+  margin-right: 5px;
 }
 
 /* Popup */
