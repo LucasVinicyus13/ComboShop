@@ -162,6 +162,11 @@ h1 {
   background-color: #6b21a8;
 }
 
+.btn-img {
+  width: 20px;
+  height: 20px;
+}
+
 /* Popup */
 .popup-overlay {
   position: fixed;
