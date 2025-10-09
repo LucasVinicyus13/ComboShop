@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <h2>${produto.nome}</h2>
             <p>${produto.descricao}</p>
             <span class="price">R$ ${produto.preco.toFixed(2)}</span>
-            <button type="button" class="btn-comprar"><img src="images/setec.png" alt="logo da setec">Comprar</button>
+            <button type="button" class="btn-comprar"><img src="images/setec.png" class="btn-img" alt="logo da setec">Comprar</button>
         `
 
     card.querySelector(".btn-comprar").addEventListener("click", () => {
