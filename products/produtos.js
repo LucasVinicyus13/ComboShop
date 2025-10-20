@@ -214,7 +214,7 @@ document.addEventListener("DOMContentLoaded", () => {
       detalhes: "Ideal para pessoas indecisas. Basta girar a caneta e deixar o destino resolver sua vida (resultados 100% aleatórios).",
     },
     {
-      imagem: "./images/Produto22.jpg",
+      imagem: "./images/Produto22.png",
       nome: "Boné Wi-Fi",
       descricao: "Te deixa estiloso, mas continua sem sinal.",
       preco: 42.0,
