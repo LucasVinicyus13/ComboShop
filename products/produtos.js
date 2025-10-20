@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
       descricao: "Para você ficar divo que nem o Ken da Barbie.",
       preco: 13.13,
       detalhes:
-        "Boné ajustável com estampa bordada em destaque, feito em algodão resistente para garantir estilo e durabilidade.",
+        "Transforme-se em uma lenda instantaneamente! A Peruca Loira da ComboShop é feita com fios sintéticos brilhantes que refletem a luz do sucesso (ou do ring light). Serve para festas, trollagens, cosplay, gravações ou apenas para dar um susto na sua avó. Ajustável, leve e 100% estilosa — você nunca mais será o mesmo depois de colocar essa obra-prima capilar.",
     },
     {
       imagem: "./images/Produto5.jpeg",
