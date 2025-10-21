@@ -1,72 +1,109 @@
-:root{
-  --bg: #414bd2;
-  --card: #9f8eff;
-  --card-dark: #c5a6ff;
-  --accent: #6c63ff;
-  --text: #000;
-}
-
-*{box-sizing:border-box;margin:0;padding:0;font-family:"Manjari",sans-serif}
-
 body {
-  background: var(--bg);
-  color: var(--text);
-  min-height:100vh;
-  padding-top:60px;
+  font-family: Arial, sans-serif;
+  background-color: #111;
+  color: #fff;
+  margin: 0;
+  padding: 0;
 }
 
-/* header simples */
 header {
-  position:fixed;
-  top:0;left:0;width:100%;height:50px;
-  background:var(--card);
-  border-bottom:3px solid #000;
-  display:flex;align-items:center;justify-content:center;z-index:1000;
-  box-shadow:0 3px 12px rgba(0,0,0,0.3);
-}
-.header-container{width:96%;display:flex;align-items:center;justify-content:space-between}
-.logo{width:36px}
-
-/* main */
-.perfil-wrapper{display:flex;justify-content:center;padding:30px 20px}
-
-.perfil-card{
-  width:100%;max-width:880px;background:var(--card);
-  border-radius:12px;padding:20px;box-shadow:0 8px 30px rgba(0,0,0,0.3);
+  background-color: #1a1a1a;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-/* top */
-.perfil-top{display:flex;gap:20px;align-items:center;margin-bottom:10px}
-.foto-area{display:flex;flex-direction:column;align-items:center;gap:10px}
-#fotoPerfil{width:120px;height:120px;border-radius:50%;object-fit:cover;border:6px solid var(--card-dark)}
-.btn-upload{background:var(--card-dark);padding:8px 12px;border-radius:8px;color:#000;cursor:pointer;display:inline-block}
-.btn-upload input{display:none}
-
-/* dados rapidos */
-.dados-rapidos p{margin:6px 0;font-size:14px}
-
-/* form */
-.form-perfil{display:flex;flex-direction:column;gap:10px;margin-top:10px}
-.form-perfil label{font-weight:700;font-size:14px;margin-top:6px}
-.form-perfil input[type="text"], .form-perfil input[type="password"]{
-  padding:10px;border-radius:8px;border:1px solid #ccc;background:#fff;
+.logo {
+  height: 50px;
 }
 
-/* duas colunas */
-.duas-colunas{display:flex;gap:12px}
-.duas-colunas > div{flex:1}
+.desktop-menu ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
 
-/* ações */
-.acoes{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
-.btn-primary{background:var(--accent);color:white;padding:10px 14px;border:none;border-radius:10px;cursor:pointer}
-.btn-secondary{background:#ddd;color:#000;padding:10px 14px;border:none;border-radius:10px;cursor:pointer}
-.btn-danger{background:#ff5959;color:#fff;padding:10px 14px;border:none;border-radius:10px;cursor:pointer}
+.desktop-menu a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
 
-/* mensagem */
-.mensagem{margin-top:8px;color:#111;font-weight:700}
+.desktop-menu a.ativo {
+  color: #00ffcc;
+}
 
-/* responsivo */
-@media (max-width:720px){
-  .duas-colunas{flex-direction:column}
-  #fotoPerfil{width:100px;height:100px}
+.perfil-container {
+  max-width: 600px;
+  margin: 60px auto;
+  text-align: center;
+}
+
+.perfil-card {
+  background-color: #222;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.foto-container {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.foto-container img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #00ffcc;
+}
+
+#inputFoto {
+  margin-top: 10px;
+  color: #ccc;
+}
+
+.info-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-container input {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: #333;
+  color: #fff;
+}
+
+.info-container label {
+  text-align: left;
+  font-weight: bold;
+}
+
+button {
+  background: #00ffcc;
+  color: #000;
+  border: none;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+.logout {
+  background: #ff4444;
+  margin-top: 10px;
 }
