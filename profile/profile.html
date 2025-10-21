@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ComboShop | Perfil</title>
+  <link rel="icon" type="image/x-icon" href="../images/ComboShopLogo.png">
+  <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+  <header>
+    <div class="header-container">
+      <img class="logo" src="../images/ComboShopLogo.png" alt="Combo Shop logo">
+      <h1>Meu Perfil</h1>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="profile-card">
+      <div class="profile-pic-container">
+        <img id="profile-pic" src="../images/usuario.png" alt="Foto de perfil" class="profile-pic">
+        <input type="file" id="upload-pic" accept="image/*">
+      </div>
+
+      <div class="profile-info">
+        <label>Nome de Usuário</label>
+        <input type="text" id="username">
+
+        <label>Senha</label>
+        <input type="password" id="password">
+
+        <label>Endereço</label>
+        <textarea id="endereco" rows="3"></textarea>
+
+        <div class="btn-group">
+          <button id="save-btn">Salvar Alterações</button>
+          <button id="logout-btn">Sair da Conta</button>
+          <button id="delete-btn" class="danger">Excluir Conta</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="profile.js"></script>
+</body>
+</html>
