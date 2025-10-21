@@ -29,23 +29,26 @@ const usersRef = collection(db, "usuarios");
 
 /* --- Formatar CPF --- */
 const cpfInput = document.getElementById("cpf");
-cpfInput.addEventListener("input", () => {
-  let value = cpfInput.value.replace(/\D/g, "");
-  if (value.length > 11) value = value.slice(0, 11);
-  value = value.replace(/(\d{3})(\d)/, "$1.$2");
-  value = value.replace(/(\d{3})(\d)/, "$1.$2");
-  value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-  cpfInput.value = value;
-});
+if (cpfInput) { // Verifica se o input existe antes de adicionar o listener
+    cpfInput.addEventListener("input", () => {
+        let value = cpfInput.value.replace(/\D/g, "");
+        if (value.length > 11) value = value.slice(0, 11);
+        value = value.replace(/(\d{3})(\d)/, "$1.$2");
+        value = value.replace(/(\d{3})(\d)/, "$1.$2");
+        value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        cpfInput.value = value;
+    });
+}
+
 
 /* --- Registro --- */
 window.validarFormulario = async function (event) {
   event.preventDefault();
 
-  const fullname = document.getElementById("fullname").value.trim();
-  const username = document.getElementById("username").value.trim();
-  let cpf = document.getElementById("cpf").value;
-  const password = document.getElementById("password").value;
+  const fullname = document.getElementById("fullname")?.value.trim();
+  const username = document.getElementById("username")?.value.trim();
+  let cpf = document.getElementById("cpf")?.value;
+  const password = document.getElementById("password")?.value;
 
   if (!fullname || !username || !cpf || !password) {
     alert("Por favor, preencha todos os campos obrigatórios.");
@@ -65,13 +68,13 @@ window.validarFormulario = async function (event) {
     return;
   }
 
-  // --- Verificar duplicidade ---
+  // --- Verificar duplicidade (CPF ou Username) ---
   const qCpf = query(usersRef, where("cpf", "==", cpf));
   const qUser = query(usersRef, where("username", "==", username));
   const [cpfSnap, userSnap] = await Promise.all([getDocs(qCpf), getDocs(qUser)]);
 
   if (!cpfSnap.empty || !userSnap.empty) {
-    // Mostrar popup estilizado
+    // Código do popup estilizado
     const popup = document.createElement("div");
     popup.className = "popup-overlay";
     popup.innerHTML = `
@@ -79,12 +82,12 @@ window.validarFormulario = async function (event) {
         <h3>Já existe um usuário com esse nome de usuário ou CPF.</h3>
         <p>É você?</p>
         <a href="https://combo-shop.vercel.app/login/login.html" 
-           style="color:#3498db; font-weight:bold; text-decoration:none;">
+          style="color:#3498db; font-weight:bold; text-decoration:none;">
           Fazer login
         </a>
         <br><br>
         <button id="fechar-popup" 
-                style="background:#555; color:white; border:none; padding:6px 14px; border-radius:5px; cursor:pointer;">
+              style="background:#555; color:white; border:none; padding:6px 14px; border-radius:5px; cursor:pointer;">
           Fechar
         </button>
       </div>
@@ -94,19 +97,27 @@ window.validarFormulario = async function (event) {
     return;
   }
 
-  // --- Criar no Authentication ---
+  // --- Criar no Authentication e Firestore ---
   try {
     const fakeEmail = `${username}@comboshop.com`;
-    await createUserWithEmailAndPassword(auth, fakeEmail, password);
+    
+    // 1. Cria o usuário no Firebase Authentication
+    const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
+    const uid = userCredential.user.uid; // Pega o UID do usuário
 
-    // --- Criar no Firestore ---
-    await addDoc(usersRef, { fullname, username, cpf, password });
+    // 2. Cria o documento no Firestore (SEM a senha)
+    await addDoc(usersRef, { 
+      fullname, 
+      username, 
+      cpf, 
+      userId: uid // Salva o UID para vincular o usuário do Auth com o documento do Firestore
+    });
 
     alert("Cadastro realizado com sucesso!");
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
   } catch (error) {
     console.error("Erro ao criar usuário:", error);
-    alert("Erro ao registrar usuário. Tente novamente.");
+    alert("Erro ao registrar usuário. Tente novamente. (Detalhes no console: " + error.code + ")");
   }
 };
 
