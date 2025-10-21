@@ -59,7 +59,7 @@ li a {
   font-family: "Manjari", sans-serif;
 }
 
-a > .perfil-link {
+a.perfil-link {
   white-space: nowrap;
 }
 
