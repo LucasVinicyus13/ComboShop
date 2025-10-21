@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
@@ -11,7 +11,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const auth = getAuth(app);
 
 window.login = async function (event) {
   event.preventDefault();
@@ -24,24 +24,18 @@ window.login = async function (event) {
     return;
   }
 
-  const usersRef = collection(db, "usuarios");
-  const q = query(usersRef, where("username", "==", username), where("password", "==", password));
-  const querySnapshot = await getDocs(q);
+  const emailFake = `${username}@comboshop.com`;
 
-  if (querySnapshot.empty) {
-    alert("Nome de usuário ou senha incorretos.");
-  } else {
+  try {
+    await signInWithEmailAndPassword(auth, emailFake, password);
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
+  } catch (error) {
+    alert("Nome de usuário ou senha incorretos.");
   }
 };
 
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-
-const auth = getAuth();
-
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    // Usuário já está autenticado, redireciona para a página de produtos
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
   }
 });
