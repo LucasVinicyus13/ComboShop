@@ -1,6 +1,17 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, query, where, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
-import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc, 
+  getDocs, 
+  query, 
+  where 
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
@@ -16,6 +27,7 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const usersRef = collection(db, "usuarios");
 
+/* --- Formatar CPF --- */
 const cpfInput = document.getElementById("cpf");
 cpfInput.addEventListener("input", () => {
   let value = cpfInput.value.replace(/\D/g, "");
@@ -26,13 +38,14 @@ cpfInput.addEventListener("input", () => {
   cpfInput.value = value;
 });
 
+/* --- Registro --- */
 window.validarFormulario = async function (event) {
   event.preventDefault();
 
   const fullname = document.getElementById("fullname").value.trim();
   const username = document.getElementById("username").value.trim();
-  let cpf = document.getElementById("cpf").value.trim();
-  const password = document.getElementById("password").value.trim();
+  let cpf = document.getElementById("cpf").value;
+  const password = document.getElementById("password").value;
 
   if (!fullname || !username || !cpf || !password) {
     alert("Por favor, preencha todos os campos obrigatórios.");
@@ -52,38 +65,52 @@ window.validarFormulario = async function (event) {
     return;
   }
 
-  // Verifica se CPF ou usuário já existem
-  const existingCpf = await getDocs(query(usersRef, where("cpf", "==", cpf)));
-  const existingUser = await getDocs(query(usersRef, where("username", "==", username)));
+  // --- Verificar duplicidade ---
+  const qCpf = query(usersRef, where("cpf", "==", cpf));
+  const qUser = query(usersRef, where("username", "==", username));
+  const [cpfSnap, userSnap] = await Promise.all([getDocs(qCpf), getDocs(qUser)]);
 
-  if (!existingCpf.empty || !existingUser.empty) {
-    document.getElementById("popup").style.display = "block";
+  if (!cpfSnap.empty || !userSnap.empty) {
+    // Mostrar popup estilizado
+    const popup = document.createElement("div");
+    popup.className = "popup-overlay";
+    popup.innerHTML = `
+      <div class="popup-content" style="text-align:center;">
+        <h3>Já existe um usuário com esse nome de usuário ou CPF.</h3>
+        <p>É você?</p>
+        <a href="https://combo-shop.vercel.app/login/login.html" 
+           style="color:#3498db; font-weight:bold; text-decoration:none;">
+          Fazer login
+        </a>
+        <br><br>
+        <button id="fechar-popup" 
+                style="background:#555; color:white; border:none; padding:6px 14px; border-radius:5px; cursor:pointer;">
+          Fechar
+        </button>
+      </div>
+    `;
+    document.body.appendChild(popup);
+    popup.querySelector("#fechar-popup").addEventListener("click", () => popup.remove());
     return;
   }
 
+  // --- Criar no Authentication ---
   try {
-    // Cria usuário no Firebase Auth (usando username como "email fake")
-    const emailFake = `${username}@comboshop.com`;
-    const userCredential = await createUserWithEmailAndPassword(auth, emailFake, password);
-    const user = userCredential.user;
+    const fakeEmail = `${username}@comboshop.com`;
+    await createUserWithEmailAndPassword(auth, fakeEmail, password);
 
-    // Salva no Firestore com o mesmo UID
-    await setDoc(doc(db, "usuarios", user.uid), {
-      fullname,
-      username,
-      cpf,
-      password,
-      endereco: "",
-      fotoURL: ""
-    });
+    // --- Criar no Firestore ---
+    await addDoc(usersRef, { fullname, username, cpf, password });
 
+    alert("Cadastro realizado com sucesso!");
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
   } catch (error) {
-    console.error("Erro ao registrar:", error.message);
-    alert("Erro ao registrar usuário: " + error.message);
+    console.error("Erro ao criar usuário:", error);
+    alert("Erro ao registrar usuário. Tente novamente.");
   }
 };
 
+/* --- Verificação de login automático --- */
 onAuthStateChanged(auth, (user) => {
   if (user) {
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
