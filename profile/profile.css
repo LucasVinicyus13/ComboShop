@@ -1,0 +1,121 @@
+body {
+  font-family: 'Manjari', sans-serif;
+  background: linear-gradient(135deg, #6e00ff, #9b4dff);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+header {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 10px 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+}
+
+.container {
+  margin-top: 60px;
+  width: 90%;
+  max-width: 500px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-pic-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid white;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+#upload-pic {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.profile-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.profile-info label {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.profile-info input,
+.profile-info textarea {
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 16px;
+  outline: none;
+  width: 100%;
+}
+
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+button {
+  background-color: #7b2cff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #9b59ff;
+}
+
+button.danger {
+  background-color: #ff3d3d;
+}
+
+button.danger:hover {
+  background-color: #ff7070;
+}
