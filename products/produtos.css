@@ -59,6 +59,10 @@ li a {
   font-family: "Manjari", sans-serif;
 }
 
+a > .perfil-link {
+  white-space: nowrap;
+}
+
 .container {
   display: flex;
   justify-content: center;
