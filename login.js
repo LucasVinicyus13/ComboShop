@@ -16,20 +16,24 @@ const auth = getAuth(app);
 window.login = async function (event) {
   event.preventDefault();
 
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value;
+  // ⚠️ CERTIFIQUE-SE DE QUE O INPUT NO HTML TEM ID="username"
+  const username = document.getElementById("username")?.value.trim();
+  const password = document.getElementById("password")?.value;
 
   if (!username || !password) {
     alert("Preencha todos os campos.");
     return;
   }
 
+  // Recria o email falso usado no registro
   const emailFake = `${username}@comboshop.com`;
 
   try {
     await signInWithEmailAndPassword(auth, emailFake, password);
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
   } catch (error) {
+    // Exibe o erro no console para depuração, mas mantém a mensagem genérica para o usuário
+    console.error("Erro de login:", error.code, error.message);
     alert("Nome de usuário ou senha incorretos.");
   }
 };
