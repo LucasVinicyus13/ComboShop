@@ -34,7 +34,7 @@ let currentUserId;
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     alert("Você precisa estar logado para acessar esta página.");
-    window.location.href = "../login/login.html";
+    window.location.href = "../login.html";
     return;
   }
 
@@ -46,7 +46,7 @@ onAuthStateChanged(auth, async (user) => {
     const data = docSnap.data();
     usernameInput.value = data.username || "";
     enderecoInput.value = data.endereco || "";
-    profilePic.src = data.fotoURL || "../images/usuario.png";
+    profilePic.src = data.fotoURL || "./images/usuario.png";
   }
 });
 
@@ -85,7 +85,7 @@ saveBtn.addEventListener("click", async () => {
 // Logout
 logoutBtn.addEventListener("click", async () => {
   await signOut(auth);
-  window.location.href = "../login/login.html";
+  window.location.href = "../login.html";
 });
 
 // Excluir conta
