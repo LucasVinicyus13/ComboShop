@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ComboShop | Perfil</title>
   <link rel="stylesheet" href="perfil.css">
-  <!-- Firebase v9 (modular) -->
-  <script type="module" src="perfil.js" defer></script>
+  <link rel="icon" type="image/x-icon" href="./images/ComboShopLogo.png">
 </head>
 <body>
   <header>
@@ -15,84 +14,41 @@
       <nav class="desktop-menu">
         <ul>
           <li><a href="/products/produtos.html">Produtos</a></li>
-          <li><a id="link-carrinho" href="#">Carrinho</a></li>
+          <li><a href="/perfil.html" class="ativo">Meu Perfil</a></li>
           <li><a href="/donate/donate.html">Doações</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <main class="perfil-wrapper">
+  <main class="perfil-container">
+    <h1>Meu Perfil</h1>
+
     <div class="perfil-card">
-      <h1>Meu Perfil</h1>
-
-      <div class="perfil-top">
-        <div class="foto-area">
-          <img id="fotoPerfil" src="images/default-avatar.png" alt="Foto de perfil">
-          <label class="btn-upload">
-            Alterar foto
-            <input id="uploadFoto" type="file" accept="image/*">
-          </label>
-        </div>
-
-        <div class="dados-rapidos">
-          <p><strong>Email:</strong> <span id="emailUsuario">-</span></p>
-          <p><strong>Data Cadastro:</strong> <span id="dataCadastro">-</span></p>
-        </div>
+      <div class="foto-container">
+        <img id="fotoPerfil" src="images/user-default.png" alt="Foto de perfil">
+        <input type="file" id="inputFoto" accept="image/*">
       </div>
 
-      <form id="formPerfil" class="form-perfil">
+      <div class="info-container">
         <label>Nome de Usuário</label>
-        <input id="nomeUsuario" type="text" placeholder="Nome de usuário" required>
+        <input type="text" id="username" placeholder="Seu nome de usuário">
 
-        <label>Nova senha (deixe em branco para manter)</label>
-        <input id="novaSenha" type="password" placeholder="Nova senha">
+        <label>Email</label>
+        <input type="email" id="email" disabled>
 
-        <label>Senha atual (obrigatória para alterar senha / excluir conta)</label>
-        <input id="senhaAtual" type="password" placeholder="Senha atual">
+        <label>Endereço</label>
+        <input type="text" id="endereco" placeholder="Rua, número, cidade...">
 
-        <h3>Endereço de entrega</h3>
+        <label>Senha</label>
+        <input type="password" id="senha" placeholder="Nova senha (opcional)">
 
-        <div class="duas-colunas">
-          <div>
-            <label>CEP</label>
-            <input id="cep" type="text" maxlength="9" placeholder="00000-000" required>
-          </div>
-          <div>
-            <label>Número</label>
-            <input id="numero" type="text" placeholder="Número" required>
-          </div>
-        </div>
-
-        <div class="duas-colunas">
-          <div>
-            <label>Cidade</label>
-            <input id="cidade" type="text" placeholder="Cidade" required>
-          </div>
-          <div>
-            <label>Estado (UF)</label>
-            <input id="estado" type="text" maxlength="2" placeholder="UF" required>
-          </div>
-        </div>
-
-        <label>Bairro</label>
-        <input id="bairro" type="text" placeholder="Bairro" required>
-
-        <label>Rua</label>
-        <input id="rua" type="text" placeholder="Rua" required>
-
-        <label>Complemento (opcional)</label>
-        <input id="complemento" type="text" placeholder="Apto / Bloco">
-
-        <div class="acoes">
-          <button id="btnSalvar" type="button" class="btn-primary">Salvar alterações</button>
-          <button id="btnSair" type="button" class="btn-secondary">Sair</button>
-          <button id="btnExcluir" type="button" class="btn-danger">Excluir conta</button>
-        </div>
-
-        <p id="mensagem" class="mensagem"></p>
-      </form>
+        <button id="salvarPerfil">Salvar Alterações</button>
+        <button id="sairConta" class="logout">Sair</button>
+      </div>
     </div>
   </main>
+
+  <script type="module" src="perfil.js"></script>
 </body>
 </html>
