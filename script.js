@@ -29,7 +29,7 @@ const usersRef = collection(db, "usuarios");
 
 /* --- Formatar CPF --- */
 const cpfInput = document.getElementById("cpf");
-if (cpfInput) { // Verifica se o input existe antes de adicionar o listener
+if (cpfInput) {
     cpfInput.addEventListener("input", () => {
         let value = cpfInput.value.replace(/\D/g, "");
         if (value.length > 11) value = value.slice(0, 11);
@@ -40,21 +40,22 @@ if (cpfInput) { // Verifica se o input existe antes de adicionar o listener
     });
 }
 
-
 /* --- Registro --- */
 window.validarFormulario = async function (event) {
   event.preventDefault();
 
   const fullname = document.getElementById("fullname")?.value.trim();
   const username = document.getElementById("username")?.value.trim();
+  const email = document.getElementById("email")?.value.trim(); // NOVO: Captura o email
   let cpf = document.getElementById("cpf")?.value;
   const password = document.getElementById("password")?.value;
 
-  if (!fullname || !username || !cpf || !password) {
+  if (!fullname || !username || !email || !cpf || !password) {
     alert("Por favor, preencha todos os campos obrigatórios.");
     return;
   }
 
+  // Validação de CPF
   cpf = cpf.replace(/[^\d]/g, "");
   const regexCPF = /^\d{11}$/;
   if (!regexCPF.test(cpf)) {
@@ -62,24 +63,26 @@ window.validarFormulario = async function (event) {
     return;
   }
 
+  // Validação de Senha
   const regexSenha = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!"'@#$%*()_\-+=\[\]´^~\?\/;:.,\\]).{8,}$/;
   if (!regexSenha.test(password)) {
     alert("Sua senha deve conter no mínimo 8 dígitos, 1 número, 1 letra e 1 caractere especial.");
     return;
   }
 
-  // --- Verificar duplicidade (CPF ou Username) ---
+  // --- Verificar duplicidade (Email, CPF ou Username) ---
+  const qEmail = query(usersRef, where("email", "==", email)); // Verifica email no Firestore
   const qCpf = query(usersRef, where("cpf", "==", cpf));
   const qUser = query(usersRef, where("username", "==", username));
-  const [cpfSnap, userSnap] = await Promise.all([getDocs(qCpf), getDocs(qUser)]);
+  const [emailSnap, cpfSnap, userSnap] = await Promise.all([getDocs(qEmail), getDocs(qCpf), getDocs(qUser)]);
 
-  if (!cpfSnap.empty || !userSnap.empty) {
-    // Código do popup estilizado
+  if (!emailSnap.empty || !cpfSnap.empty || !userSnap.empty) {
+    // Mostrar popup estilizado para duplicidade
     const popup = document.createElement("div");
     popup.className = "popup-overlay";
     popup.innerHTML = `
       <div class="popup-content" style="text-align:center;">
-        <h3>Já existe um usuário com esse nome de usuário ou CPF.</h3>
+        <h3>Já existe um usuário com esse Email, nome de usuário ou CPF.</h3>
         <p>É você?</p>
         <a href="https://combo-shop.vercel.app/login/login.html" 
           style="color:#3498db; font-weight:bold; text-decoration:none;">
@@ -99,24 +102,24 @@ window.validarFormulario = async function (event) {
 
   // --- Criar no Authentication e Firestore ---
   try {
-    const fakeEmail = `${username}@comboshop.com`;
-    
-    // 1. Cria o usuário no Firebase Authentication
-    const userCredential = await createUserWithEmailAndPassword(auth, fakeEmail, password);
-    const uid = userCredential.user.uid; // Pega o UID do usuário
+    // 1. Cria o usuário no Firebase Authentication (AGORA COM O EMAIL REAL)
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const uid = userCredential.user.uid;
 
-    // 2. Cria o documento no Firestore (SEM a senha)
+    // 2. Cria o documento no Firestore (SEM a senha, mas com o email)
     await addDoc(usersRef, { 
       fullname, 
       username, 
+      email, // Novo campo salvo no Firestore
       cpf, 
-      userId: uid // Salva o UID para vincular o usuário do Auth com o documento do Firestore
+      userId: uid 
     });
 
     alert("Cadastro realizado com sucesso!");
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
   } catch (error) {
     console.error("Erro ao criar usuário:", error);
+    // Erros comuns aqui são: auth/email-already-in-use
     alert("Erro ao registrar usuário. Tente novamente. (Detalhes no console: " + error.code + ")");
   }
 };
