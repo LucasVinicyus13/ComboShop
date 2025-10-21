@@ -15,12 +15,12 @@ import {
  Substitua abaixo pelo seu firebaseConfig
 ================================= */
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_PROJECT.firebaseapp.com",
-  projectId: "SEU_PROJECT_ID",
-  storageBucket: "SEU_PROJECT.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID"
+  apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
+  authDomain: "comboshop-66b1c.firebaseapp.com",
+  projectId: "comboshop-66b1c",
+  storageBucket: "comboshop-66b1c.appspot.com",
+  messagingSenderId: "607173380854",
+  appId: "1:607173380854:web:60b02791198cdc113e7ad7"
 };
 /* ============================== */
 
