@@ -1,45 +1,105 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ComboShop | Perfil</title>
   <link rel="icon" type="image/x-icon" href="../images/ComboShopLogo.png">
+  <!-- Usa o mesmo CSS de produtos para manter estilo -->
+  <link rel="stylesheet" href="../products/produtos.css">
   <link rel="stylesheet" href="profile.css">
 </head>
 <body>
+  <!-- Header idêntico ao produtos -->
   <header>
     <div class="header-container">
       <img class="logo" src="../images/ComboShopLogo.png" alt="Combo Shop logo">
-      <h1>Meu Perfil</h1>
+      <div class="menu-toggle" id="menu-toggle">
+        <span></span><span></span><span></span>
+      </div>
     </div>
+
+    <nav class="mobile-menu" id="mobile-menu">
+      <ul>
+        <li><a href="../products/produtos.html">Produtos</a></li>
+        <li><a href="profile.html" class="perfil-link">Seu Perfil</a></li>
+        <li><a href="https://combo-shop.vercel.app/donate/donate.html">Doações</a></li>
+      </ul>
+    </nav>
+
+    <nav class="desktop-menu">
+      <ul>
+        <li><a href="../products/produtos.html">Produtos</a></li>
+        <li><a href="profile.html" class="perfil-link">Seu Perfil</a></li>
+        <li>
+          <button id="btn-carrinho-desktop" class="btn-carrinho">
+            <div class="cart-icon-wrapper">
+              <img src="../images/carrinho.png" class="icon-carrinho" alt="carrinho">
+              <span id="contador-desktop" class="cart-badge">0</span>
+            </div>
+          </button>
+        </li>
+        <li><a href="https://combo-shop.vercel.app/donate/donate.html">Doações</a></li>
+      </ul>
+    </nav>
   </header>
 
-  <div class="container">
-    <div class="profile-card">
-      <div class="profile-pic-container">
-        <img id="profile-pic" src="../images/usuario.png" alt="Foto de perfil" class="profile-pic">
-        <input type="file" id="upload-pic" accept="image/*">
-      </div>
+  <main class="container">
+    <div class="profile-panel">
+      <h1 style="text-align:center; margin: 20px 0 10px;">Meu Perfil</h1>
 
-      <div class="profile-info">
-        <label>Nome de Usuário</label>
-        <input type="text" id="username">
+      <div class="profile-card-custom">
+        <div class="left">
+          <div class="profile-pic-wrap">
+            <img id="profile-pic" src="../images/usuario.png" alt="Foto de perfil" class="profile-pic-custom">
+            <input type="file" id="upload-pic" accept="image/*">
+          </div>
+        </div>
 
-        <label>Senha</label>
-        <input type="password" id="password">
+        <div class="right">
+          <label>Nome completo</label>
+          <input id="fullname" type="text" readonly>
 
-        <label>Endereço</label>
-        <textarea id="endereco" rows="3"></textarea>
+          <label>Nome de usuário</label>
+          <input id="username" type="text" readonly>
 
-        <div class="btn-group">
-          <button id="save-btn">Salvar Alterações</button>
-          <button id="logout-btn">Sair da Conta</button>
-          <button id="delete-btn" class="danger">Excluir Conta</button>
+          <label>Email</label>
+          <input id="email" type="email" readonly>
+
+          <label>CPF</label>
+          <input id="cpf" type="text" readonly>
+
+          <div class="btn-row">
+            <button id="btn-edit-profile" class="btn-comprar">Editar perfil</button>
+            <button id="btn-change-password" class="btn-comprar">Alterar senha</button>
+          </div>
+
+          <div id="edit-actions" style="display:none; margin-top:12px;">
+            <button id="btn-save" class="btn-comprar">Salvar</button>
+            <button id="btn-cancel" class="btn-popup-comprar">Cancelar</button>
+          </div>
+
+          <div id="password-box" style="display:none; margin-top:12px;">
+            <label>Senha atual</label>
+            <input id="current-password" type="password" placeholder="Senha atual">
+            <label>Nova senha</label>
+            <input id="new-password" type="password" placeholder="Nova senha">
+            <label>Confirmar nova senha</label>
+            <input id="confirm-password" type="password" placeholder="Confirmar nova senha">
+            <div style="margin-top:10px;">
+              <button id="btn-save-pass" class="btn-comprar">Alterar senha</button>
+              <button id="btn-cancel-pass" class="btn-popup-comprar">Cancelar</button>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <button id="logout-btn" class="btn-finalizar-pedido">Sair</button>
+            <button id="delete-btn" class="btn-popup-comprar" style="background:#ff4d4d; margin-left:8px;">Excluir conta</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 
   <script type="module" src="profile.js"></script>
 </body>
