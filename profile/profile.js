@@ -275,7 +275,7 @@ btnSavePass.addEventListener("click", async () => {
 /* Logout */
 logoutBtn.addEventListener("click", async () => {
   await signOut(auth);
-  window.location.href = "../login/login.html";
+  window.location.href = "../login.html";
 });
 
 /* Delete account */
@@ -292,7 +292,7 @@ deleteBtn.addEventListener("click", async () => {
     await updateDoc(doc(db, "usuarios", currentUid), { deletedAt: new Date().toISOString() }); // optional soft-delete
     await deleteUser(user);
     mostrarPopupAlerta("Conta excluída.", "success");
-    window.location.href = "../login/login.html";
+    window.location.href = "../login.html";
   } catch (err) {
     console.error(err);
     mostrarPopupAlerta("Falha ao excluir conta. Verifique sua senha.", "error");
