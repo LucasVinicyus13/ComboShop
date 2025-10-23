@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ComboShop | Seu Perfil</title>
-  <link rel="icon" type="image/x-icon" href="../products/images/ComboShopLogo.png">
-  <link rel="stylesheet" href="profile.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ComboShop | Perfil</title>
+  <link rel="icon" type="image/x-icon" href="../images/ComboShopLogo.png">
+  <link rel="stylesheet" href="../products/produtos.css">
+  <link rel="stylesheet" href="profile.css">
 </head>
 <body>
   <header>
     <div class="header-container">
-      <img class="logo" src="../products/images/ComboShopLogo.png" alt="Combo Shop logo">
+      <img class="logo" src="../images/ComboShopLogo.png" alt="ComboShop logo">
       <div class="menu-toggle" id="menu-toggle">
         <span></span><span></span><span></span>
       </div>
@@ -18,89 +19,88 @@
 
     <nav class="mobile-menu" id="mobile-menu">
       <ul>
-        <li><a href="#">Seu Perfil</a></li>
         <li><a href="../products/produtos.html">Produtos</a></li>
-        <li>
-          <button id="btn-carrinho-mobile" class="btn-carrinho">
-            <div class="cart-icon-wrapper">
-              <img src="../products/images/carrinho.png" alt="Carrinho" class="icon-carrinho">
-              <span id="contador-mobile" class="cart-badge">0</span>
-            </div>
-          </button>
-        </li>
-        <li><a href="https://combo-shop.vercel.app/donate/donate.html">Doações</a></li>
+        <li><a href="profile.html" class="perfil-link">Seu Perfil</a></li>
+        <li><a href="../donate/donate.html">Doações</a></li>
       </ul>
     </nav>
 
     <nav class="desktop-menu">
       <ul>
-        <li><a href="#">Seu Perfil</a></li>
         <li><a href="../products/produtos.html">Produtos</a></li>
+        <li><a href="profile.html" class="perfil-link">Seu Perfil</a></li>
         <li>
           <button id="btn-carrinho-desktop" class="btn-carrinho">
             <div class="cart-icon-wrapper">
-              <img src="../products/images/carrinho.png" alt="Carrinho" class="icon-carrinho">
+              <img src="../images/carrinho.png" class="icon-carrinho" alt="Carrinho">
               <span id="contador-desktop" class="cart-badge">0</span>
             </div>
           </button>
         </li>
-        <li><a href="https://combo-shop.vercel.app/donate/donate.html">Doações</a></li>
+        <li><a href="../donate/donate.html">Doações</a></li>
       </ul>
     </nav>
   </header>
 
-  <div class="container">
-    <div class="profile-card">
-      <h2>Seu Perfil</h2>
-      <div class="profile-pic">
-        <img id="profile-pic" src="./images/usuario.png" alt="Foto de perfil" />
-        <input type="file" id="file-input" accept="image/*" hidden />
-        <button id="upload-btn">Alterar foto</button>
-      </div>
+  <main class="container">
+    <div class="profile-panel">
+      <h1 style="text-align:center; margin: 20px 0;">Meu Perfil</h1>
 
-      <div class="info">
-        <label>Nome Completo:</label>
-        <input type="text" id="fullname" readonly />
+      <div class="profile-card-custom">
+        <div class="left">
+          <div class="profile-pic-wrap">
+            <img id="profile-pic" src="../images/usuario.png" alt="Foto de perfil" class="profile-pic-custom">
+            <input type="file" id="upload-pic" accept="image/*">
+          </div>
+        </div>
 
-        <label>Nome de Usuário:</label>
-        <input type="text" id="username" readonly />
+        <div class="right">
+          <label>Nome completo</label>
+          <input id="fullname" type="text" readonly>
 
-        <label>Email:</label>
-        <input type="email" id="email" readonly />
+          <label>Nome de usuário</label>
+          <input id="username" type="text" readonly>
 
-        <label>CPF:</label>
-        <input type="text" id="cpf" readonly />
-      </div>
+          <label>Email</label>
+          <input id="email" type="email" readonly>
 
-      <div class="buttons">
-        <button id="edit-btn" class="btn">Editar Perfil</button>
-        <button id="save-btn" class="btn hidden">Salvar Alterações</button>
-        <button id="cancel-btn" class="btn-cancel hidden">Cancelar</button>
-      </div>
+          <label>CPF</label>
+          <input id="cpf" type="text" readonly>
 
-      <div id="alert" class="alert hidden">Suas informações foram alteradas com sucesso!</div>
+          <div class="btn-row">
+            <button id="btn-edit-profile" class="btn-comprar">Editar perfil</button>
+            <button id="btn-change-password" class="btn-comprar">Alterar senha</button>
+          </div>
 
-      <div class="password-section">
-        <button id="change-password-btn" class="btn">Alterar Senha</button>
-        <div id="password-form" class="hidden">
-          <input type="password" id="current-password" placeholder="Senha atual" />
-          <input type="password" id="new-password" placeholder="Nova senha" />
-          <input type="password" id="confirm-password" placeholder="Confirmar nova senha" />
-          <button id="save-password-btn" class="btn">Salvar Nova Senha</button>
+          <div id="edit-actions" style="display:none; margin-top:12px;">
+            <button id="btn-save" class="btn-comprar">Salvar</button>
+            <button id="btn-cancel" class="btn-cancelar">Cancelar</button>
+          </div>
+
+          <div id="password-box" style="display:none; margin-top:12px;">
+            <label>Senha atual</label>
+            <input id="current-password" type="password" placeholder="Senha atual">
+            <label>Nova senha</label>
+            <input id="new-password" type="password" placeholder="Nova senha">
+            <label>Confirmar nova senha</label>
+            <input id="confirm-password" type="password" placeholder="Confirmar nova senha">
+            <div style="margin-top:10px;">
+              <button id="btn-save-pass" class="btn-comprar">Alterar senha</button>
+              <button id="btn-cancel-pass" class="btn-cancelar">Cancelar</button>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <button id="logout-btn" class="btn-finalizar-pedido">Sair</button>
+            <button id="delete-btn" class="btn-excluir">Excluir conta</button>
+          </div>
         </div>
       </div>
-
-      <button id="delete-account-btn" class="btn-delete">Excluir Conta</button>
     </div>
-  </div>
+  </main>
 
-  <div id="cart-popup" class="cart-popup hidden"></div>
+  <div id="popup-msg" class="popup-msg">Suas informações foram alteradas com sucesso!</div>
 
   <script type="module" src="profile.js"></script>
-  <script>
-    document.getElementById('menu-toggle').addEventListener('click', () => {
-      document.getElementById('mobile-menu').classList.toggle('active');
-    });
-  </script>
 </body>
 </html>
