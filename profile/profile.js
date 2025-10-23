@@ -1,23 +1,37 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
-import { 
-  getAuth, onAuthStateChanged, updateEmail, updatePassword, reauthenticateWithCredential, 
-  EmailAuthProvider, deleteUser 
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
-import { 
-  getFirestore, doc, getDoc, updateDoc 
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
-import { 
-  getStorage, ref, uploadBytes, getDownloadURL 
-} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  updateEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  deleteUser,
+  signOut
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
 
-// Config Firebase
+// 🔧 Config Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
   authDomain: "comboshop-66b1c.firebaseapp.com",
   projectId: "comboshop-66b1c",
   storageBucket: "comboshop-66b1c.appspot.com",
   messagingSenderId: "607173380854",
-  appId: "1:607173380854:web:60b02791198cdc113e7ad7"
+  appId: "1:607173380854:web:60b02791198cdc113e7ad7",
 };
 
 const app = initializeApp(firebaseConfig);
@@ -25,212 +39,237 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// Referências DOM
-const fullname = document.getElementById("fullname");
-const username = document.getElementById("username");
-const email = document.getElementById("email");
-const cpf = document.getElementById("cpf");
-const editBtn = document.getElementById("edit-btn");
-const saveBtn = document.getElementById("save-btn");
-const cancelBtn = document.getElementById("cancel-btn");
-const alertMsg = document.getElementById("alert");
-const changePasswordBtn = document.getElementById("change-password-btn");
-const passwordForm = document.getElementById("password-form");
-const savePasswordBtn = document.getElementById("save-password-btn");
-const deleteAccountBtn = document.getElementById("delete-account-btn");
-const fileInput = document.getElementById("file-input");
-const uploadBtn = document.getElementById("upload-btn");
+// 🧠 Campos
+const fullnameInput = document.getElementById("fullname");
+const usernameInput = document.getElementById("username");
+const emailInput = document.getElementById("email");
+const cpfInput = document.getElementById("cpf");
 const profilePic = document.getElementById("profile-pic");
+const uploadPic = document.getElementById("upload-pic");
 
-// Carrinho
-const btnCarrinhoDesktop = document.getElementById("btn-carrinho-desktop");
-const btnCarrinhoMobile = document.getElementById("btn-carrinho-mobile");
-const contadorDesktop = document.getElementById("contador-desktop");
-const contadorMobile = document.getElementById("contador-mobile");
-const cartPopup = document.getElementById("cart-popup");
+const btnEdit = document.getElementById("btn-edit-profile");
+const btnSave = document.getElementById("btn-save");
+const btnCancel = document.getElementById("btn-cancel");
+const editActions = document.getElementById("edit-actions");
 
-// Estado inicial
-let userDocRef;
+const btnChangePass = document.getElementById("btn-change-password");
+const passBox = document.getElementById("password-box");
+const btnSavePass = document.getElementById("btn-save-pass");
+const btnCancelPass = document.getElementById("btn-cancel-pass");
+
+const logoutBtn = document.getElementById("logout-btn");
+const deleteBtn = document.getElementById("delete-btn");
+
 let originalData = {};
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let currentUserRef;
 
-// Atualizar contador
+// 🧩 Carrinho (igual produtos.js)
+let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
+const contadorDesktop = document.getElementById("contador-desktop");
+
+// Atualiza contador
 function atualizarContador() {
-  const count = cart.reduce((acc, item) => acc + item.quantity, 0);
-  contadorDesktop.textContent = count;
-  contadorMobile.textContent = count;
+  const total = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
+  contadorDesktop.textContent = total;
 }
 atualizarContador();
 
-// Exibir carrinho
-function mostrarCarrinho() {
-  if (cart.length === 0) {
-    cartPopup.innerHTML = "<p>Seu carrinho está vazio!</p>";
-  } else {
-    cartPopup.innerHTML = `
-      <h3>Seu Carrinho</h3>
-      ${cart.map(item => `
-        <div class="cart-item">
-          <img src="${item.image}" alt="${item.name}" class="cart-img">
-          <div class="cart-info">
-            <p><strong>${item.name}</strong></p>
-            <p>R$ ${item.price.toFixed(2)}</p>
-          </div>
-          <div class="cart-qty">
-            <button class="qty-btn" data-name="${item.name}" data-action="decrease"><</button>
-            <span>${item.quantity}</span>
-            <button class="qty-btn" data-name="${item.name}" data-action="increase">></button>
-          </div>
-          <p class="cart-total">R$ ${(item.price * item.quantity).toFixed(2)}</p>
-        </div>
-      `).join("")}
-    `;
-  }
-  cartPopup.classList.toggle("hidden");
-}
+// Carrinho popup
+const btnCarrinho = document.getElementById("btn-carrinho-desktop");
+let popupCarrinho;
 
-// Eventos carrinho
-btnCarrinhoDesktop.addEventListener("click", mostrarCarrinho);
-btnCarrinhoMobile.addEventListener("click", mostrarCarrinho);
-
-cartPopup.addEventListener("click", (e) => {
-  if (e.target.classList.contains("qty-btn")) {
-    const name = e.target.dataset.name;
-    const action = e.target.dataset.action;
-    const product = cart.find(i => i.name === name);
-    if (action === "increase") product.quantity++;
-    else if (action === "decrease" && product.quantity > 1) product.quantity--;
-    localStorage.setItem("cart", JSON.stringify(cart));
-    atualizarContador();
-    mostrarCarrinho();
+btnCarrinho.addEventListener("click", () => {
+  if (popupCarrinho) {
+    popupCarrinho.remove();
+    popupCarrinho = null;
+    return;
   }
+  abrirCarrinho();
 });
 
-// Autenticação
+function abrirCarrinho() {
+  popupCarrinho = document.createElement("div");
+  popupCarrinho.className = "popup-carrinho";
+  popupCarrinho.innerHTML = `
+    <h3>Seu Carrinho</h3>
+    <div id="itens-carrinho"></div>
+    <p id="total-carrinho"></p>
+    <button class="btn-finalizar-pedido" id="fechar-carrinho">Fechar</button>
+  `;
+  document.body.appendChild(popupCarrinho);
+
+  const itensDiv = popupCarrinho.querySelector("#itens-carrinho");
+  let total = 0;
+
+  if (carrinho.length === 0) {
+    itensDiv.innerHTML = "<p>Seu carrinho está vazio!</p>";
+  } else {
+    carrinho.forEach(item => {
+      const el = document.createElement("div");
+      el.className = "item-carrinho";
+      el.innerHTML = `
+        <span>${item.nome} (x${item.quantidade})</span>
+        <span>R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
+      `;
+      itensDiv.appendChild(el);
+      total += item.preco * item.quantidade;
+    });
+  }
+
+  popupCarrinho.querySelector("#total-carrinho").textContent =
+    `Total: R$ ${total.toFixed(2)}`;
+
+  popupCarrinho.querySelector("#fechar-carrinho").addEventListener("click", () => {
+    popupCarrinho.remove();
+    popupCarrinho = null;
+  });
+}
+
+// 🔑 Autenticação
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
-    window.location.href = "../login/login.html";
+    window.location.href = "https://combo-shop.vercel.app/index.html";
     return;
   }
 
-  userDocRef = doc(db, "usuarios", user.uid);
-  const userSnap = await getDoc(userDocRef);
+  currentUserRef = doc(db, "usuarios", user.uid);
+  const snap = await getDoc(currentUserRef);
 
-  if (userSnap.exists()) {
-    const data = userSnap.data();
-    fullname.value = data.nomeCompleto || "";
-    username.value = data.nomeUsuario || "";
-    email.value = user.email;
-    cpf.value = data.cpf ? `000.${data.cpf.slice(3,6)}.***-00` : "";
+  if (snap.exists()) {
+    const data = snap.data();
+    fullnameInput.value = data.nomeCompleto || "";
+    usernameInput.value = data.username || "";
+    emailInput.value = user.email || "";
+    cpfInput.value = data.cpf ? maskCPF(data.cpf) : "";
+    profilePic.src = data.fotoURL || "../images/usuario.png";
 
-    originalData = { 
-      nomeCompleto: fullname.value, 
-      nomeUsuario: username.value, 
-      email: email.value 
-    };
-
-    // Foto de perfil
-    if (data.profilePicURL) {
-      profilePic.src = data.profilePicURL;
-    } else {
-      profilePic.src = "./images/usuario.png";
-    }
+    originalData = { ...data, email: user.email };
+  } else {
+    alert("Erro ao carregar informações do usuário.");
   }
 });
 
-// Editar perfil
-editBtn.addEventListener("click", () => {
-  username.readOnly = false;
-  email.readOnly = false;
-  saveBtn.classList.remove("hidden");
-  cancelBtn.classList.remove("hidden");
-  editBtn.classList.add("hidden");
+// 🪄 Editar perfil
+btnEdit.addEventListener("click", () => {
+  usernameInput.removeAttribute("readonly");
+  emailInput.removeAttribute("readonly");
+  editActions.style.display = "flex";
 });
 
-cancelBtn.addEventListener("click", () => {
-  username.value = originalData.nomeUsuario;
-  email.value = originalData.email;
-  username.readOnly = true;
-  email.readOnly = true;
-  saveBtn.classList.add("hidden");
-  cancelBtn.classList.add("hidden");
-  editBtn.classList.remove("hidden");
+btnCancel.addEventListener("click", () => {
+  usernameInput.value = originalData.username;
+  emailInput.value = originalData.email;
+  usernameInput.setAttribute("readonly", true);
+  emailInput.setAttribute("readonly", true);
+  editActions.style.display = "none";
 });
 
-saveBtn.addEventListener("click", async () => {
+btnSave.addEventListener("click", async () => {
   const user = auth.currentUser;
-  if (!user) return;
+  const newUsername = usernameInput.value.trim();
+  const newEmail = emailInput.value.trim();
 
   try {
-    if (email.value !== originalData.email) await updateEmail(user, email.value);
-    await updateDoc(userDocRef, { nomeUsuario: username.value, email: email.value });
-    
-    alertMsg.classList.remove("hidden");
-    setTimeout(() => alertMsg.classList.add("hidden"), 3000);
-    
-    originalData.email = email.value;
-    originalData.nomeUsuario = username.value;
+    if (newEmail !== originalData.email) {
+      await updateEmail(user, newEmail);
+    }
 
-    username.readOnly = true;
-    email.readOnly = true;
-    saveBtn.classList.add("hidden");
-    cancelBtn.classList.add("hidden");
-    editBtn.classList.remove("hidden");
-  } catch (err) {
-    console.error("Erro ao atualizar:", err);
+    await updateDoc(currentUserRef, {
+      username: newUsername,
+      email: newEmail,
+    });
+
+    alert("Suas informações foram alteradas com sucesso!");
+    usernameInput.setAttribute("readonly", true);
+    emailInput.setAttribute("readonly", true);
+    editActions.style.display = "none";
+    originalData.username = newUsername;
+    originalData.email = newEmail;
+  } catch (error) {
+    console.error("Erro ao atualizar perfil:", error);
+    alert("Erro ao atualizar perfil.");
   }
 });
 
-// Upload foto
-uploadBtn.addEventListener("click", () => fileInput.click());
-
-fileInput.addEventListener("change", async (e) => {
+// 📸 Upload de foto
+uploadPic.addEventListener("change", async (e) => {
   const file = e.target.files[0];
   if (!file) return;
 
   const user = auth.currentUser;
-  const storageRef = ref(storage, `profilePictures/${user.uid}`);
-  await uploadBytes(storageRef, file);
-  const url = await getDownloadURL(storageRef);
-  await updateDoc(userDocRef, { profilePicURL: url });
+  const imgRef = ref(storage, `fotosPerfil/${user.uid}.jpg`);
+  await uploadBytes(imgRef, file);
+  const url = await getDownloadURL(imgRef);
+
+  await updateDoc(currentUserRef, { fotoURL: url });
   profilePic.src = url;
 });
 
-// Alterar senha
-changePasswordBtn.addEventListener("click", () => passwordForm.classList.toggle("hidden"));
-savePasswordBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  const currentPassword = document.getElementById("current-password").value;
-  const newPassword = document.getElementById("new-password").value;
-  const confirmPassword = document.getElementById("confirm-password").value;
+// 🔒 Alterar senha
+btnChangePass.addEventListener("click", () => {
+  passBox.style.display = "block";
+});
 
-  if (newPassword !== confirmPassword) {
-    alert("As senhas não coincidem!");
+btnCancelPass.addEventListener("click", () => {
+  passBox.style.display = "none";
+});
+
+btnSavePass.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  const current = document.getElementById("current-password").value;
+  const nova = document.getElementById("new-password").value;
+  const confirmar = document.getElementById("confirm-password").value;
+
+  if (nova !== confirmar) {
+    alert("As senhas não coincidem.");
     return;
   }
 
   try {
-    const cred = EmailAuthProvider.credential(user.email, currentPassword);
+    const cred = EmailAuthProvider.credential(user.email, current);
     await reauthenticateWithCredential(user, cred);
-    await updatePassword(user, newPassword);
+    await updatePassword(user, nova);
     alert("Senha alterada com sucesso!");
-    passwordForm.classList.add("hidden");
-  } catch (err) {
-    alert("Erro ao alterar senha: " + err.message);
+    passBox.style.display = "none";
+  } catch (error) {
+    alert("Senha atual incorreta.");
   }
 });
 
-// Excluir conta
-deleteAccountBtn.addEventListener("click", async () => {
-  const confirmDelete = confirm("Tem certeza que deseja excluir sua conta?");
-  if (!confirmDelete) return;
+// 🚪 Sair
+logoutBtn.addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "https://combo-shop.vercel.app/index.html";
+});
 
-  const user = auth.currentUser;
+// 💀 Excluir conta
+deleteBtn.addEventListener("click", async () => {
+  const confirma = confirm("Tem certeza que deseja excluir sua conta?");
+  if (!confirma) return;
+
+  const senha = prompt("Digite sua senha para confirmar:");
+  if (!senha) return;
+
   try {
+    const user = auth.currentUser;
+    const cred = EmailAuthProvider.credential(user.email, senha);
+    await reauthenticateWithCredential(user, cred);
     await deleteUser(user);
-    alert("Conta excluída com sucesso!");
-    window.location.href = "../login/login.html";
-  } catch (err) {
-    alert("Erro ao excluir conta: " + err.message);
+    alert("Conta excluída com sucesso.");
+    window.location.href = "https://combo-shop.vercel.app/index.html";
+  } catch (error) {
+    alert("Senha incorreta ou erro ao excluir conta.");
   }
+});
+
+// 🧮 Máscara CPF
+function maskCPF(cpf) {
+  if (!cpf) return "";
+  return cpf.replace(/(\d{3})\d{3}\d{3}(\d{2})/, "$1.***.***-$2");
+}
+
+// 🍔 Menu hambúrguer
+document.getElementById("menu-toggle").addEventListener("click", function () {
+  this.classList.toggle("open");
+  document.getElementById("mobile-menu").classList.toggle("active");
 });
