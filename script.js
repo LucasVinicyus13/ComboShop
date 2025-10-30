@@ -1,68 +1,77 @@
+// ======= IMPORTAÇÕES DO FIREBASE =======
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc 
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+// ======= CONFIGURAÇÃO DO FIREBASE =======
+const firebaseConfig = {
+  apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
+  authDomain: "comboshop-66b1c.firebaseapp.com",
+  projectId: "comboshop-66b1c",
+  storageBucket: "comboshop-66b1c.appspot.com",
+  messagingSenderId: "607173380854",
+  appId: "1:607173380854:web:60b02791198cdc113e7ad7"
+};
+
+// Inicializa Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ======= LÓGICA DO FORMULÁRIO =======
 document.addEventListener("DOMContentLoaded", () => {
-  // ======= CONFIGURAÇÃO DO FIREBASE =======
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import {
-    getAuth,
-    createUserWithEmailAndPassword,
-    onAuthStateChanged
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import {
-    getFirestore,
-    collection,
-    addDoc
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  const form = document.getElementById("formulario");
 
-  const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_AUTH_DOMAIN",
-    projectId: "SEU_PROJECT_ID",
-    storageBucket: "SEU_STORAGE_BUCKET",
-    messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-    appId: "SEU_APP_ID"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  const registerForm = document.getElementById("registerForm");
-
-  if (!registerForm) {
-    console.error("Formulário de registro não encontrado!");
+  if (!form) {
+    console.error("⚠️ Formulário de registro não encontrado!");
     return;
   }
 
-  registerForm.addEventListener("submit", async (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const nomeCompleto = document.getElementById("nomeCompleto").value.trim();
-    const nomeUsuario = document.getElementById("nomeUsuario").value.trim();
+    const fullname = document.getElementById("fullname").value.trim();
+    const username = document.getElementById("username").value.trim();
     const email = document.getElementById("email").value.trim();
-    const cpf = document.getElementById("cpf").value.trim();
-    const senha = document.getElementById("senha").value.trim();
+    const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
+    const password = document.getElementById("password").value.trim();
+
+    if (!fullname || !username || !email || !cpf || !password) {
+      alert("Preencha todos os campos!");
+      return;
+    }
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+      // Cria conta de autenticação
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      console.log("Usuário criado com sucesso:", user.uid);
 
+      // Aguarda autenticação para salvar dados
       onAuthStateChanged(auth, async (currentUser) => {
         if (currentUser) {
           await addDoc(collection(db, "usuarios"), {
             uid: currentUser.uid,
-            nomeCompleto,
-            nomeUsuario,
+            fullname,
+            username,
             email,
             cpf,
-            criadoEm: new Date()
+            criadoEm: new Date().toISOString()
           });
 
-          alert("✅ Registro realizado com sucesso!");
+          alert("✅ Registro concluído com sucesso!");
           window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
         }
       });
     } catch (error) {
-      console.error("Erro ao registrar usuário:", error);
+      console.error("Erro ao registrar:", error.code, error.message);
       alert("❌ Erro ao registrar: " + error.message);
     }
   });
