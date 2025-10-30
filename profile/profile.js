@@ -77,7 +77,7 @@ onAuthStateChanged(auth, async (user) => {
   if (snap.exists()) {
     const data = snap.data();
     fullnameInput.value = data.nomeCompleto || "";
-    usernameInput.value = data.username || "";
+    document.getElementById("full-name").value = data.fullname || "";
     emailInput.value = user.email || "";
     cpfInput.value = data.cpf ? maskCPF(data.cpf) : "";
     profilePic.src = data.fotoURL || "./images/profile.png";
