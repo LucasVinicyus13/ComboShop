@@ -15,7 +15,8 @@ import {
   getFirestore,
   doc,
   getDoc,
-  updateDoc
+  updateDoc,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 import {
   getStorage,
@@ -63,68 +64,6 @@ const deleteBtn = document.getElementById("delete-btn");
 let originalData = {};
 let currentUserRef;
 
-// 🧩 Carrinho (igual produtos.js)
-let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
-const contadorDesktop = document.getElementById("contador-desktop");
-
-// Atualiza contador
-function atualizarContador() {
-  const total = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
-  contadorDesktop.textContent = total;
-}
-atualizarContador();
-
-// Carrinho popup
-const btnCarrinho = document.getElementById("btn-carrinho-desktop");
-let popupCarrinho;
-
-btnCarrinho.addEventListener("click", () => {
-  if (popupCarrinho) {
-    popupCarrinho.remove();
-    popupCarrinho = null;
-    return;
-  }
-  abrirCarrinho();
-});
-
-function abrirCarrinho() {
-  popupCarrinho = document.createElement("div");
-  popupCarrinho.className = "popup-carrinho";
-  popupCarrinho.innerHTML = `
-    <h3>Seu Carrinho</h3>
-    <div id="itens-carrinho"></div>
-    <p id="total-carrinho"></p>
-    <button class="btn-finalizar-pedido" id="fechar-carrinho">Fechar</button>
-  `;
-  document.body.appendChild(popupCarrinho);
-
-  const itensDiv = popupCarrinho.querySelector("#itens-carrinho");
-  let total = 0;
-
-  if (carrinho.length === 0) {
-    itensDiv.innerHTML = "<p>Seu carrinho está vazio!</p>";
-  } else {
-    carrinho.forEach(item => {
-      const el = document.createElement("div");
-      el.className = "item-carrinho";
-      el.innerHTML = `
-        <span>${item.nome} (x${item.quantidade})</span>
-        <span>R$ ${(item.preco * item.quantidade).toFixed(2)}</span>
-      `;
-      itensDiv.appendChild(el);
-      total += item.preco * item.quantidade;
-    });
-  }
-
-  popupCarrinho.querySelector("#total-carrinho").textContent =
-    `Total: R$ ${total.toFixed(2)}`;
-
-  popupCarrinho.querySelector("#fechar-carrinho").addEventListener("click", () => {
-    popupCarrinho.remove();
-    popupCarrinho = null;
-  });
-}
-
 // 🔑 Autenticação
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
@@ -141,7 +80,7 @@ onAuthStateChanged(auth, async (user) => {
     usernameInput.value = data.username || "";
     emailInput.value = user.email || "";
     cpfInput.value = data.cpf ? maskCPF(data.cpf) : "";
-    profilePic.src = data.fotoURL || "../images/usuario.png";
+    profilePic.src = data.fotoURL || "./images/profile.png";
 
     originalData = { ...data, email: user.email };
   } else {
@@ -179,7 +118,7 @@ btnSave.addEventListener("click", async () => {
       email: newEmail,
     });
 
-    alert("Suas informações foram alteradas com sucesso!");
+    showPopup("Suas informações foram alteradas com sucesso!");
     usernameInput.setAttribute("readonly", true);
     emailInput.setAttribute("readonly", true);
     editActions.style.display = "none";
@@ -203,6 +142,7 @@ uploadPic.addEventListener("change", async (e) => {
 
   await updateDoc(currentUserRef, { fotoURL: url });
   profilePic.src = url;
+  showPopup("Foto de perfil atualizada!");
 });
 
 // 🔒 Alterar senha
@@ -229,7 +169,7 @@ btnSavePass.addEventListener("click", async () => {
     const cred = EmailAuthProvider.credential(user.email, current);
     await reauthenticateWithCredential(user, cred);
     await updatePassword(user, nova);
-    alert("Senha alterada com sucesso!");
+    showPopup("Senha alterada com sucesso!");
     passBox.style.display = "none";
   } catch (error) {
     alert("Senha atual incorreta.");
@@ -254,9 +194,13 @@ deleteBtn.addEventListener("click", async () => {
     const user = auth.currentUser;
     const cred = EmailAuthProvider.credential(user.email, senha);
     await reauthenticateWithCredential(user, cred);
+
+    // Exclui do Firestore
+    await deleteDoc(doc(db, "usuarios", user.uid));
     await deleteUser(user);
+
     alert("Conta excluída com sucesso.");
-    window.location.href = "https://combo-shop.vercel.app/index.html";
+    window.location.href = "https://combo-shop.vercel.app/register/registro.html";
   } catch (error) {
     alert("Senha incorreta ou erro ao excluir conta.");
   }
@@ -266,6 +210,14 @@ deleteBtn.addEventListener("click", async () => {
 function maskCPF(cpf) {
   if (!cpf) return "";
   return cpf.replace(/(\d{3})\d{3}\d{3}(\d{2})/, "$1.***.***-$2");
+}
+
+// ✨ Popup suave
+function showPopup(msg) {
+  const popup = document.getElementById("popup-msg");
+  popup.textContent = msg;
+  popup.style.display = "block";
+  setTimeout(() => (popup.style.display = "none"), 3000);
 }
 
 // 🍔 Menu hambúrguer
