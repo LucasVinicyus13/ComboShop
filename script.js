@@ -1,86 +1,96 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  query,
-  where,
-  getDocs,
-  addDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+// ======= IMPORTAÇÕES DO FIREBASE =======
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+import { 
+  getFirestore, 
+  collection, 
+  addDoc 
+} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-// 🔥 Configuração real do seu Firebase
+// ======= CONFIGURAÇÃO DO FIREBASE =======
 const firebaseConfig = {
-  apiKey: "AIzaSyA8o3UuZgWtwFfVLn1jVwRKKGcK36WRFjQ",
-  authDomain: "comboshop-3f1b3.firebaseapp.com",
-  projectId: "comboshop-3f1b3",
-  storageBucket: "comboshop-3f1b3.appspot.com",
-  messagingSenderId: "896785330802",
-  appId: "1:896785330802:web:3b9330b1b6ce238b7cf68c"
+  apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
+  authDomain: "comboshop-66b1c.firebaseapp.com",
+  projectId: "comboshop-66b1c",
+  storageBucket: "comboshop-66b1c.appspot.com",
+  messagingSenderId: "607173380854",
+  appId: "1:607173380854:web:60b02791198cdc113e7ad7"
 };
 
+// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const formulario = document.getElementById("formulario");
-const popup = document.getElementById("popup");
-const cpfInput = document.getElementById("cpf");
-
-// 🧮 Máscara automática de CPF
-cpfInput.addEventListener("input", (e) => {
-  let valor = e.target.value.replace(/\D/g, ""); // remove tudo que não for número
-  if (valor.length > 11) valor = valor.slice(0, 11);
+// ======= FUNÇÃO DE MÁSCARA CPF =======
+function aplicarMascaraCPF(valor) {
+  valor = valor.replace(/\D/g, ""); // Remove tudo que não for número
+  valor = valor.slice(0, 11); // Limita a 11 dígitos
   valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
   valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
   valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-  e.target.value = valor;
-});
+  return valor;
+}
 
-formulario.addEventListener("submit", async (e) => {
-  e.preventDefault();
+// ======= LÓGICA DO FORMULÁRIO =======
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("formulario");
+  const cpfInput = document.getElementById("cpf");
 
-  const nomeCompleto = document.getElementById("fullname").value.trim();
-  const nomeUsuario = document.getElementById("username").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const cpf = document.getElementById("cpf").value.trim();
-  const senha = document.getElementById("password").value.trim();
+  // Adiciona máscara de CPF em tempo real
+  if (cpfInput) {
+    cpfInput.addEventListener("input", (e) => {
+      e.target.value = aplicarMascaraCPF(e.target.value);
+    });
+  }
 
-  try {
-    // 🔎 Verifica se já existe CPF ou nome de usuário
-    const usuariosRef = collection(db, "usuarios");
-    const q = query(usuariosRef, where("cpf", "==", cpf));
-    const q2 = query(usuariosRef, where("nomeUsuario", "==", nomeUsuario));
-    const [snap1, snap2] = await Promise.all([getDocs(q), getDocs(q2)]);
+  if (!form) {
+    console.error("⚠️ Formulário de registro não encontrado!");
+    return;
+  }
 
-    if (!snap1.empty || !snap2.empty) {
-      popup.style.display = "block";
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const fullname = document.getElementById("fullname").value.trim();
+    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const cpf = document.getElementById("cpf").value.replace(/\D/g, ""); // remove pontuações para salvar limpo
+    const password = document.getElementById("password").value.trim();
+
+    if (!fullname || !username || !email || !cpf || !password) {
+      alert("Preencha todos os campos!");
       return;
     }
 
-    // 🔥 Cria o usuário no Auth
-    const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
-    const user = userCredential.user;
+    try {
+      // Cria conta de autenticação
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
-    // 💾 Salva no Firestore
-    await addDoc(collection(db, "usuarios"), {
-      uid: user.uid,
-      nomeCompleto,
-      nomeUsuario,
-      email,
-      cpf,
-      criadoEm: new Date()
-    });
+      // Aguarda autenticação para salvar dados
+      onAuthStateChanged(auth, async (currentUser) => {
+        if (currentUser) {
+          await addDoc(collection(db, "usuarios"), {
+            uid: currentUser.uid,
+            fullname,
+            username,
+            email,
+            cpf, // salvo sem pontos e traço
+            criadoEm: new Date().toISOString()
+          });
 
-    alert("✅ Registro concluído com sucesso!");
-    window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
-
-  } catch (error) {
-    console.error("Erro ao registrar:", error);
-    alert("❌ " + error.message);
-  }
+          alert("✅ Registro concluído com sucesso!");
+          window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
+        }
+      });
+    } catch (error) {
+      console.error("Erro ao registrar:", error.code, error.message);
+      alert("❌ Erro ao registrar: " + error.message);
+    }
+  });
 });
