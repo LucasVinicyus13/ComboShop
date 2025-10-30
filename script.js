@@ -7,50 +7,40 @@ import {
 import {
   getFirestore,
   collection,
-  addDoc,
   query,
   where,
-  getDocs
+  getDocs,
+  addDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ======= CONFIGURAÇÃO DO FIREBASE =======
+// 🔥 Configuração real do seu Firebase
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY",
-  authDomain: "SEU_AUTH_DOMAIN",
-  projectId: "SEU_PROJECT_ID",
-  storageBucket: "SEU_STORAGE_BUCKET",
-  messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-  appId: "SEU_APP_ID"
+  apiKey: "AIzaSyA8o3UuZgWtwFfVLn1jVwRKKGcK36WRFjQ",
+  authDomain: "comboshop-3f1b3.firebaseapp.com",
+  projectId: "comboshop-3f1b3",
+  storageBucket: "comboshop-3f1b3.appspot.com",
+  messagingSenderId: "896785330802",
+  appId: "1:896785330802:web:3b9330b1b6ce238b7cf68c"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ======= MÁSCARA DE CPF =======
+const formulario = document.getElementById("formulario");
+const popup = document.getElementById("popup");
 const cpfInput = document.getElementById("cpf");
+
+// 🧮 Máscara automática de CPF
 cpfInput.addEventListener("input", (e) => {
-  let value = e.target.value.replace(/\D/g, ""); // Remove tudo que não é número
-  if (value.length > 11) value = value.slice(0, 11); // Limita a 11 números
-  value = value.replace(/(\d{3})(\d)/, "$1.$2");
-  value = value.replace(/(\d{3})(\d)/, "$1.$2");
-  value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-  e.target.value = value;
+  let valor = e.target.value.replace(/\D/g, ""); // remove tudo que não for número
+  if (valor.length > 11) valor = valor.slice(0, 11);
+  valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+  valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+  valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  e.target.value = valor;
 });
 
-// ======= POP-UP DE AVISO =======
-const popup = document.getElementById("popup");
-function mostrarPopup() {
-  popup.style.display = "block";
-  popup.style.opacity = "1";
-  setTimeout(() => {
-    popup.style.opacity = "0";
-    setTimeout(() => (popup.style.display = "none"), 500);
-  }, 4000);
-}
-
-// ======= REGISTRO =======
-const formulario = document.getElementById("formulario");
 formulario.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -61,41 +51,36 @@ formulario.addEventListener("submit", async (e) => {
   const senha = document.getElementById("password").value.trim();
 
   try {
-    // Verifica duplicados no Firestore
+    // 🔎 Verifica se já existe CPF ou nome de usuário
     const usuariosRef = collection(db, "usuarios");
-
-    const q1 = query(usuariosRef, where("cpf", "==", cpf));
+    const q = query(usuariosRef, where("cpf", "==", cpf));
     const q2 = query(usuariosRef, where("nomeUsuario", "==", nomeUsuario));
+    const [snap1, snap2] = await Promise.all([getDocs(q), getDocs(q2)]);
 
-    const [cpfSnap, userSnap] = await Promise.all([getDocs(q1), getDocs(q2)]);
-
-    if (!cpfSnap.empty || !userSnap.empty) {
-      mostrarPopup();
+    if (!snap1.empty || !snap2.empty) {
+      popup.style.display = "block";
       return;
     }
 
-    // Cria o usuário no Auth
+    // 🔥 Cria o usuário no Auth
     const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
     const user = userCredential.user;
 
-    // Após autenticar, salva os dados no Firestore
-    onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        await addDoc(collection(db, "usuarios"), {
-          uid: currentUser.uid,
-          nomeCompleto,
-          nomeUsuario,
-          email,
-          cpf,
-          criadoEm: new Date()
-        });
-
-        alert("✅ Registro concluído com sucesso!");
-        window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
-      }
+    // 💾 Salva no Firestore
+    await addDoc(collection(db, "usuarios"), {
+      uid: user.uid,
+      nomeCompleto,
+      nomeUsuario,
+      email,
+      cpf,
+      criadoEm: new Date()
     });
+
+    alert("✅ Registro concluído com sucesso!");
+    window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
+
   } catch (error) {
     console.error("Erro ao registrar:", error);
-    alert("❌ Erro ao registrar: " + error.message);
+    alert("❌ " + error.message);
   }
 });
