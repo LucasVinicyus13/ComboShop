@@ -179,7 +179,7 @@ btnSavePass.addEventListener("click", async () => {
 // 🚪 Sair
 logoutBtn.addEventListener("click", async () => {
   await signOut(auth);
-  window.location.href = "https://combo-shop.vercel.app/index.html";
+  window.location.href = "https://combo-shop.vercel.app/login.html";
 });
 
 // 💀 Excluir conta
@@ -200,7 +200,7 @@ deleteBtn.addEventListener("click", async () => {
     await deleteUser(user);
 
     alert("Conta excluída com sucesso.");
-    window.location.href = "https://combo-shop.vercel.app/register/registro.html";
+    window.location.href = "https://combo-shop.vercel.app/index.html";
   } catch (error) {
     alert("Senha incorreta ou erro ao excluir conta.");
   }
