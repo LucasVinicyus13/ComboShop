@@ -65,7 +65,7 @@ onAuthStateChanged(auth, async (user) => {
     }
   } else {
     alerta("Nenhum usuário logado. Redirecionando para login...");
-    window.location.href = "/login/login.html";
+    window.location.href = "../login.html";
   }
 });
 
@@ -103,7 +103,7 @@ alterarSenhaBtn.addEventListener("click", async () => {
 sairBtn.addEventListener("click", async () => {
   await signOut(auth);
   alerta("Você saiu da conta!");
-  window.location.href = "/login/login.html";
+  window.location.href = "../login.html";
 });
 
 // Excluir conta
@@ -117,5 +117,5 @@ excluirBtn.addEventListener("click", async () => {
   await deleteDoc(doc(db, "usuarios", user.uid));
   await user.delete();
   alerta("Conta excluída com sucesso!");
-  window.location.href = "/login/login.html";
+  window.location.href = "../index.html";
 });
