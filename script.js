@@ -1,92 +1,121 @@
-// ======= IMPORTAÇÕES DO FIREBASE =======
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-import { 
-  getAuth, 
-  createUserWithEmailAndPassword, 
-  onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
-import { 
-  getFirestore, 
-  setDoc, 
-  doc 
-} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+  updatePassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// ======= CONFIGURAÇÃO DO FIREBASE =======
 const firebaseConfig = {
-  apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
+  apiKey: "AIzaSyC3nIYv-x8cKvmK4z8qLrUzO_3gkIfgU8Y",
   authDomain: "comboshop-66b1c.firebaseapp.com",
   projectId: "comboshop-66b1c",
   storageBucket: "comboshop-66b1c.appspot.com",
-  messagingSenderId: "607173380854",
-  appId: "1:607173380854:web:60b02791198cdc113e7ad7"
+  messagingSenderId: "937764326932",
+  appId: "1:937764326932:web:d47094034c00ef5e2f45b5",
 };
 
-// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// ======= MÁSCARA DE CPF =======
-document.addEventListener("DOMContentLoaded", () => {
-  const cpfInput = document.getElementById("cpf");
-  if (cpfInput) {
-    cpfInput.addEventListener("input", (e) => {
-      let value = e.target.value.replace(/\D/g, "");
-      if (value.length > 11) value = value.slice(0, 11);
-      value = value
-        .replace(/^(\d{3})(\d)/, "$1.$2")
-        .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
-        .replace(/\.(\d{3})(\d)/, ".$1-$2");
-      e.target.value = value;
-    });
-  }
+// Elementos
+const nomeCompletoInput = document.getElementById("fullname");
+const usernameInput = document.getElementById("username");
+const emailInput = document.getElementById("email");
+const cpfInput = document.getElementById("cpf");
+const editarBtn = document.getElementById("editarBtn");
+const alterarSenhaBtn = document.getElementById("alterarSenhaBtn");
+const sairBtn = document.getElementById("sairBtn");
+const excluirBtn = document.getElementById("excluirBtn");
 
-  // ======= FORMULÁRIO =======
-  const form = document.getElementById("formulario");
+// Função para exibir alertas personalizados
+function alerta(msg) {
+  alert(msg);
+}
 
-  if (!form) {
-    console.error("⚠️ Formulário de registro não encontrado!");
-    return;
-  }
+// Verifica usuário logado
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const uid = user.uid;
+    const userDocRef = doc(db, "usuarios", uid);
+    const userSnap = await getDoc(userDocRef);
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    if (userSnap.exists()) {
+      const data = userSnap.data();
+      nomeCompletoInput.value = data.fullname || "";
+      usernameInput.value = data.username || "";
+      emailInput.value = data.email || "";
+      cpfInput.value = data.cpf || "";
 
-    const fullname = document.getElementById("fullname").value.trim();
-    const username = document.getElementById("username").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
-    const password = document.getElementById("password").value.trim();
-
-    if (!fullname || !username || !email || !cpf || !password) {
-      alert("⚠️ Preencha todos os campos!");
-      return;
+      // Ativa botões
+      editarBtn.disabled = false;
+      alterarSenhaBtn.disabled = false;
+      sairBtn.disabled = false;
+      excluirBtn.disabled = false;
+    } else {
+      alerta("Usuário não encontrado no banco de dados.");
     }
+  } else {
+    alerta("Nenhum usuário logado. Redirecionando para login...");
+    window.location.href = "/login/login.html";
+  }
+});
 
-    try {
-      // Cria conta de autenticação
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+// Editar perfil
+editarBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) return alerta("Usuário não autenticado.");
 
-      // Aguarda autenticação para salvar dados
-      onAuthStateChanged(auth, async (currentUser) => {
-        if (currentUser) {
-          await setDoc(doc(db, "usuarios", currentUser.uid), {
-            uid: currentUser.uid,
-            fullname,
-            username,
-            email,
-            cpf,
-            criadoEm: new Date().toISOString()
-          });
-
-          alert("✅ Registro concluído com sucesso!");
-          window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
-        }
-      });
-    } catch (error) {
-      console.error("Erro ao registrar:", error.code, error.message);
-      alert("❌ Erro ao registrar: " + error.message);
-    }
+  const userDocRef = doc(db, "usuarios", user.uid);
+  await updateDoc(userDocRef, {
+    fullname: nomeCompletoInput.value,
+    username: usernameInput.value,
+    email: emailInput.value,
+    cpf: cpfInput.value,
   });
+
+  alerta("Perfil atualizado com sucesso!");
+});
+
+// Alterar senha
+alterarSenhaBtn.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) return alerta("Usuário não autenticado.");
+
+  const novaSenha = prompt("Digite sua nova senha:");
+  if (novaSenha && novaSenha.length >= 6) {
+    await updatePassword(user, novaSenha);
+    alerta("Senha alterada com sucesso!");
+  } else {
+    alerta("A senha deve ter pelo menos 6 caracteres.");
+  }
+});
+
+// Sair
+sairBtn.addEventListener("click", async () => {
+  await signOut(auth);
+  alerta("Você saiu da conta!");
+  window.location.href = "/login/login.html";
+});
+
+// Excluir conta
+excluirBtn.addEventListener("click", async () => {
+  const confirmar = confirm("Tem certeza que deseja excluir sua conta?");
+  if (!confirmar) return;
+
+  const user = auth.currentUser;
+  if (!user) return alerta("Usuário não autenticado.");
+
+  await deleteDoc(doc(db, "usuarios", user.uid));
+  await user.delete();
+  alerta("Conta excluída com sucesso!");
+  window.location.href = "/login/login.html";
 });
