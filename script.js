@@ -7,8 +7,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 import { 
   getFirestore, 
-  collection, 
-  addDoc 
+  setDoc, 
+  doc 
 } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
 // ======= CONFIGURAÇÃO DO FIREBASE =======
@@ -26,27 +26,23 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ======= FUNÇÃO DE MÁSCARA CPF =======
-function aplicarMascaraCPF(valor) {
-  valor = valor.replace(/\D/g, ""); // Remove tudo que não for número
-  valor = valor.slice(0, 11); // Limita a 11 dígitos
-  valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
-  valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
-  valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-  return valor;
-}
-
-// ======= LÓGICA DO FORMULÁRIO =======
+// ======= MÁSCARA DE CPF =======
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("formulario");
   const cpfInput = document.getElementById("cpf");
-
-  // Adiciona máscara de CPF em tempo real
   if (cpfInput) {
     cpfInput.addEventListener("input", (e) => {
-      e.target.value = aplicarMascaraCPF(e.target.value);
+      let value = e.target.value.replace(/\D/g, "");
+      if (value.length > 11) value = value.slice(0, 11);
+      value = value
+        .replace(/^(\d{3})(\d)/, "$1.$2")
+        .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+        .replace(/\.(\d{3})(\d)/, ".$1-$2");
+      e.target.value = value;
     });
   }
+
+  // ======= FORMULÁRIO =======
+  const form = document.getElementById("formulario");
 
   if (!form) {
     console.error("⚠️ Formulário de registro não encontrado!");
@@ -59,11 +55,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const fullname = document.getElementById("fullname").value.trim();
     const username = document.getElementById("username").value.trim();
     const email = document.getElementById("email").value.trim();
-    const cpf = document.getElementById("cpf").value.replace(/\D/g, ""); // remove pontuações para salvar limpo
+    const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
     const password = document.getElementById("password").value.trim();
 
     if (!fullname || !username || !email || !cpf || !password) {
-      alert("Preencha todos os campos!");
+      alert("⚠️ Preencha todos os campos!");
       return;
     }
 
@@ -75,12 +71,12 @@ document.addEventListener("DOMContentLoaded", () => {
       // Aguarda autenticação para salvar dados
       onAuthStateChanged(auth, async (currentUser) => {
         if (currentUser) {
-          await addDoc(collection(db, "usuarios"), {
+          await setDoc(doc(db, "usuarios", currentUser.uid), {
             uid: currentUser.uid,
             fullname,
             username,
             email,
-            cpf, // salvo sem pontos e traço
+            cpf,
             criadoEm: new Date().toISOString()
           });
 
