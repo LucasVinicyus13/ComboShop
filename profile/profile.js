@@ -182,7 +182,7 @@ savePasswordBtn.addEventListener("click", async () => {
 // ======= SAIR =======
 logoutBtn.addEventListener("click", async () => {
   await signOut(auth);
-  window.location.href = "../login/login.html";
+  window.location.href = "../login.html";
 });
 
 // ======= EXCLUIR CONTA =======
@@ -197,7 +197,7 @@ deleteBtn.addEventListener("click", async () => {
     await deleteDoc(doc(db, "usuarios", user.uid));
     await deleteUser(user);
     alert("✅ Conta excluída com sucesso!");
-    window.location.href = "../register/register.html";
+    window.location.href = "../index.html";
   } catch (error) {
     alert("❌ Erro ao excluir conta: " + error.message);
   }
