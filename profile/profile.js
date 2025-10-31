@@ -1,204 +1,121 @@
-// ======= IMPORTAÇÕES DO FIREBASE =======
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-import {
-  getAuth,
-  signOut,
-  deleteUser,
-  updateEmail,
-  updatePassword,
-  reauthenticateWithCredential,
-  EmailAuthProvider,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getFirestore,
   doc,
   getDoc,
   updateDoc,
   deleteDoc
-} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+  updatePassword
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-// ======= CONFIGURAÇÃO DO FIREBASE =======
 const firebaseConfig = {
-  apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
+  apiKey: "AIzaSyC3nIYv-x8cKvmK4z8qLrUzO_3gkIfgU8Y",
   authDomain: "comboshop-66b1c.firebaseapp.com",
   projectId: "comboshop-66b1c",
   storageBucket: "comboshop-66b1c.appspot.com",
-  messagingSenderId: "607173380854",
-  appId: "1:607173380854:web:60b02791198cdc113e7ad7"
+  messagingSenderId: "937764326932",
+  appId: "1:937764326932:web:d47094034c00ef5e2f45b5",
 };
 
-// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
+const auth = getAuth(app);
 
-// ======= ELEMENTOS HTML =======
-const photoInput = document.getElementById("photo");
-const photoPreview = document.getElementById("photo-preview");
-const fullnameInput = document.getElementById("fullname");
+// Elementos
+const nomeCompletoInput = document.getElementById("fullname");
 const usernameInput = document.getElementById("username");
 const emailInput = document.getElementById("email");
 const cpfInput = document.getElementById("cpf");
-const editBtn = document.getElementById("edit-btn");
-const saveBtn = document.getElementById("save-btn");
-const logoutBtn = document.getElementById("logout-btn");
-const deleteBtn = document.getElementById("delete-btn");
-const changePasswordBtn = document.getElementById("change-password-btn");
-const passwordSection = document.getElementById("password-section");
-const currentPassword = document.getElementById("current-password");
-const newPassword = document.getElementById("new-password");
-const confirmPassword = document.getElementById("confirm-password");
-const savePasswordBtn = document.getElementById("save-password-btn");
+const editarBtn = document.getElementById("editarBtn");
+const alterarSenhaBtn = document.getElementById("alterarSenhaBtn");
+const sairBtn = document.getElementById("sairBtn");
+const excluirBtn = document.getElementById("excluirBtn");
 
-// ======= MÁSCARA CPF =======
-cpfInput.addEventListener("input", (e) => {
-  let value = e.target.value.replace(/\D/g, "").slice(0, 11);
-  let formatted = value;
-  if (value.length > 3) formatted = value.slice(0, 3) + "." + value.slice(3);
-  if (value.length > 6) formatted = formatted.slice(0, 7) + "." + value.slice(6);
-  if (value.length > 9) formatted = formatted.slice(0, 11) + "-" + value.slice(9);
-  e.target.value = formatted;
-});
+// Função para exibir alertas personalizados
+function alerta(msg) {
+  alert(msg);
+}
 
-// ======= CARREGA DADOS DO USUÁRIO =======
+// Verifica usuário logado
 onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "../login/login.html";
-    return;
-  }
+  if (user) {
+    const uid = user.uid;
+    const userDocRef = doc(db, "usuarios", uid);
+    const userSnap = await getDoc(userDocRef);
 
-  const docRef = doc(db, "usuarios", user.uid);
-  const snap = await getDoc(docRef);
+    if (userSnap.exists()) {
+      const data = userSnap.data();
+      nomeCompletoInput.value = data.fullname || "";
+      usernameInput.value = data.username || "";
+      emailInput.value = data.email || "";
+      cpfInput.value = data.cpf || "";
 
-  if (snap.exists()) {
-    const data = snap.data();
-
-    fullnameInput.value = data.fullname || "";
-    usernameInput.value = data.username || "";
-    emailInput.value = data.email || "";
-    cpfInput.value = data.cpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.***.***-$4") || "";
-    photoPreview.src = data.fotoURL || "./images/profile.png";
-
-    // Bloqueia edição inicialmente
-    [usernameInput, emailInput].forEach(el => el.disabled = true);
-    photoInput.disabled = true;
+      // Ativa botões
+      editarBtn.disabled = false;
+      alterarSenhaBtn.disabled = false;
+      sairBtn.disabled = false;
+      excluirBtn.disabled = false;
+    } else {
+      alerta("Usuário não encontrado no banco de dados.");
+    }
   } else {
-    alert("Usuário não encontrado no banco de dados.");
+    alerta("Nenhum usuário logado. Redirecionando para login...");
+    window.location.href = "/login/login.html";
   }
 });
 
-// ======= EDITAR PERFIL =======
-editBtn.addEventListener("click", async () => {
+// Editar perfil
+editarBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) return alerta("Usuário não autenticado.");
 
-  // Libera campos para edição
-  [usernameInput, emailInput].forEach(el => el.disabled = false);
-  photoInput.disabled = false;
+  const userDocRef = doc(db, "usuarios", user.uid);
+  await updateDoc(userDocRef, {
+    fullname: nomeCompletoInput.value,
+    username: usernameInput.value,
+    email: emailInput.value,
+    cpf: cpfInput.value,
+  });
 
-  editBtn.style.display = "none";
-  saveBtn.style.display = "inline-block";
+  alerta("Perfil atualizado com sucesso!");
 });
 
-saveBtn.addEventListener("click", async () => {
+// Alterar senha
+alterarSenhaBtn.addEventListener("click", async () => {
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) return alerta("Usuário não autenticado.");
 
-  const newUsername = usernameInput.value.trim();
-  const newEmail = emailInput.value.trim();
-
-  try {
-    // Atualiza email na autenticação
-    if (newEmail !== user.email) {
-      await updateEmail(user, newEmail);
-    }
-
-    // Atualiza foto se enviada
-    let photoURL = null;
-    if (photoInput.files.length > 0) {
-      const file = photoInput.files[0];
-      const storageRef = ref(storage, `profile_photos/${user.uid}`);
-      await uploadBytes(storageRef, file);
-      photoURL = await getDownloadURL(storageRef);
-    }
-
-    // Atualiza Firestore
-    const userRef = doc(db, "usuarios", user.uid);
-    await updateDoc(userRef, {
-      username: newUsername,
-      email: newEmail,
-      fotoURL: photoURL || "./images/profile.png"
-    });
-
-    alert("✅ Perfil atualizado com sucesso!");
-    window.location.reload();
-  } catch (error) {
-    console.error("Erro ao atualizar perfil:", error);
-    alert("❌ Erro ao atualizar perfil: " + error.message);
+  const novaSenha = prompt("Digite sua nova senha:");
+  if (novaSenha && novaSenha.length >= 6) {
+    await updatePassword(user, novaSenha);
+    alerta("Senha alterada com sucesso!");
+  } else {
+    alerta("A senha deve ter pelo menos 6 caracteres.");
   }
 });
 
-// ======= ALTERAR SENHA =======
-changePasswordBtn.addEventListener("click", () => {
-  passwordSection.style.display =
-    passwordSection.style.display === "block" ? "none" : "block";
-});
-
-savePasswordBtn.addEventListener("click", async () => {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const current = currentPassword.value;
-  const nova = newPassword.value;
-  const confirmar = confirmPassword.value;
-
-  if (nova !== confirmar) {
-    alert("As senhas não coincidem!");
-    return;
-  }
-
-  try {
-    const cred = EmailAuthProvider.credential(user.email, current);
-    await reauthenticateWithCredential(user, cred);
-    await updatePassword(user, nova);
-    alert("✅ Senha alterada com sucesso!");
-    passwordSection.style.display = "none";
-    currentPassword.value = "";
-    newPassword.value = "";
-    confirmPassword.value = "";
-  } catch (error) {
-    alert("❌ Erro ao alterar senha: " + error.message);
-  }
-});
-
-// ======= SAIR =======
-logoutBtn.addEventListener("click", async () => {
+// Sair
+sairBtn.addEventListener("click", async () => {
   await signOut(auth);
-  window.location.href = "../login.html";
+  alerta("Você saiu da conta!");
+  window.location.href = "/login/login.html";
 });
 
-// ======= EXCLUIR CONTA =======
-deleteBtn.addEventListener("click", async () => {
+// Excluir conta
+excluirBtn.addEventListener("click", async () => {
+  const confirmar = confirm("Tem certeza que deseja excluir sua conta?");
+  if (!confirmar) return;
+
   const user = auth.currentUser;
-  if (!user) return;
+  if (!user) return alerta("Usuário não autenticado.");
 
-  const confirmDelete = confirm("Tem certeza que deseja excluir sua conta?");
-  if (!confirmDelete) return;
-
-  try {
-    await deleteDoc(doc(db, "usuarios", user.uid));
-    await deleteUser(user);
-    alert("✅ Conta excluída com sucesso!");
-    window.location.href = "../index.html";
-  } catch (error) {
-    alert("❌ Erro ao excluir conta: " + error.message);
-  }
+  await deleteDoc(doc(db, "usuarios", user.uid));
+  await user.delete();
+  alerta("Conta excluída com sucesso!");
+  window.location.href = "/login/login.html";
 });
