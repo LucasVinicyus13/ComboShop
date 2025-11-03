@@ -1,145 +1,114 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+// === Firebase Configuração ===
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
 import {
   getFirestore,
   collection,
+  addDoc,
   query,
   where,
-  getDocs,
-  setDoc,
-  doc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB3nNcUzB2pTxwY0HoMZEE3FS3x9XWy2ig",
-  authDomain: "comboshop-f5fa7.firebaseapp.com",
-  projectId: "comboshop-f5fa7",
-  storageBucket: "comboshop-f5fa7.appspot.com",
-  messagingSenderId: "4699060626",
-  appId: "1:4699060626:web:a8a4c46f4c3d4ffcb40a69"
+  apiKey: "AIzaSyACfEok2lIudcax8QwH6VFaJ4OeYdcLQ4E",
+  authDomain: "comboshop-7a3dc.firebaseapp.com",
+  projectId: "comboshop-7a3dc",
+  storageBucket: "comboshop-7a3dc.appspot.com",
+  messagingSenderId: "781234987276",
+  appId: "1:781234987276:web:7b4127df8a712a6bcd6f41"
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// Captura dos elementos HTML
-const form = document.getElementById("registerForm");
-const nomeCompleto = document.getElementById("nomeCompleto");
-const nomeUsuario = document.getElementById("nomeUsuario");
-const email = document.getElementById("email");
-const cpf = document.getElementById("cpf");
-const senha = document.getElementById("senha");
+// === Máscara do CPF ===
+document.getElementById("cpf").addEventListener("input", (e) => {
+  let value = e.target.value.replace(/\D/g, "");
+  if (value.length > 11) value = value.slice(0, 11);
+  e.target.value = value
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+});
 
-// Função para exibir pop-up estilizado
-function mostrarPopup(mensagem, botaoTexto, link) {
-  const popup = document.createElement("div");
-  popup.innerHTML = `
-    <div style="
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.6);
-      display: flex; align-items: center; justify-content: center;
-      z-index: 9999;">
-      <div style="
-        background: linear-gradient(135deg, #321152, #4b0082);
-        color: white;
-        padding: 20px;
-        border-radius: 15px;
-        text-align: center;
-        width: 300px;">
-        <h3>${mensagem}</h3>
-        <a href="${link}" style="
-          display: inline-block;
-          margin-top: 15px;
-          background-color: #6a0dad;
-          color: white;
-          padding: 10px 20px;
-          border-radius: 8px;
-          text-decoration: none;
-          font-weight: bold;">
-          ${botaoTexto}
-        </a>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(popup);
-}
+// === Registro de Usuário ===
+const registerForm = document.getElementById("registerForm");
 
-// Evento de envio do formulário
-form.addEventListener("submit", async (e) => {
+registerForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const nome = nomeCompleto.value.trim();
-  const usuario = nomeUsuario.value.trim();
-  const emailValor = email.value.trim();
-  const cpfValor = cpf.value.trim();
-  const senhaValor = senha.value.trim();
+  const fullname = document.getElementById("fullname").value.trim();
+  const username = document.getElementById("username").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const cpf = document.getElementById("cpf").value.trim();
+  const password = document.getElementById("password").value;
 
-  if (!nome || !usuario || !emailValor || !cpfValor || !senhaValor) {
-    alert("Por favor, preencha todos os campos.");
+  if (!fullname || !username || !email || !cpf || !password) {
+    alert("Preencha todos os campos!");
     return;
   }
 
   try {
-    // 🔎 Verifica se já existe usuário com o mesmo CPF ou nome de usuário
-    const usuariosRef = collection(db, "usuarios");
-    const q = query(
-      usuariosRef,
-      where("cpf", "==", cpfValor)
-    );
-    const q2 = query(
-      usuariosRef,
-      where("nomeUsuario", "==", usuario)
-    );
+    // Verifica se já existe um CPF ou nome de usuário no Firestore
+    const usersRef = collection(db, "users");
+    const q = query(usersRef, where("cpf", "==", cpf));
+    const q2 = query(usersRef, where("username", "==", username));
 
-    const cpfSnap = await getDocs(q);
-    const usuarioSnap = await getDocs(q2);
+    const [cpfSnap, userSnap] = await Promise.all([getDocs(q), getDocs(q2)]);
 
-    if (!cpfSnap.empty || !usuarioSnap.empty) {
-      mostrarPopup(
-        "Já existe um usuário com esse nome de usuário ou CPF. É você?",
-        "Fazer login",
-        "https://combo-shop.vercel.app/login/login.html"
-      );
+    if (!cpfSnap.empty || !userSnap.empty) {
+      // Exibe o popup estilizado
+      const popup = document.createElement("div");
+      popup.innerHTML = `
+        <div style="
+          position: fixed;
+          top: 0; left: 0; width: 100%; height: 100%;
+          background-color: rgba(0,0,0,0.5);
+          display: flex; align-items: center; justify-content: center;
+          z-index: 9999;
+        ">
+          <div style="
+            background: linear-gradient(135deg, #4B0082, #8A2BE2);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            max-width: 350px;
+          ">
+            <p>Já existe um usuário com esse nome de usuário ou CPF.</p>
+            <p>É você? <a href="/login/login.html" style="color:#00ffff; text-decoration:underline;">Fazer login</a></p>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(popup);
       return;
     }
 
-    // Cria o usuário no Firebase Authentication
-    const userCredential = await createUserWithEmailAndPassword(auth, emailValor, senhaValor);
+    // Cria o usuário no Firebase Auth
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Salva os dados do usuário no Firestore
-    await setDoc(doc(db, "usuarios", user.uid), {
-      nomeCompleto: nome,
-      nomeUsuario: usuario,
-      email: emailValor,
-      cpf: cpfValor,
-      criadoEm: serverTimestamp(),
-      uid: user.uid
+    // Salva dados no Firestore
+    await addDoc(collection(db, "users"), {
+      uid: user.uid,
+      fullname,
+      username,
+      email,
+      cpf,
     });
 
-    alert("Registro realizado com sucesso!");
+    // Redireciona para produtos
+    alert("Registro concluído com sucesso!");
     window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
 
   } catch (error) {
-    console.error("Erro ao registrar:", error);
-    if (error.code === "auth/email-already-in-use") {
-      mostrarPopup(
-        "Este e-mail já está em uso. Deseja fazer login?",
-        "Ir para login",
-        "https://combo-shop.vercel.app/login/login.html"
-      );
-    } else if (error.code === "permission-denied") {
-      alert("Erro: Missing or insufficient permissions. Verifique suas regras do Firestore.");
-    } else {
-      alert("Erro ao registrar: " + error.message);
-    }
+    console.error(error);
+    alert("Erro ao registrar: " + error.message);
   }
 });
