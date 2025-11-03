@@ -2,8 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
 import { 
   getAuth, 
-  createUserWithEmailAndPassword, 
-  onAuthStateChanged 
+  createUserWithEmailAndPassword 
 } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 import { 
   getFirestore, 
@@ -61,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const fullname = document.getElementById("fullname").value.trim();
     const username = document.getElementById("username").value.trim();
     const email = document.getElementById("email").value.trim();
-    const cpf = document.getElementById("cpf").value.replace(/\D/g, ""); // Remove a máscara antes de salvar
+    const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
     const password = document.getElementById("password").value.trim();
 
     if (!fullname || !username || !email || !cpf || !password) {
@@ -74,25 +73,27 @@ document.addEventListener("DOMContentLoaded", () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Aguarda autenticação para salvar dados
-      onAuthStateChanged(auth, async (currentUser) => {
-        if (currentUser) {
-          await addDoc(collection(db, "usuarios"), {
-            uid: currentUser.uid,
-            fullname,
-            username,
-            email,
-            cpf,
-            criadoEm: new Date().toISOString()
-          });
-
-          alert("✅ Registro concluído com sucesso!");
-          window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
-        }
+      // Salva informações no Firestore
+      await addDoc(collection(db, "usuarios"), {
+        uid: user.uid,
+        fullname,
+        username,
+        email,
+        cpf,
+        criadoEm: new Date().toISOString()
       });
+
+      alert("✅ Registro concluído com sucesso!");
+      window.location.href = "https://combo-shop.vercel.app/products/produtos.html";
+
     } catch (error) {
-      console.error("Erro ao registrar:", error.code, error.message);
-      alert("❌ Erro ao registrar: " + error.message);
+      console.error("❌ Erro ao registrar:", error.code, error.message);
+
+      if (error.code === "auth/email-already-in-use") {
+        alert("⚠️ Esse e-mail já está em uso. Tente fazer login.");
+      } else {
+        alert("❌ Erro ao registrar: " + error.message);
+      }
     }
   });
 });
