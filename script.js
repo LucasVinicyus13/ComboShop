@@ -16,12 +16,12 @@ import {
 
 // === Configuração Firebase ===
 const firebaseConfig = {
-  apiKey: "AIzaSyD1sx0hfSY6SYLgV2AIv4mHlU9rHogm9EA",
-  authDomain: "comboshop-ff2f3.firebaseapp.com",
-  projectId: "comboshop-ff2f3",
-  storageBucket: "comboshop-ff2f3.appspot.com",
-  messagingSenderId: "224052432585",
-  appId: "1:224052432585:web:cfbb1fc3dfd7da6f4e4204"
+  apiKey: "AIzaSyAMpbU5K-LpvnDqG-2UOncbbOMSijch19c",
+  authDomain: "comboshop-66b1c.firebaseapp.com",
+  projectId: "comboshop-66b1c",
+  storageBucket: "comboshop-66b1c.firebasestorage.app",
+  messagingSenderId: "607173380854",
+  appId: "1:607173380854:web:60b02791198cdc113e7ad7"
 };
 
 // === Inicialização ===
