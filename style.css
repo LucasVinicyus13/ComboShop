@@ -17,15 +17,16 @@ body {
 }
 
 header {
-  width: 100%;
-  background-color: #c2b6ff;
-  padding: 10px 0;
-  text-align: left;
+  height: 50px;
+  background-color: #9f8eff;
+  border-bottom: 3px solid #000;
+  box-shadow: 2px 0px 25px #000;
 }
 
 .logo {
-  width: 70px;
-  margin-left: 20px;
+  width: 40px;
+  margin-top: 5px;
+  margin-left: 10px;
 }
 
 .container {
