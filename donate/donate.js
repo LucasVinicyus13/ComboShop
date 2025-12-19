@@ -133,10 +133,17 @@ function abrirCarrinho() {
 
 // listeners dos botões
 document.getElementById("btn-carrinho-desktop")
-  ?.addEventListener("click", abrirCarrinho)
+  ?.addEventListener("click", (e) => {
+    e.stopPropagation()
+    abrirCarrinho()
+  })
 
 document.getElementById("btn-carrinho-mobile")
-  ?.addEventListener("click", abrirCarrinho)
+  ?.addEventListener("click", (e) => {
+    e.stopPropagation()
+    abrirCarrinho()
+  })
+
 
 // atualiza contador ao carregar
 atualizarContadorCarrinho()
