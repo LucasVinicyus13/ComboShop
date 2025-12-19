@@ -446,6 +446,21 @@ document.addEventListener("DOMContentLoaded", () => {
       })
     })
 
+    popup.querySelectorAll(".remover-item").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    const index = Number.parseInt(e.target.getAttribute("data-index"))
+    const carrinho = JSON.parse(localStorage.getItem("carrinho")) || []
+
+    carrinho.splice(index, 1)
+
+    localStorage.setItem("carrinho", JSON.stringify(carrinho))
+    atualizarContadorCarrinho()
+    fecharPopups()
+    abrirCarrinho()
+  })
+})
+
+
     if (carrinho.length > 0) {
       popup.querySelector(".btn-finalizar-carrinho").addEventListener("click", () => {
         const checkBoxes = popup.querySelectorAll(".item-selecionado")
