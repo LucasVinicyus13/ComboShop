@@ -424,41 +424,39 @@ document.addEventListener("DOMContentLoaded", () => {
     })
 
     popup.querySelectorAll(".diminuir, .aumentar").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const index = Number.parseInt(e.target.getAttribute("data-index"))
-        const carrinho = JSON.parse(localStorage.getItem("carrinho")) || []
-        const produto = carrinho[index]
-
-        if (e.target.classList.contains("aumentar")) {
-          produto.quantidade++
-        } else if (produto.quantidade > 1) {
-          produto.quantidade--
-        }
-
-        if (produto.quantidade === 0) {
-          carrinho.splice(index, 1)
-        }
-
-        localStorage.setItem("carrinho", JSON.stringify(carrinho))
-        atualizarContadorCarrinho()
-        fecharPopups()
-        abrirCarrinho()
-      })
-    })
-
-    popup.querySelectorAll(".remover-item").forEach((btn) => {
   btn.addEventListener("click", (e) => {
     const index = Number.parseInt(e.target.getAttribute("data-index"))
     const carrinho = JSON.parse(localStorage.getItem("carrinho")) || []
+    const produto = carrinho[index]
 
+    if (e.target.classList.contains("aumentar")) {
+      produto.quantidade++
+    } else {
+      produto.quantidade--
+    }
+
+    if (produto.quantidade <= 0) {
+  const itemDiv = e.target.closest(".carrinho-item")
+  itemDiv.classList.add("removendo")
+
+  setTimeout(() => {
     carrinho.splice(index, 1)
-
     localStorage.setItem("carrinho", JSON.stringify(carrinho))
     atualizarContadorCarrinho()
     fecharPopups()
     abrirCarrinho()
+  }, 300)
+
+  return
+}
+
+
+    localStorage.setItem("carrinho", JSON.stringify(carrinho))
+    fecharPopups()
+    abrirCarrinho()
   })
 })
+
 
 
     if (carrinho.length > 0) {
