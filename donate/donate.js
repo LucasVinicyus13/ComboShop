@@ -92,3 +92,54 @@ menuToggle.addEventListener('click', () => {
   menuToggle.classList.toggle('open');
   mobileMenu.classList.toggle('active');
 });
+
+function atualizarContadorCarrinho() {
+  const carrinho = JSON.parse(localStorage.getItem("carrinho")) || []
+  const total = carrinho.length
+
+  const desktop = document.getElementById("contador-desktop")
+  const mobile = document.getElementById("contador-mobile")
+
+  if (desktop) desktop.textContent = total
+  if (mobile) mobile.textContent = total
+}
+
+atualizarContadorCarrinho()
+
+function abrirCarrinho() {
+  const carrinho = JSON.parse(localStorage.getItem("carrinho")) || []
+
+  const popup = document.createElement("div")
+  popup.className = "popup-overlay"
+
+  let html = `
+    <div class="popup-content">
+      <span class="popup-close">&times;</span>
+      <h2>Meu Carrinho</h2>
+  `
+
+  if (carrinho.length === 0) {
+    html += `<p>Seu carrinho está vazio.</p>`
+  } else {
+    carrinho.forEach(item => {
+      html += `
+        <p><strong>${item.nome}</strong> — ${item.quantidade}x</p>
+      `
+    })
+  }
+
+  html += `</div>`
+  popup.innerHTML = html
+  document.body.appendChild(popup)
+
+  popup.querySelector(".popup-close").addEventListener("click", () => popup.remove())
+  popup.addEventListener("click", e => {
+    if (e.target === popup) popup.remove()
+  })
+}
+
+document.getElementById("btn-carrinho-desktop")
+  ?.addEventListener("click", abrirCarrinho)
+
+document.getElementById("btn-carrinho-mobile")
+  ?.addEventListener("click", abrirCarrinho)
