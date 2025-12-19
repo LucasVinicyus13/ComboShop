@@ -126,9 +126,12 @@ function abrirCarrinho() {
   document.body.appendChild(popup)
 
   popup.querySelector(".popup-close").addEventListener("click", () => popup.remove())
-  popup.addEventListener("click", e => {
+  setTimeout(() => {
+  popup.addEventListener("click", (e) => {
     if (e.target === popup) popup.remove()
   })
+}, 0)
+
 }
 
 // listeners dos botões
