@@ -82,16 +82,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
   }
-});
 
-
-const menuToggle = document.getElementById('menu-toggle');
-const mobileMenu = document.getElementById('mobile-menu');
-
-menuToggle.addEventListener('click', () => {
-  menuToggle.classList.toggle('open');
-  mobileMenu.classList.toggle('active');
-});
+  // =======================
+// CARRINHO NO HEADER
+// =======================
 
 function atualizarContadorCarrinho() {
   const carrinho = JSON.parse(localStorage.getItem("carrinho")) || []
@@ -104,8 +98,7 @@ function atualizarContadorCarrinho() {
   if (mobile) mobile.textContent = total
 }
 
-atualizarContadorCarrinho()
-
+// abre popup do carrinho
 function abrirCarrinho() {
   const carrinho = JSON.parse(localStorage.getItem("carrinho")) || []
 
@@ -138,8 +131,22 @@ function abrirCarrinho() {
   })
 }
 
+// listeners dos botões
 document.getElementById("btn-carrinho-desktop")
   ?.addEventListener("click", abrirCarrinho)
 
 document.getElementById("btn-carrinho-mobile")
   ?.addEventListener("click", abrirCarrinho)
+
+// atualiza contador ao carregar
+atualizarContadorCarrinho()
+});
+
+
+const menuToggle = document.getElementById('menu-toggle');
+const mobileMenu = document.getElementById('mobile-menu');
+
+menuToggle.addEventListener('click', () => {
+  menuToggle.classList.toggle('open');
+  mobileMenu.classList.toggle('active');
+});
