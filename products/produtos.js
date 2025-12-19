@@ -397,7 +397,6 @@ document.addEventListener("DOMContentLoaded", () => {
                             <button class="aumentar" data-index="${index}" type="button">&gt;</button>
                             <p>Total: R$ ${(item.preco * item.quantidade).toFixed(2)}</p>
                         </div>
-                        <button class="remover-item" data-index="${index}" title="Remover item">✕</button>
                     </div>
                     <hr>
                 `
