@@ -783,3 +783,22 @@ h1 {
     font-size: 14px;
   }
 }
+
+/* ===== LIMITAR ALTURA DO POPUP DO CARRINHO ===== */
+.popup-overlay .popup-content {
+  max-height: 800px;
+  overflow-y: auto;
+}
+
+.popup-overlay .popup-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.popup-overlay .popup-content::-webkit-scrollbar-thumb {
+  background-color: #6c63ff;
+  border-radius: 10px;
+}
+
+.popup-overlay .popup-content::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
